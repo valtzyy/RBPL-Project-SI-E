@@ -1,0 +1,1 @@
+Untuk membuat skema table dari database, atau membuat kolom baru, perubahan kolom dsb

@@ -5,7 +5,6 @@
 //    php migrate.php           → jalankan semua migrasi baru
 //    php migrate.php rollback  → rollback migrasi terakhir
 //    php migrate.php seed      → isi data awal (seeder)
-//    php migrate.php fresh     → DROP semua tabel lalu migrate ulang
 // ============================================================
 
 define('ROOT_PATH', __DIR__);
@@ -20,17 +19,17 @@ $runner = new MigrationRunner($db, ROOT_PATH . '/database/migrations');
 
 $command = $argv[1] ?? 'migrate';
 
-echo "\n=== MyApp Migration Tool ===\n\n";
+echo "\n=== RBPL SI E itu mudah!!! ===\n\n";
 
 switch ($command) {
 
     case 'migrate':
-        echo "Menjalankan migrasi...\n\n";
+        echo "Melakukan migrasi...\n\n";
         $runner->run();
         break;
 
     case 'rollback':
-        echo "Rollback migrasi terakhir...\n\n";
+        echo "Kembali ke migrasi sebelumnya...\n\n";
         $runner->rollback();
         break;
 
@@ -39,13 +38,6 @@ switch ($command) {
         require_once ROOT_PATH . '/database/seeders/UserSeeder.php';
         $seeder = new UserSeeder($db);
         $seeder->run();
-        break;
-
-    case 'fresh':
-        echo "⚠️  DROP semua tabel & migrate ulang...\n\n";
-        // Hapus tabel migrations agar semua dijalankan ulang
-        $db->exec("DROP TABLE IF EXISTS migrations");
-        $runner->run();
         break;
 
     default:

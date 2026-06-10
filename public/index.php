@@ -21,6 +21,8 @@ $router = new Router();
 
 // 4. Muat daftar route
 require_once ROOT_PATH . '/routes/web.php';
-
+// Tambahkan ini sementara untuk lihat error
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 // 5. Jalankan!
 $router->run();

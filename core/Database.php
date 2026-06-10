@@ -1,30 +1,46 @@
 <?php
 
-class Database {
+class Database
+{
     private static ?PDO $instance = null;
 
-    // Tidak bisa di-new dari luar
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
-    /**
-     * Ambil koneksi PDO (dibuat sekali, dipakai terus)
-     */
-    public static function getInstance(): PDO {
+    public static function getInstance(): PDO
+    {
         if (self::$instance === null) {
-            $config = require __DIR__ . '/../config/database.php';
 
-            $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['dbname']};charset={$config['charset']}";
+            $config = require ROOT_PATH . '/config/database.php';
+
+            $certPath = $config['sslcert'] ?? null;
+
+            // DEBUG WAJIB (hapus nanti kalau sudah jalan)
+            if (!file_exists($certPath)) {
+                die("CA CERT NOT FOUND: " . $certPath);
+            }
+
+            $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['dbname']};charset=utf8mb4";
+
+            $options = $config['options'] ?? [];
+
+            // SSL Aiven
+            $options[PDO::MYSQL_ATTR_SSL_CA] = $certPath;
+            $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
 
             try {
                 self::$instance = new PDO(
                     $dsn,
                     $config['username'],
                     $config['password'],
-                    $config['options']
+                    $options
                 );
+
+                self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
             } catch (PDOException $e) {
-                // Tampilkan error yang ramah
-                die("❌ Koneksi database gagal: " . $e->getMessage());
+                die("❌ Koneksi Aiven MySQL gagal: " . $e->getMessage());
             }
         }
 

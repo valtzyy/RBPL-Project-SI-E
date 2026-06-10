@@ -10,14 +10,14 @@ class Controller {
         // Ekstrak array menjadi variabel (misal $data['users'] → $users)
         extract($data);
 
-        $viewPath = __DIR__ . "/../app/views/{$name}.php";
+        $viewPath = ROOT_PATH . "/app/views/{$name}.php";
 
         if (!file_exists($viewPath)) {
             die("❌ View tidak ditemukan: {$name}.php");
         }
 
         // Gunakan layout jika ada
-        $layoutPath = __DIR__ . '/../app/views/layouts/main.php';
+        $layoutPath = ROOT_PATH . '/app/views/layouts/main.php';
         if (file_exists($layoutPath)) {
             ob_start();
             require $viewPath;

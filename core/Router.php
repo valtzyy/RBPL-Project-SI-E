@@ -34,7 +34,7 @@ class Router {
 
                 [$controllerName, $methodName] = explode('@', $action);
 
-                require_once __DIR__ . "/../app/controllers/{$controllerName}.php";
+                require_once ROOT_PATH . "/app/controllers/{$controllerName}.php";
 
                 $controller = new $controllerName();
                 $controller->$methodName(...array_values($params));
