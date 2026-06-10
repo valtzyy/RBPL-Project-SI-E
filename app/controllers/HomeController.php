@@ -8,7 +8,7 @@ class HomeController extends Controller {
     public function index(): void {
         $this->view('home', [
             'title'   => 'Selamat Datang',
-            'message' => 'Aplikasi PHP Native siap digunakan!',
+            'message' => 'Siap membara',
         ]);
     }
 }
