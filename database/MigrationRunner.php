@@ -48,7 +48,6 @@ class MigrationRunner
             }
 
             try {
-                $this->db->beginTransaction();
 
                 $migration = require $file;
                 $this->validateMigration($migration, $filename, 'up');
@@ -59,13 +58,9 @@ class MigrationRunner
                 );
                 $stmt->execute([$filename]);
 
-                $this->db->commit();
                 echo "  [OK] {$filename}\n";
                 $count++;
             } catch (Throwable $e) {
-                if ($this->db->inTransaction()) {
-                    $this->db->rollBack();
-                }
 
                 echo "\n====================\n";
                 echo "FILE : {$filename}\n";
@@ -87,46 +82,44 @@ class MigrationRunner
             : "\n[OK] Semua migrasi sudah up-to-date.\n";
     }
 
-    public function rollback(): void
+    public function rollback(int $steps = 1): void
     {
         $stmt = $this->db->query(
-            "SELECT filename FROM migrations ORDER BY id DESC LIMIT 1"
+            "SELECT filename FROM migrations ORDER BY id DESC LIMIT {$steps}"
         );
-        $last = $stmt->fetchColumn();
+        $files = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        if (!$last) {
+        if (!$files) {
             echo "Tidak ada migrasi untuk di-rollback.\n";
             return;
         }
 
-        $file = $this->migrationsPath . '/' . $last;
+        foreach ($files as $last) {
+            $file = $this->migrationsPath . '/' . $last;
 
-        if (!file_exists($file)) {
-            echo "File migrasi tidak ditemukan: {$last}\n";
-            return;
-        }
-
-        try {
-            $this->db->beginTransaction();
-
-            $migration = require $file;
-            $this->validateMigration($migration, $last, 'down');
-            $migration->down($this->db);
-
-            $this->db->prepare("DELETE FROM migrations WHERE filename = ?")
-                     ->execute([$last]);
-
-            $this->db->commit();
-            echo "  [ROLLBACK] {$last}\n";
-        } catch (Throwable $e) {
-            if ($this->db->inTransaction()) {
-                $this->db->rollBack();
+            if (!file_exists($file)) {
+                echo "File migrasi tidak ditemukan: {$last}\n";
+                continue;
             }
 
-            echo "Rollback gagal: " . $e->getMessage() . "\n";
+            try {
+                $migration = (function (string $path): mixed {
+                    return require $path;
+                })($file);
+
+                $this->validateMigration($migration, $last, 'down');
+                $migration->down($this->db);
+
+                $this->db->prepare("DELETE FROM migrations WHERE filename = ?")
+                    ->execute([$last]);
+
+                echo "  [ROLLBACK] {$last}\n";
+            } catch (Throwable $e) {
+                echo "Rollback gagal: " . $e->getMessage() . "\n";
+                break;
+            }
         }
     }
-
     private function validateMigration(mixed $migration, string $filename, string $method): void
     {
         if (!is_object($migration) || !method_exists($migration, $method)) {
