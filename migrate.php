@@ -33,6 +33,11 @@ switch ($command) {
         $runner->rollback();
         break;
 
+    case 'rollback:all':
+        echo "Rollback semua migrasi...\n\n";
+        $runner->rollback(999);       // semua
+        break;
+
     case 'seed':
         echo "Menjalankan seeder...\n\n";
         require_once ROOT_PATH . '/database/seeders/UserSeeder.php';
