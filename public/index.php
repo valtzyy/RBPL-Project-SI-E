@@ -1,28 +1,37 @@
 <?php
-// ============================================================
-//  ENTRY POINT — semua request masuk ke sini
-//  Pastikan web server diarahkan ke folder public/
-// ============================================================
 
 define('ROOT_PATH', dirname(__DIR__));
 
-// 1. Load konfigurasi (juga memuat .env)
 require_once ROOT_PATH . '/config/database.php';
-require_once ROOT_PATH . '/config/app.php';
+$app = require ROOT_PATH . '/config/app.php';
 
-// 2. Load core classes
+if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+
+    session_start();
+}
+
+if (($app['debug'] ?? false) === true) {
+    ini_set('display_errors', '1');
+} else {
+    ini_set('display_errors', '0');
+}
+
+error_reporting(E_ALL);
+
 require_once ROOT_PATH . '/core/Database.php';
 require_once ROOT_PATH . '/core/Model.php';
 require_once ROOT_PATH . '/core/Controller.php';
 require_once ROOT_PATH . '/core/Router.php';
 
-// 3. Buat instance router
 $router = new Router();
 
-// 4. Muat daftar route
 require_once ROOT_PATH . '/routes/web.php';
-// Tambahkan ini sementara untuk lihat error
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-// 5. Jalankan!
+
 $router->run();

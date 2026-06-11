@@ -3,6 +3,6 @@
 return [
     'name'    => $_ENV['APP_NAME']  ?? 'MyApp',
     'env'     => $_ENV['APP_ENV']   ?? 'production',
-    'debug'   => $_ENV['APP_DEBUG'] ?? false,
+    'debug'   => filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOLEAN),
     'url'     => $_ENV['APP_URL']   ?? 'http://localhost',
 ];

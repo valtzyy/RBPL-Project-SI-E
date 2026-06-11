@@ -1,49 +1,89 @@
 <?php
 
-class Router {
+class Router
+{
     private array $routes = [];
 
-    /** Daftarkan route GET */
-    public function get(string $path, string $action): void {
+    public function get(string $path, string $action): void
+    {
         $this->routes['GET'][$path] = $action;
     }
 
-    /** Daftarkan route POST */
-    public function post(string $path, string $action): void {
+    public function post(string $path, string $action): void
+    {
         $this->routes['POST'][$path] = $action;
     }
 
-    /** Jalankan router berdasarkan URL saat ini */
-    public function run(): void {
-        $method = $_SERVER['REQUEST_METHOD'];
-        $uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    public function run(): void
+    {
+        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
-        // Hilangkan trailing slash kecuali root
         if ($uri !== '/') {
             $uri = rtrim($uri, '/');
         }
 
         foreach ($this->routes[$method] ?? [] as $path => $action) {
-            // Ubah :param menjadi regex
-            $pattern = preg_replace('/:([a-z]+)/', '(?P<$1>[^/]+)', $path);
-            $pattern = "@^{$pattern}$@";
+            $pattern = $this->routePattern($path);
 
-            if (preg_match($pattern, $uri, $matches)) {
-                // Ambil hanya named captures
-                $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
-
-                [$controllerName, $methodName] = explode('@', $action);
-
-                require_once ROOT_PATH . "/app/controllers/{$controllerName}.php";
-
-                $controller = new $controllerName();
-                $controller->$methodName(...array_values($params));
-                return;
+            if (!preg_match($pattern, $uri, $matches)) {
+                continue;
             }
+
+            $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+            $this->dispatch($action, array_values($params));
+            return;
         }
 
-        // 404 jika tidak ada yang cocok
         http_response_code(404);
-        echo "<h1>404 - Halaman tidak ditemukan</h1>";
+        echo '<h1>404 - Halaman tidak ditemukan</h1>';
+    }
+
+    private function routePattern(string $path): string
+    {
+        $pattern = preg_quote($path, '@');
+        $pattern = preg_replace('/\\\\:([a-zA-Z_][a-zA-Z0-9_]*)/', '(?P<$1>[^/]+)', $pattern);
+        return '@^' . $pattern . '$@';
+    }
+
+    private function dispatch(string $action, array $params): void
+    {
+        if (!str_contains($action, '@')) {
+            http_response_code(500);
+            exit('Format action route tidak valid.');
+        }
+
+        [$controllerName, $methodName] = explode('@', $action, 2);
+
+        if (
+            !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $controllerName) ||
+            !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $methodName)
+        ) {
+            http_response_code(500);
+            exit('Nama controller atau method tidak valid.');
+        }
+
+        $controllerPath = ROOT_PATH . "/app/controllers/{$controllerName}.php";
+
+        if (!file_exists($controllerPath)) {
+            http_response_code(500);
+            exit("Controller tidak ditemukan: {$controllerName}");
+        }
+
+        require_once $controllerPath;
+
+        if (!class_exists($controllerName)) {
+            http_response_code(500);
+            exit("Class controller tidak ditemukan: {$controllerName}");
+        }
+
+        $controller = new $controllerName();
+
+        if (!method_exists($controller, $methodName)) {
+            http_response_code(500);
+            exit("Method controller tidak ditemukan: {$methodName}");
+        }
+
+        $controller->$methodName(...$params);
     }
 }
