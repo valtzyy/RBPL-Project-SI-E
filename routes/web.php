@@ -17,9 +17,9 @@ $router->post('/users/delete', 'UserController@destroy');
 // ===========================
 // Sprint 6 - Serah Terima
 // ===========================
-$router->get('/delivery',                      'DeliveryController@index');
-$router->get('/delivery/create',               'DeliveryController@create');
-$router->get('/delivery/:id',                  'DeliveryController@show');
-$router->get('/delivery/:id/document',         'DeliveryController@document');
-$router->post('/delivery',                     'DeliveryController@store');
-$router->post('/delivery/:id/confirm',         'DeliveryController@confirm');
+$router->get('/delivery',                      'DeliveryScheduleController@index');
+$router->get('/delivery/create',               'DeliveryScheduleController@create');
+$router->get('/delivery/:id',                  'DeliveryScheduleController@show');
+$router->get('/delivery/:id/document',         'DeliveryScheduleController@document');
+$router->post('/delivery',                     'DeliveryScheduleController@store');
+$router->post('/delivery/:id/confirm',         'DeliveryScheduleController@confirm');

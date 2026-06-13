@@ -2,7 +2,7 @@
 require_once ROOT_PATH . '/core/Controller.php';
 require_once ROOT_PATH . '/app/models/DeliverySchedule.php';
 
-class DeliveryController extends Controller
+class DeliveryScheduleController extends Controller
 {
     private DeliverySchedule $deliveryModel;
 
@@ -76,10 +76,8 @@ class DeliveryController extends Controller
         $signatureBase64 = '';
 
         if ($signatureData) {
-            // Simpan base64 ke database
             $signatureBase64 = $signatureData;
 
-            // Simpan juga sebagai file backup
             $imageData = base64_decode(
                 preg_replace('#^data:image/\w+;base64,#i', '', $signatureData)
             );
