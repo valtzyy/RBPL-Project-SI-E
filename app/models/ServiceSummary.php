@@ -1,19 +1,39 @@
 <?php
 
-class Service_Summary extends Model {
-    // 1. Mengunci manipulasi data khusus untuk tabel utama kamu
+class ServiceSummary extends Model {
     protected string $table = 'service_summary';
 
-    /**
-     * 2. Method untuk menghitung total antrean pada tanggal & jam tertentu
-     * Digunakan oleh UI Form Pelanggan nanti untuk cek apakah kuota di jam tersebut penuh atau belum
-     */
-    public function countBookingsByDateTime(string $tanggal, string $jam): int {
-        // Menggunakan Prepared Statement PDO demi keamanan dari SQL Injection
-        $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM {$this->table} WHERE tanggal_servis = ? AND jam_servis = ?");
-        $stmt->execute([$tanggal, $jam]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        return (int) ($result['total'] ?? 0);
+    // Ambil summary berdasarkan tanggal
+    public function getByDate(string $date): ?array {
+        $stmt = $this->db->prepare(
+            "SELECT * FROM {$this->table} WHERE date = ? LIMIT 1"
+        );
+        $stmt->execute([$date]);
+        return $stmt->fetch() ?: null;
+    }
+
+    // Update rekap harian otomatis dari service_bookings
+    public function updateSummary(string $date): bool {
+        $stmt = $this->db->prepare("
+            INSERT INTO {$this->table} (date, total_work_orders, completed)
+            SELECT 
+                booking_date,
+                COUNT(*),
+                SUM(status = 'confirmed')
+            FROM service_bookings
+            WHERE booking_date = ?
+            ON DUPLICATE KEY UPDATE
+                total_work_orders = VALUES(total_work_orders),
+                completed         = VALUES(completed)
+        ");
+        return $stmt->execute([$date]);
+    }
+
+    // Ambil semua summary (untuk laporan manager)
+    public function getAll(): array {
+        $stmt = $this->db->query(
+            "SELECT * FROM {$this->table} ORDER BY date DESC"
+        );
+        return $stmt->fetchAll();
     }
 }
