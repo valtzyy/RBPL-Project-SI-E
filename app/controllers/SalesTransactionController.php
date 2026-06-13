@@ -1,6 +1,6 @@
 <?php
 
-class TransactionController extends Controller
+class SalesTransactionController extends Controller
 {
     // GET /transactions — tampilkan semua transaksi
     public function index(): void
