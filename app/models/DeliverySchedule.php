@@ -39,18 +39,17 @@ class DeliverySchedule extends Model
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function confirmDelivery(int $id, string $signaturePath, string $signatureBase64 = ''): bool
+    public function confirmDelivery(int $id, string $signatureBase64): bool
     {
         $stmt = $this->db->prepare("
             UPDATE delivery_schedules
             SET status           = 'completed',
-                signature_path   = ?,
                 signature_base64 = ?,
                 confirmed_at     = NOW(),
                 updated_at       = NOW()
             WHERE id = ?
         ");
-        return $stmt->execute([$signaturePath, $signatureBase64, $id]);
+        return $stmt->execute([$signatureBase64, $id]);
     }
 
     public function markVehicleSold(int $vehicleId): bool

@@ -71,28 +71,9 @@ class DeliveryScheduleController extends Controller
             die("Jadwal tidak ditemukan.");
         }
 
-        $signatureData   = $this->input('signature_data');
-        $signaturePath   = '';
-        $signatureBase64 = '';
+        $signatureBase64 = $this->input('signature_data') ?? '';
 
-        if ($signatureData) {
-            $signatureBase64 = $signatureData;
-
-            $imageData = base64_decode(
-                preg_replace('#^data:image/\w+;base64,#i', '', $signatureData)
-            );
-            $fileName  = 'signature_' . $id . '_' . time() . '.png';
-            $uploadDir = ROOT_PATH . '/public/uploads/signatures/';
-
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-
-            file_put_contents($uploadDir . $fileName, $imageData);
-            $signaturePath = '/uploads/signatures/' . $fileName;
-        }
-
-        $this->deliveryModel->confirmDelivery((int) $id, $signaturePath, $signatureBase64);
+        $this->deliveryModel->confirmDelivery((int) $id, $signatureBase64);
 
         if (!empty($schedule['vehicle_id'])) {
             $this->deliveryModel->markVehicleSold((int) $schedule['vehicle_id']);
