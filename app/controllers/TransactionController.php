@@ -25,7 +25,7 @@ class TransactionController extends Controller
     {
         $customerId  = $this->input('customer_id');
         $vehicleId   = $this->input('vehicle_id');
-        $paymentType = $this->input('payment_type');
+        $paymentType = (int) $this->input('payment_type');
         $salesUserId = $_SESSION['user_id'] ?? 1; // sementara default 1
 
         // Simpan transaksi
@@ -43,7 +43,7 @@ class TransactionController extends Controller
         (new Vehicle())->setHeld((int) $vehicleId);
 
         // Routing berdasarkan metode pembayaran (PBI-4.4.4)
-        if ($paymentType === 'kredit') {
+        if ($paymentType === 1) {
             $this->redirect('/credit-applications/create?vehicle_id=' . $vehicleId);
         } else {
             $this->redirect('/payments/create?vehicle_id=' . $vehicleId);

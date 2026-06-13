@@ -6,7 +6,16 @@ class Vehicle extends Model
 
     public function getAvailable(): array
     {
-        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE status = 'available'");
+        $stmt = $this->db->prepare("
+            SELECT 
+                v.*,
+                vs.quantity AS stock_quantity,
+                vs.min_stock AS stock_minimum
+            FROM {$this->table} v
+            JOIN vehicles_stock vs ON vs.vehicle_id = v.id
+            WHERE v.status = 'available'
+            AND vs.quantity > 0
+        ");
         $stmt->execute();
         return $stmt->fetchAll();
     }
