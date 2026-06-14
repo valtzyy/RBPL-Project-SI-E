@@ -2,17 +2,35 @@
 
 class ServiceBooking extends Model {
     protected string $table = 'service_bookings';
+    private int $quota;
 
-    // Hitung booking per tanggal (untuk auto-reject)
+    public function __construct() {
+        parent::__construct();
+        $config      = require ROOT_PATH . '/config/app.php';
+        $this->quota = $config['booking_quota'];
+    }
+
+    // Hitung booking per tanggal
     public function countBookingsByDate(string $date): int {
         $stmt = $this->db->prepare("
-            SELECT COUNT(*) as total 
+            SELECT COUNT(*) as total
             FROM {$this->table}
-            WHERE booking_date = ? 
+            WHERE booking_date = ?
             AND status != 'rejected'
         ");
         $stmt->execute([$date]);
         return (int) ($stmt->fetch()['total'] ?? 0);
+    }
+
+    // Cek apakah slot tanggal masih tersedia
+    public function isSlotAvailable(string $date): bool {
+        return $this->countBookingsByDate($date) < $this->quota;
+    }
+
+    // Ambil sisa slot di tanggal tertentu
+    public function getRemainingSlot(string $date): int {
+        $booked = $this->countBookingsByDate($date);
+        return max(0, $this->quota - $booked);
     }
 
     // Simpan booking baru
@@ -32,7 +50,7 @@ class ServiceBooking extends Model {
 
             // Validasi vehicle ada & statusnya available
             $stmt = $this->db->prepare(
-                "SELECT id FROM vehicles 
+                "SELECT id FROM vehicles
                  WHERE id = ? AND status = 'available' LIMIT 1"
             );
             $stmt->execute([$data['vehicle_id']]);

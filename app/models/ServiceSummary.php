@@ -14,20 +14,21 @@ class ServiceSummary extends Model {
 
     // Update rekap harian otomatis dari service_bookings
     public function updateSummary(string $date): bool {
-        $stmt = $this->db->prepare("
-            INSERT INTO {$this->table} (date, total_work_orders, completed)
-            SELECT 
-                booking_date,
-                COUNT(*),
-                SUM(status = 'confirmed')
-            FROM service_bookings
-            WHERE booking_date = ?
-            ON DUPLICATE KEY UPDATE
-                total_work_orders = VALUES(total_work_orders),
-                completed         = VALUES(completed)
-        ");
-        return $stmt->execute([$date]);
-    }
+    $stmt = $this->db->prepare("
+        INSERT INTO {$this->table} (date, total_work_orders, completed)
+        SELECT 
+            booking_date,
+            COUNT(*) as total_work_orders,
+            SUM(status = 'confirmed') as completed
+        FROM service_bookings
+        WHERE booking_date = ?
+        GROUP BY booking_date
+        ON DUPLICATE KEY UPDATE
+            total_work_orders = VALUES(total_work_orders),
+            completed         = VALUES(completed)
+    ");
+    return $stmt->execute([$date]);
+}
 
     // Ambil semua summary (untuk laporan manager)
     public function getAll(): array {
