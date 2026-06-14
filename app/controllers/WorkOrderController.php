@@ -1,0 +1,52 @@
+<?php
+// app/controllers/WorkOrderController.php
+
+require_once ROOT_PATH . '/app/models/WorkOrder.php';
+
+class WorkOrderController extends Controller 
+{
+    private WorkOrder $workOrderModel;
+
+    public function __construct() 
+    {
+        $this->workOrderModel = new WorkOrder();
+    }
+
+    /**
+     * Menampilkan dashboard utama panel teknisi
+     */
+    public function index() {
+    // Diubah ke angka 5 sesuai dengan ID akun mekanik di database riil
+    $mechanicId = 5; 
+    
+    $orders = $this->workOrderModel->getByMechanic($mechanicId);
+    $this->view('bengkel/mechanic_panel', ['orders' => $orders]);
+}
+
+    /**
+     * Menerima kiriman request POST dari tombol aksi perubahan status
+     */
+    public function updateStatus(): void 
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $woId = (int) $this->input('work_order_id');
+            $newStatus = $this->input('status');
+
+            if ($woId > 0 && !empty($newStatus)) {
+                // =========================================================================
+                // [PBI-11.4] & [PBI-11.6] EKSEKUSI API TRIGGER PENGALIHAN STATUS WORK ORDER
+                // Memproses aksi tombol dari web untuk merubah status pengerjaan secara real-time
+                // =========================================================================
+                $success = $this->workOrderModel->updateWorkOrderStatus($woId, $newStatus);
+                
+                if ($success) {
+                    // Jika database berhasil di-update, arahkan kembali (refresh) ke layar utama
+                    $this->redirect('/mechanic/panel');
+                    return;
+                }
+            }
+            
+            die("🚨 Error: Gagal memproses update status.");
+        }
+    }
+}
