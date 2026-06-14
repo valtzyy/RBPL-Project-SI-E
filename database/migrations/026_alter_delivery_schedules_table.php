@@ -4,7 +4,6 @@ return new class {
     {
         $db->exec("
             ALTER TABLE delivery_schedules
-                ADD COLUMN customer_name   VARCHAR(150) NOT NULL DEFAULT '',
                 ADD COLUMN notes           TEXT,
                 ADD COLUMN signature_path  VARCHAR(255),
                 ADD COLUMN confirmed_at    DATETIME,
@@ -17,7 +16,6 @@ return new class {
     {
         $db->exec("
             ALTER TABLE delivery_schedules
-                DROP COLUMN customer_name,
                 DROP COLUMN notes,
                 DROP COLUMN signature_path,
                 DROP COLUMN confirmed_at,

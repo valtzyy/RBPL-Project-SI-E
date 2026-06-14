@@ -6,6 +6,7 @@
             <tr><td style="padding:8px; font-weight:bold; width:40%;">Nama Customer</td><td style="padding:8px;"><?= htmlspecialchars($schedule['customer_name']) ?></td></tr>
             <tr><td style="padding:8px; font-weight:bold;">Kendaraan</td><td style="padding:8px;"><?= htmlspecialchars($schedule['brand'] . ' ' . $schedule['type'] . ' - ' . $schedule['color']) ?></td></tr>
             <tr><td style="padding:8px; font-weight:bold;">No. Rangka</td><td style="padding:8px;"><?= htmlspecialchars($schedule['chassis_number']) ?></td></tr>
+            <tr><td style="padding:8px; font-weight:bold;">Metode Pembayaran</td><td style="padding:8px;"><?= htmlspecialchars(ucfirst($schedule['payment_type'] ?? '-')) ?></td></tr>
             <tr><td style="padding:8px; font-weight:bold;">Tanggal Serah Terima</td><td style="padding:8px;"><?= htmlspecialchars($schedule['scheduled_date']) ?></td></tr>
             <tr><td style="padding:8px; font-weight:bold;">Status</td><td style="padding:8px;"><?= htmlspecialchars($schedule['status']) ?></td></tr>
             <tr><td style="padding:8px; font-weight:bold;">Catatan</td><td style="padding:8px;"><?= htmlspecialchars($schedule['notes'] ?? '-') ?></td></tr>
@@ -47,6 +48,4 @@
     </div>
     <?php endif; ?>
     <a href="/delivery" style="display:inline-block; margin-top:20px; padding:8px 16px; background:#6c757d; color:white; text-decoration:none; border-radius:4px;">← Kembali ke Daftar</a>
-</div> -->
-
- -->
+</div>

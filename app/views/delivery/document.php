@@ -11,7 +11,8 @@
     <p style="font-weight:bold; border-bottom:1px solid #ccc; padding-bottom:4px;">Data Customer</p>
     <table style="width:100%; margin-bottom:20px;">
         <tr><td style="padding:8px; font-weight:bold; width:35%;">Nama Customer</td><td style="padding:8px;">: <?= htmlspecialchars($schedule['customer_name']) ?></td></tr>
-        <tr><td style="padding:8px; font-weight:bold;">No. Transaksi</td><td style="padding:8px;">: <?= htmlspecialchars($schedule['trx_id']) ?></td></tr>
+        <tr><td style="padding:8px; font-weight:bold;">No. Transaksi</td><td style="padding:8px;">: <?= htmlspecialchars($schedule['transaction_code']) ?></td></tr>
+        <tr><td style="padding:8px; font-weight:bold;">Metode Pembayaran</td><td style="padding:8px;">: <?= htmlspecialchars(ucfirst($schedule['payment_type'] ?? '-')) ?></td></tr>
     </table>
     <p style="font-weight:bold; border-bottom:1px solid #ccc; padding-bottom:4px;">Data Kendaraan</p>
     <table style="width:100%; margin-bottom:20px;">
@@ -26,9 +27,9 @@
         <tr><td style="padding:8px; font-weight:bold;">Catatan</td><td style="padding:8px;">: <?= htmlspecialchars($schedule['notes'] ?? '-') ?></td></tr>
         <tr><td style="padding:8px; font-weight:bold;">Dikonfirmasi</td><td style="padding:8px;">: <?= htmlspecialchars($schedule['confirmed_at'] ?? '-') ?></td></tr>
     </table>
-    <?php if (!empty($schedule['signature_base64'])): ?>
+    <?php if (!empty($schedule['signature_path'])): ?>
     <p style="font-weight:bold; border-bottom:1px solid #ccc; padding-bottom:4px;">Tanda Tangan Customer</p>
-    <img src="<?= $schedule['signature_base64'] ?>" style="max-width:300px; border:1px solid #ccc; border-radius:4px; margin-bottom:20px;">
+    <img src="<?= htmlspecialchars($schedule['signature_path']) ?>" style="max-width:300px; border:1px solid #ccc; border-radius:4px; margin-bottom:20px;">
     <?php endif; ?>
     <div style="display:flex; justify-content:space-between; margin-top:60px;">
         <div style="text-align:center; width:200px;">

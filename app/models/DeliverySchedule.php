@@ -7,10 +7,14 @@ class DeliverySchedule extends Model
     {
         $stmt = $this->db->query("
             SELECT ds.*, st.id as trx_id, st.status as trx_status,
-                   v.brand, v.type, v.color, v.chassis_number
+                   st.transaction_code, pt.name as payment_type,
+                   v.brand, v.type, v.color, v.chassis_number,
+                   c.name as customer_name
             FROM delivery_schedules ds
             JOIN sales_transactions st ON ds.transaction_id = st.id
             LEFT JOIN vehicles v ON st.vehicle_id = v.id
+            LEFT JOIN customers c ON ds.customer_id = c.id
+            LEFT JOIN payment_types pt ON st.payment_type = pt.id
             ORDER BY ds.scheduled_date ASC
         ");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -20,10 +24,14 @@ class DeliverySchedule extends Model
     {
         $stmt = $this->db->prepare("
             SELECT ds.*, st.id as trx_id, st.status as trx_status,
-                   v.brand, v.type, v.color, v.chassis_number, v.id as vehicle_id
+                   st.transaction_code, pt.name as payment_type,
+                   v.brand, v.type, v.color, v.chassis_number, v.id as vehicle_id,
+                   c.name as customer_name, c.id as customer_id
             FROM delivery_schedules ds
             JOIN sales_transactions st ON ds.transaction_id = st.id
             LEFT JOIN vehicles v ON st.vehicle_id = v.id
+            LEFT JOIN customers c ON ds.customer_id = c.id
+            LEFT JOIN payment_types pt ON st.payment_type = pt.id
             WHERE ds.id = ?
         ");
         $stmt->execute([$id]);
@@ -39,17 +47,17 @@ class DeliverySchedule extends Model
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function confirmDelivery(int $id, string $signatureBase64): bool
+    public function confirmDelivery(int $id, string $signaturePath): bool
     {
         $stmt = $this->db->prepare("
             UPDATE delivery_schedules
-            SET status           = 'completed',
-                signature_base64 = ?,
-                confirmed_at     = NOW(),
-                updated_at       = NOW()
+            SET status         = 'completed',
+                signature_path = ?,
+                confirmed_at   = NOW(),
+                updated_at     = NOW()
             WHERE id = ?
         ");
-        return $stmt->execute([$signatureBase64, $id]);
+        return $stmt->execute([$signaturePath, $id]);
     }
 
     public function markVehicleSold(int $vehicleId): bool
@@ -75,11 +83,13 @@ class DeliverySchedule extends Model
     public function getReadyTransactions(): array
     {
         $stmt = $this->db->query("
-            SELECT st.id, st.transaction_code, c.name as customer_name,
+            SELECT st.id, st.transaction_code, pt.name as payment_type,
+                   c.name as customer_name, c.id as customer_id,
                    v.brand, v.type, v.color
             FROM sales_transactions st
             JOIN customers c ON st.customer_id = c.id
             JOIN vehicles v ON st.vehicle_id = v.id
+            LEFT JOIN payment_types pt ON st.payment_type = pt.id
             LEFT JOIN delivery_schedules ds ON ds.transaction_id = st.id
             WHERE st.status = 'lunas'
             AND ds.id IS NULL

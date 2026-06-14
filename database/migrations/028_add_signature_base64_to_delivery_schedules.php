@@ -2,17 +2,11 @@
 return new class {
     public function up(PDO $db): void
     {
-        $db->exec("
-            ALTER TABLE delivery_schedules
-                ADD COLUMN signature_base64 LONGTEXT
-        ");
+        // Tidak ada perubahan - migration ini sudah tidak diperlukan
     }
 
     public function down(PDO $db): void
     {
-        $db->exec("
-            ALTER TABLE delivery_schedules
-                DROP COLUMN signature_base64
-        ");
+        // Tidak ada perubahan
     }
 };
