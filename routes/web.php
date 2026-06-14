@@ -4,12 +4,11 @@
 //  Format: $router->get('/path', 'NamaController@namaMethod')
 // ============================================================
 
-// Halaman Utama
-$router->get('/',           'HomeController@index');
+// 1. Ini rute untuk MEMBUKA FORM (Halaman sebelum post)
+$router->get('/document',       'DocumentController@tampilkanForm');
 
-// Users - CRUD
-$router->get('/users',         'UserController@index');
-$router->get('/users/:id',     'UserController@show');
-$router->post('/users',        'UserController@store');
-$router->post('/users/:id',    'UserController@update');
-$router->post('/users/delete', 'UserController@destroy');
+// 2. Ini rute untuk MEMPROSES UPLOAD (Saat tombol diklik)
+$router->post('/document',      'DocumentController@simpanDokumen');
+
+// 3. Ini rute untuk MELIHAT HASIL (Menggunakan query parameter ?id=)
+$router->get('/document/view',  'DocumentController@bukaDokumen');
