@@ -4,6 +4,7 @@ require_once ROOT_PATH . '/app/services/CloudinaryService.php';
 require_once ROOT_PATH . '/app/services/LeasingService.php';
 require_once ROOT_PATH . '/app/models/CreditDocument.php';
 require_once ROOT_PATH . '/app/models/CreditApplication.php';
+require_once ROOT_PATH . '/app/models/CreditDecision.php';
 require_once ROOT_PATH . '/app/models/SalesTransaction.php';
 require_once ROOT_PATH . '/app/models/PaymentType.php';
 
@@ -16,6 +17,7 @@ class CreditController extends Controller
     // Model untuk akses DB tiap tabel terkait
     private CreditDocument $documentModel;
     private CreditApplication $applicationModel;
+    private CreditDecision $decisionModel;
     private SalesTransaction $transactionModel;
     private PaymentType $paymentTypeModel;
 
@@ -26,6 +28,7 @@ class CreditController extends Controller
         $this->leasing          = new LeasingService();
         $this->documentModel    = new CreditDocument();
         $this->applicationModel = new CreditApplication();
+        $this->decisionModel    = new CreditDecision();
         $this->transactionModel = new SalesTransaction();
         $this->paymentTypeModel = new PaymentType();
     }
@@ -233,6 +236,110 @@ class CreditController extends Controller
         exit;
     }
 
+    public function status()
+    {
+        // 1. Login check
+        if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);
+            exit('Login dulu');
+        }
+
+        // 2. Ambil param: ?app=ID untuk detail, tanpa param untuk list
+        $applicationId = (int) ($_GET['app'] ?? 0);
+
+        header('Content-Type: application/json');
+
+        // 3a. Mode DETAIL: ?app=ID
+        if ($applicationId > 0) {
+            $application = $this->applicationModel->find($applicationId);
+            if (!$application) {
+                http_response_code(404);
+                exit('Pengajuan tidak ditemukan');
+            }
+
+            $documents = $this->documentModel->findByApplication($applicationId);
+            $decision  = $this->decisionModel->findByApplication($applicationId);
+
+            echo json_encode([
+                'status'      => 'ok',
+                'type'        => 'detail',
+                'application' => $application,
+                'documents'   => $documents,
+                'decision'    => $decision ?: null,
+            ]);
+            exit;
+        }
+
+        // 3b. Mode LIST: tanpa param
+        $applications = $this->applicationModel->findAllWithDocCount();
+        echo json_encode([
+            'status'       => 'ok',
+            'type'         => 'list',
+            'applications' => $applications,
+        ]);
+        exit;
+    }
+
+    public function decision()
+    {
+        // 1. Login check
+        if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);
+            exit('Login dulu');
+        }
+
+        // 2. Ambil input
+        $applicationId = (int) ($_POST['application_id'] ?? 0);
+        $decision      = $_POST['decision'] ?? '';
+        $notes         = trim($_POST['notes'] ?? '');
+
+        // 3. Validasi kelengkapan & nilai decision
+        if ($applicationId <= 0 || !in_array($decision, ['approved', 'rejected'], true)) {
+            http_response_code(400);
+            exit('Data tidak lengkap atau nilai decision tidak valid');
+        }
+
+        // 4. Validasi application: ada & status = 'submitted'
+        $application = $this->applicationModel->find($applicationId);
+        if (!$application) {
+            http_response_code(404);
+            exit('Pengajuan tidak ditemukan');
+        }
+        if ($application['status'] !== 'submitted') {
+            http_response_code(400);
+            exit('Hanya pengajuan submitted yang bisa di-decision');
+        }
+
+        // 5. Business rule: harus ada 3 dokumen (KTP, KK, SlipGaji)
+        $documents = $this->documentModel->findByApplication($applicationId);
+        if (count($documents) < 3) {
+            http_response_code(400);
+            exit('Pengajuan belum memiliki 3 dokumen lengkap');
+        }
+
+        // 6. Insert ke credit_decisions
+        $this->decisionModel->create([
+            'credit_application_id' => $applicationId,
+            'decision'              => $decision,
+            'notes'                 => $notes,
+        ]);
+
+        // 7. Update status credit_applications → approved/rejected
+        $this->applicationModel->update($applicationId, [
+            'status' => $decision,
+        ]);
+
+        // 8. Response JSON
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status'         => 'ok',
+            'action'         => 'decision',
+            'application_id' => $applicationId,
+            'new_status'     => $decision,
+        ]);
+        exit;
+    }
+
     public function uploadDocument()
     {
         // 1. Cek login — $_SESSION['user_id'] di-set oleh tim login (bukan job kita)
@@ -308,15 +415,5 @@ class CreditController extends Controller
         // 9. Redirect ke halaman status pengajuan
         header('Location: /credit/status?app=' . $applicationId);
         exit;
-    }
-
-    public function getStatus()
-    {
-        // TODO: PBI-8.5 — lihat status pengajuan + progress dokumen
-    }
-
-    public function createDecision()
-    {
-        // TODO: PBI-8.6/8.7 — approve/reject pengajuan
     }
 }

@@ -25,4 +25,17 @@ class CreditApplication extends Model
         $stmt->execute([$status]);
         return $stmt->fetchAll();
     }
+
+    // List semua pengajuan + count dokumen uploaded (untuk Kanban PBI-8.5)
+    public function findAllWithDocCount(): array
+    {
+        $stmt = $this->db->query(
+            "SELECT ca.*,
+                    (SELECT COUNT(*) FROM credit_documents
+                     WHERE credit_application_id = ca.id) AS documents_uploaded
+             FROM {$this->table} ca
+             ORDER BY ca.created_at DESC"
+        );
+        return $stmt->fetchAll();
+    }
 }
