@@ -648,3 +648,25 @@ body { font-family: 'Segoe UI', system-ui, Arial, sans-serif; background: var(--
     .dl-filter-bar { flex-direction: column; align-items: stretch; }
     .dl-search { max-width: 100%; }
 }
+
+/* ---- Sidebar section label ---- */
+.dl-sidebar__section-label {
+    padding: 16px 20px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(200,207,224,.4);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* ---- Sidebar badge (pending count) ---- */
+.dl-sidebar__badge {
+    margin-left: auto;
+    background: #ef4444;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+    line-height: 1.4;
+}
