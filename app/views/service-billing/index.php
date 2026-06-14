@@ -17,7 +17,7 @@ function rupiah(float $n): string
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($title) ?> — DealerLink DMS</title>
-    <link rel="stylesheet" href="css/service-billing.css">
+    <link rel="stylesheet" href="/css/service-billing.css">
 </head>
 
 <body>
@@ -25,76 +25,11 @@ function rupiah(float $n): string
     <div class="dl-shell">
 
         <!-- ============ SIDEBAR ============ -->
-        <aside class="dl-sidebar">
-            <div class="dl-sidebar__logo">Dealer<span>Link</span> DMS</div>
-
-            <nav class="dl-sidebar__nav">
-                <a href="/dashboard" class="dl-sidebar__item">
-                    <!-- icon: grid -->
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="7" height="7" />
-                        <rect x="14" y="3" width="7" height="7" />
-                        <rect x="3" y="14" width="7" height="7" />
-                        <rect x="14" y="14" width="7" height="7" />
-                    </svg>
-                    Dashboard
-                </a>
-                <a href="/inventaris" class="dl-sidebar__item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Z" />
-                        <path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2Z" />
-                    </svg>
-                    Inventaris
-                </a>
-                <a href="/procurement" class="dl-sidebar__item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                        <line x1="3" y1="6" x2="21" y2="6" />
-                        <path d="M16 10a4 4 0 0 1-8 0" />
-                    </svg>
-                    Procurement
-                </a>
-                <a href="/sales" class="dl-sidebar__item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                    </svg>
-                    Sales SPK
-                </a>
-                <a href="/workshop" class="dl-sidebar__item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="3" />
-                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-                        <path d="M4.93 4.93a10 10 0 0 0 0 14.14" />
-                    </svg>
-                    Workshop
-                </a>
-                <a href="/service-billing" class="dl-sidebar__item active">
-                    <!-- icon: receipt -->
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 2v20l3-2 3 2 3-2 3 2 3-2V2" />
-                        <path d="M8 7h8M8 11h8M8 15h4" />
-                    </svg>
-                    Kasir Bengkel
-                </a>
-                <a href="/laporan" class="dl-sidebar__item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <polyline points="14 2 14 8 20 8" />
-                        <line x1="8" y1="13" x2="16" y2="13" />
-                        <line x1="8" y1="17" x2="16" y2="17" />
-                    </svg>
-                    Laporan
-                </a>
-            </nav>
-
-            <div class="dl-sidebar__user">
-                <div class="dl-sidebar__avatar">AD</div>
-                <div class="dl-sidebar__user-info">
-                    <div class="dl-sidebar__user-name">Admin Dealer</div>
-                    <div class="dl-sidebar__user-role">Kasir Bengkel</div>
-                </div>
-            </div>
-        </aside>
+        <?php
+        $activePage   = 'tagihan';
+        $pendingCount = count(array_filter($tagihan ?? [], fn($t) => $t['wo_status'] === 'ready'));
+        include __DIR__ . '/../kasir/_sidebar.php';
+        ?>
 
         <!-- ============ KONTEN UTAMA ============ -->
         <div class="dl-main">
