@@ -5,6 +5,7 @@ require_once ROOT_PATH . '/app/services/LeasingService.php';
 require_once ROOT_PATH . '/app/models/CreditDocument.php';
 require_once ROOT_PATH . '/app/models/CreditApplication.php';
 require_once ROOT_PATH . '/app/models/SalesTransaction.php';
+require_once ROOT_PATH . '/app/models/PaymentType.php';
 
 class CreditController extends Controller
 {
@@ -16,6 +17,7 @@ class CreditController extends Controller
     private CreditDocument $documentModel;
     private CreditApplication $applicationModel;
     private SalesTransaction $transactionModel;
+    private PaymentType $paymentTypeModel;
 
     public function __construct()
     {
@@ -25,6 +27,7 @@ class CreditController extends Controller
         $this->documentModel    = new CreditDocument();
         $this->applicationModel = new CreditApplication();
         $this->transactionModel = new SalesTransaction();
+        $this->paymentTypeModel = new PaymentType();
     }
 
     public function create()
@@ -82,6 +85,150 @@ class CreditController extends Controller
             'status'         => 'ok',
             'application_id' => $applicationId,
             'leasing_ref'    => $leasingRef,
+        ]);
+        exit;
+    }
+
+    public function cancel()
+    {
+        // 1. Login check
+        if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);
+            exit('Login dulu');
+        }
+
+        // 2. Ambil input
+        $applicationId = (int) ($_POST['application_id'] ?? 0);
+
+        // 3. Validasi kelengkapan
+        if ($applicationId <= 0) {
+            http_response_code(400);
+            exit('Data tidak lengkap');
+        }
+
+        // 4. Validasi: application ada & status = 'rejected'
+        $application = $this->applicationModel->find($applicationId);
+        if (!$application) {
+            http_response_code(404);
+            exit('Pengajuan tidak ditemukan');
+        }
+        if ($application['status'] !== 'rejected') {
+            http_response_code(400);
+            exit('Hanya pengajuan rejected yang bisa dibatalkan');
+        }
+
+        // 5. Update sales_transactions.status = 'cancel'
+        $this->transactionModel->update($application['transaction_id'], [
+            'status' => 'cancel',
+        ]);
+
+        // 6. Response JSON
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status'         => 'ok',
+            'action'         => 'cancel',
+            'transaction_id' => $application['transaction_id'],
+        ]);
+        exit;
+    }
+
+    public function switchToCash()
+    {
+        // 1. Login check
+        if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);
+            exit('Login dulu');
+        }
+
+        // 2. Ambil input
+        $applicationId = (int) ($_POST['application_id'] ?? 0);
+
+        // 3. Validasi kelengkapan
+        if ($applicationId <= 0) {
+            http_response_code(400);
+            exit('Data tidak lengkap');
+        }
+
+        // 4. Validasi: application ada & status = 'rejected'
+        $application = $this->applicationModel->find($applicationId);
+        if (!$application) {
+            http_response_code(404);
+            exit('Pengajuan tidak ditemukan');
+        }
+        if ($application['status'] !== 'rejected') {
+            http_response_code(400);
+            exit('Hanya pengajuan rejected yang bisa dialihkan ke tunai');
+        }
+
+        // 5. Cari payment_type 'tunai' secara dinamis
+        $tunai = $this->paymentTypeModel->findByName('tunai');
+        if (!$tunai) {
+            http_response_code(500);
+            exit('Payment type tunai tidak ditemukan di database');
+        }
+
+        // 6. Update sales_transactions.payment_type = tunai.id
+        $this->transactionModel->update($application['transaction_id'], [
+            'payment_type' => $tunai['id'],
+        ]);
+
+        // 7. Response JSON
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status'           => 'ok',
+            'action'           => 'switch_cash',
+            'transaction_id'   => $application['transaction_id'],
+            'new_payment_type' => 'tunai',
+        ]);
+        exit;
+    }
+
+    public function reapply()
+    {
+        // 1. Login check
+        if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);
+            exit('Login dulu');
+        }
+
+        // 2. Ambil input
+        $applicationId  = (int) ($_POST['application_id'] ?? 0);
+        $newLeasingName = trim($_POST['leasing_name'] ?? '');
+
+        // 3. Validasi kelengkapan
+        if ($applicationId <= 0 || $newLeasingName === '') {
+            http_response_code(400);
+            exit('Data tidak lengkap');
+        }
+
+        // 4. Validasi: application lama ada & status = 'rejected'
+        $oldApplication = $this->applicationModel->find($applicationId);
+        if (!$oldApplication) {
+            http_response_code(404);
+            exit('Pengajuan tidak ditemukan');
+        }
+        if ($oldApplication['status'] !== 'rejected') {
+            http_response_code(400);
+            exit('Hanya pengajuan rejected yang bisa di-reapply');
+        }
+
+        // 5. Buat application baru (start fresh, tidak copy dokumen)
+        $newApplicationId = $this->applicationModel->create([
+            'transaction_id' => $oldApplication['transaction_id'],
+            'leasing_name'   => $newLeasingName,
+        ]);
+
+        // 6. Simulasi kirim ke leasing (sama alur seperti create)
+        $leasingRef = $this->leasing->simulateSend($newApplicationId, $newLeasingName);
+
+        // 7. Response JSON
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status'         => 'ok',
+            'action'         => 'reapply',
+            'application_id' => $newApplicationId,
+            'leasing_ref'    => $leasingRef,
+            'message'        => 'Pengajuan baru dibuat, silakan upload 3 dokumen',
         ]);
         exit;
     }
