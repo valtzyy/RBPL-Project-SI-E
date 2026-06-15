@@ -1,4 +1,5 @@
 <?php
+require_once ROOT_PATH . '/app/models/Customer.php';
 
 class CustomerController extends Controller
 {

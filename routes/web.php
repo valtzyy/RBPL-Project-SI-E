@@ -16,8 +16,8 @@ $router->post('/users/delete', 'UserController@destroy');
 
 // Transactions - Sprint 4
 $router->get('/transactions',           'SalesTransactionController@index');
-$router->get('/transactions/create',    'SalesTransactionController@create');
 $router->post('/transactions',          'SalesTransactionController@store');
+$router->get('/transactions/create',    'SalesTransactionController@create');
 $router->get('/transactions/:id',       'SalesTransactionController@show');
 
 // Vehicles - Sprint 4

@@ -9,18 +9,54 @@ class SalesTransaction extends Model
         $stmt = $this->db->prepare("
             SELECT 
                 st.*,
-                c.name AS customer_name,
-                c.phone AS customer_phone,
-                v.brand, v.type, v.color, v.price,
-                u.name AS sales_name
+                COALESCE(c.name, '-') AS customer_name,
+                COALESCE(c.phone, '-') AS customer_phone,
+                COALESCE(v.brand, '-') AS brand,
+                COALESCE(v.type, '-') AS type,
+                COALESCE(v.color, '-') AS color,
+                COALESCE(v.price, 0) AS price,
+                COALESCE(u.name, '-') AS sales_name
             FROM {$this->table} st
-            JOIN customers c ON st.customer_id = c.id
-            JOIN vehicles  v ON st.vehicle_id  = v.id
-            JOIN users     u ON st.sales_user_id = u.id
+            LEFT JOIN buyer_customers bc ON st.customer_id = bc.id
+            LEFT JOIN customers c ON bc.customer_id = c.id
+            LEFT JOIN vehicles  v ON st.vehicle_id  = v.id
+            LEFT JOIN users     u ON st.sales_user_id = u.id
             ORDER BY st.created_at DESC
         ");
         $stmt->execute();
         return $stmt->fetchAll();
+    }
+
+    public function create(array $data): int
+    {
+        // 1. Ambil data asli dari tabel customers
+        $stmt = $this->db->prepare("SELECT * FROM customers WHERE id = ?");
+        $stmt->execute([$data['customer_id']]);
+        $customer = $stmt->fetch();
+
+        if (!$customer) {
+            throw new Exception("Data customer tidak ditemukan!");
+        }
+
+        // 2. Insert ke tabel bridge buyer_customers sesuai struktur ERD
+        $stmt = $this->db->prepare("
+            INSERT INTO buyer_customers (customer_id, address, ktp_number, vehicle_id)
+            VALUES (?, ?, ?, ?)
+        ");
+        $stmt->execute([
+            $customer['id'],
+            $customer['address'] ?? '-',
+            $customer['ktp_number'] ?? '-',
+            $data['vehicle_id']
+        ]);
+        
+        $buyerCustomerId = (int) $this->db->lastInsertId();
+
+        // 3. Timpa customer_id menjadi ID dari buyer_customers untuk tabel sales_transactions
+        $data['customer_id'] = $buyerCustomerId;
+
+        // 4. Panggil create bawaan Model untuk menyimpan transaksi
+        return parent::create($data);
     }
 
     public function generateCode(): string

@@ -1,4 +1,7 @@
 <?php
+require_once ROOT_PATH . '/app/models/SalesTransaction.php';
+require_once ROOT_PATH . '/app/models/Customer.php';
+require_once ROOT_PATH . '/app/models/Vehicle.php';
 
 class SalesTransactionController extends Controller
 {
@@ -26,27 +29,30 @@ class SalesTransactionController extends Controller
         $customerId  = $this->input('customer_id');
         $vehicleId   = $this->input('vehicle_id');
         $paymentType = (int) $this->input('payment_type');
-        $salesUserId = $_SESSION['user_id'] ?? 1; // sementara default 1
+        $salesUserId = $_SESSION['user_id'] ?? 2;
 
-        // Simpan transaksi
-        $transaction = new SalesTransaction();
-        $transaction->create([
-            'transaction_code' => $transaction->generateCode(),
-            'customer_id'      => $customerId,
-            'vehicle_id'       => $vehicleId,
-            'sales_user_id'    => $salesUserId,
-            'payment_type'     => $paymentType,
-            'status'           => 'process',
-        ]);
+        try {
+            $transaction = new SalesTransaction();
+            $transaction->create([
+                'transaction_code' => $transaction->generateCode(),
+                'customer_id'      => $customerId,
+                'vehicle_id'       => $vehicleId,
+                'sales_user_id'    => $salesUserId,
+                'payment_type'     => $paymentType,
+                'status'           => 'process',
+            ]);
 
-        // Set kendaraan jadi 'held'
-        (new Vehicle())->setHeld((int) $vehicleId);
+            (new Vehicle())->setHeld((int) $vehicleId);
 
-        // Routing berdasarkan metode pembayaran (PBI-4.4.4)
-        if ($paymentType === 1) {
-            $this->redirect('/credit-applications/create?vehicle_id=' . $vehicleId);
-        } else {
-            $this->redirect('/payments/create?vehicle_id=' . $vehicleId);
+            // Routing berdasarkan metode pembayaran (PBI-4.4.4)
+            if ($paymentType === 1) {
+                $this->redirect('/credit-applications/create?vehicle_id=' . $vehicleId);
+            } else {
+                $this->redirect('/payments/create?vehicle_id=' . $vehicleId);
+            }
+
+        } catch (Exception $e) {
+            echo '<pre>ERROR: ' . $e->getMessage() . '</pre>';
         }
     }
 
