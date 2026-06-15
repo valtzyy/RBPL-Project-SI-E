@@ -4,6 +4,9 @@
 //  Format: $router->get('/path', 'NamaController@namaMethod')
 // ============================================================
 
+// Halaman Utama / Dashboard
+$router->get('/',               'HomeController@index');
+
 // 1. Ini rute untuk MEMBUKA FORM (Halaman sebelum post)
 $router->get('/document',       'DocumentController@tampilkanForm');
 

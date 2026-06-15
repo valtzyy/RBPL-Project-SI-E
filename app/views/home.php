@@ -1,7 +1,7 @@
 <!-- app/views/home.php -->
 <main style="max-width: 600px; margin: 64px auto; font-family: Arial, sans-serif;">
-    <h1><?= htmlspecialchars($title) ?></h1>
-    <p><?= htmlspecialchars($message) ?></p>
+    <h1><?= htmlspecialchars($title ?? 'Dashboard') ?></h1>
+    <p><?= htmlspecialchars($message ?? '') ?></p>
 
     <hr style="margin: 24px 0;">
 
