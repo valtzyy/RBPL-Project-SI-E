@@ -1,22 +1,22 @@
 <?php
-require_once __DIR__ . '/../models/Dashboard.php';
+require_once ROOT_PATH . '/core/Controller.php';
+require_once ROOT_PATH . '/app/models/Dashboard.php';
 
-class DashboardController {
+class DashboardController extends Controller {
     private $dashboardModel;
 
-    public function __construct($db) {
-        $this->dashboardModel = new Dashboard($db);
+    public function __construct() {
+        $this->dashboardModel = new Dashboard();
     }
 
     // View halaman utama dashboard executive
     public function index() {
-        require_once __DIR__ . '/../views/dashboard_manajerial.php';
+        $this->view('dashboard_manajerial');
     }
 
     // [PBI-14.6] Endpoint API untuk data KPI Finansial
     public function apiKpi() {
         header('Content-Type: application/json');
-        // FIX: Mengubah json_json_encode menjadi json_encode
         echo json_encode($this->dashboardModel->getKpiMetrics());
         exit();
     }

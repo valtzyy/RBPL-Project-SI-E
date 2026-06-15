@@ -1,11 +1,9 @@
 <?php
 
-class Sparepart {
-    private $db;
+require_once ROOT_PATH . '/core/Model.php';
 
-    public function __construct(PDO $db) {
-        $this->db = $db;
-    }
+class Sparepart extends Model {
+    protected string $table = 'spareparts';
 
     // Ambil semua data sparepart untuk dropdown di form PO
     public function getAll() {

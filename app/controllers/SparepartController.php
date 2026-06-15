@@ -1,11 +1,12 @@
 <?php
-require_once __DIR__ . '/../models/Sparepart.php';
+require_once ROOT_PATH . '/core/Controller.php';
+require_once ROOT_PATH . '/app/models/Sparepart.php';
 
-class SparepartController {
+class SparepartController extends Controller {
     private $sparepartModel;
 
-    public function __construct($db) {
-        $this->sparepartModel = new Sparepart($db);
+    public function __construct() {
+        $this->sparepartModel = new Sparepart();
     }
 
     // Halaman Utama Logistik Gudang
@@ -15,29 +16,31 @@ class SparepartController {
         $allPO = $this->sparepartModel->getAllPO();
 
         // Oper data ke view halaman gudang
-        require_once __DIR__ . '/../views/sparepart_gudang.php';
+        $this->view('sparepart_gudang', [
+            'lowStock' => $lowStock,
+            'allSpareparts' => $allSpareparts,
+            'allPO' => $allPO
+        ]);
     }
 
     // [PBI-14.2] Handler untuk submit form PO
     public function storePO() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $supplier = $_POST['supplier_name'];
-            $sparepartId = $_POST['sparepart_id'];
-            $qty = $_POST['quantity'];
+            $supplier = $this->input('supplier_name');
+            $sparepartId = $this->input('sparepart_id');
+            $qty = $this->input('quantity');
 
             $this->sparepartModel->createPO($supplier, $sparepartId, $qty);
-            header('Location: /sparepart');
-            exit();
+            $this->redirect('/sparepart');
         }
     }
 
     // [PBI-14.3] Handler untuk aksi tombol "Terima Batch Suku Cadang"
     public function terimaPO() {
-        if (isset($_GET['id'])) {
-            $poId = $_GET['id'];
+        $poId = $this->input('id');
+        if (isset($poId)) {
             $this->sparepartModel->terimaBatchSparepart($poId);
         }
-        header('Location: /sparepart');
-        exit();
+        $this->redirect('/sparepart');
     }
 }

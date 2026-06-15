@@ -1,10 +1,10 @@
 <?php
 
-class Dashboard {
-    private $db;
+require_once ROOT_PATH . '/core/Model.php';
 
-    public function __construct(PDO $db) {
-        $this->db = $db;
+class Dashboard extends Model {
+    public function __construct() {
+        $this->db = Database::getInstance();
     }
 
     // [PBI-14.6] Ambil data KPI Finansial & hitung persentase konversinya
