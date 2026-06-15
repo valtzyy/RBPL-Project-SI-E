@@ -15,17 +15,19 @@ class WorkOrder extends Model
      */
 public function getByMechanic(int $mechanicId): array 
     {
-        // PBI-11.1: Query disesuaikan dengan struktur fisik foreign key database dealer_mobil kamu
+        // PBI-11.1: Query JOIN multi-level melewati service_customers sesuai skema baru
         $query = "SELECT 
                     wo.*, 
                     c.name AS customer_name, 
                     CONCAT(v.brand, ' ', v.type) AS vehicle_model, 
                     v.color AS vehicle_color,
+                    sc.plate_number,
                     sb.booking_date 
                   FROM {$this->table} wo
                   JOIN service_bookings sb ON wo.booking_id = sb.id
-                  JOIN customers c ON sb.customer_id = c.id
-                  JOIN vehicles v ON sb.vehicle_id = v.id
+                  JOIN service_customers sc ON sb.service_customer_id = sc.id
+                  JOIN customers c ON sc.customer_id = c.id
+                  JOIN vehicles v ON sc.vehicle_id = v.id
                   WHERE wo.assigned_mechanic = ?
                   ORDER BY wo.created_at DESC";
                   
