@@ -14,6 +14,11 @@ $router->post('/users',        'UserController@store');
 $router->post('/users/:id',    'UserController@update');
 $router->post('/users/delete', 'UserController@destroy');
 
-//Pengadaan Kendaraan
-$router->get('/procurement',        'ProcurementController@index');
-$router->post('/procurement/store', 'ProcurementController@store');
+//PENGADAAN KENDARAAN
+//PBI 2.3
+$router->get('/procurement',               'ProcurementController@index');
+$router->post('/procurement/store',        'ProcurementController@store');
+//PBI 2.4 & 2.5
+$router->get('/procurement/receipt',       'ProcurementController@receiptList');
+$router->get('/procurement/receipt/:id',   'ProcurementController@receipt');
+$router->post('/procurement/receipt/store', 'ProcurementController@storeReceipt');

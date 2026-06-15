@@ -3,6 +3,7 @@
 require_once ROOT_PATH . '/app/models/Vehicles.php';
 require_once ROOT_PATH . '/app/models/procurement.php';
 require_once ROOT_PATH . '/app/models/procurementdetail.php';
+require_once ROOT_PATH . '/app/models/procurementreceipt.php';
 
 class ProcurementController extends Controller
 {
@@ -73,5 +74,121 @@ public function index()
             http_response_code(500);
             exit("Gagal menyimpan permintaan pengadaan: " . $e->getMessage());
         }
+    }
+
+    public function receipt($id)
+    {
+        $procurementModel = new Procurement();
+        $procurement = $procurementModel->find((int)$id);
+
+        if (!$procurement) {
+            http_response_code(404);
+            exit("Data pengadaan tidak ditemukan.");
+        }
+
+        // Ambil detail kendaraan yang dipesan
+        $db = Database::getInstance();
+        $stmt = $db->prepare("
+            SELECT pd.*, v.brand, v.type, v.color 
+            FROM procurement_details pd
+            JOIN vehicles v ON pd.vehicle_id = v.id
+            WHERE pd.procurement_id = ?
+        ");
+        $stmt->execute([$id]);
+        $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $this->view('Procurement/receipt', [
+            'procurement' => $procurement,
+            'details' => $details
+        ]);
+    }
+
+    public function storeReceipt()
+    {
+        $procurementId = (int)($_POST['procurement_id'] ?? 0);
+        $receivedQuantities = $_POST['received_quantities'] ?? []; // Array [vehicle_id => qty]
+
+        if ($procurementId === 0) {
+            http_response_code(400);
+            exit("ID Pengadaan tidak valid.");
+        }
+
+        $db = Database::getInstance();
+
+        try {
+            $db->beginTransaction();
+
+            // 1. Ambil detail pesanan asli
+            $stmt = $db->prepare("SELECT vehicle_id, quantity FROM procurement_details WHERE procurement_id = ?");
+            $stmt->execute([$procurementId]);
+            $orderedItems = $stmt->fetchAll(PDO::FETCH_KEY_PAIR); // [vehicle_id => quantity]
+
+            $mismatches = [];
+            $isMatch = true;
+
+            // 2. Bandingkan pesanan dengan fisik yang datang
+            foreach ($orderedItems as $vehicleId => $orderedQty) {
+                $receivedQty = (int)($receivedQuantities[$vehicleId] ?? 0);
+
+                if ($receivedQty !== $orderedQty) {
+                    $isMatch = false;
+                    $mismatches[] = [
+                        'vehicle_id' => $vehicleId,
+                        'expected' => $orderedQty,
+                        'received' => $receivedQty,
+                        'status' => $receivedQty < $orderedQty ? 'Kurang' : 'Lebih'
+                    ];
+                }
+            }
+
+            // 3. Format hasil inspeksi sebagai JSON
+            $inspectionData = [
+                'is_compatible' => $isMatch,
+                'checked_at' => date('Y-m-d H:i:s'),
+                'mismatches' => $mismatches
+            ];
+
+            // 4. Simpan ke procurement_receipts
+            $receipt = new ProcurementReceipt();
+            $receipt->create([
+                'procurement_id' => $procurementId,
+                'received_by' => 'Staff Gudang', // Default staff
+                'inspection_result' => json_encode($inspectionData)
+            ]);
+
+            // 5. Update status procurement menjadi 'received'
+            $procurement = new Procurement();
+            $procurement->update($procurementId, [
+                'status' => 'received'
+            ]);
+
+            $db->commit();
+
+            // Tampilkan hasil pencocokan ke user
+            $statusMsg = $isMatch 
+                ? "Penerimaan berhasil dicatat! Semua unit SESUAI dengan pesanan." 
+                : "Penerimaan berhasil dicatat DENGAN KETIDAKSESUAIAN (Silakan periksa log inspection_result).";
+                
+            echo "<h3>Hasil Validasi Penerimaan:</h3>";
+            echo "<p>{$statusMsg}</p>";
+            echo "<p><a href='/'>Kembali ke Beranda</a></p>";
+
+        } catch (Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            http_response_code(500);
+            exit("Gagal memproses penerimaan: " . $e->getMessage());
+        }
+    }
+
+    public function receiptList()
+    {
+        $procurementModel = new Procurement();
+        $procurements = $procurementModel->all();
+
+        $this->view('Procurement/receipt_list', [
+            'procurements' => $procurements
+        ]);
     }
 }
