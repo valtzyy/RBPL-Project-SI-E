@@ -15,13 +15,14 @@ class WorkOrderController extends Controller
     /**
      * Menampilkan dashboard utama panel teknisi
      */
-    public function index() {
-    // Diubah ke angka 5 sesuai dengan ID akun mekanik di database riil
-    $mechanicId = 5; 
-    
-    $orders = $this->workOrderModel->getByMechanic($mechanicId);
-    $this->view('bengkel/mechanic_panel', ['orders' => $orders]);
-}
+    public function index() 
+    {
+        // Diubah ke angka 5 sesuai dengan ID akun mekanik aktif di database riil kalian
+        $mechanicId = 5; 
+        
+        $orders = $this->workOrderModel->getByMechanic($mechanicId);
+        $this->view('bengkel/mechanic_panel', ['orders' => $orders]);
+    }
 
     /**
      * Menerima kiriman request POST dari tombol aksi perubahan status
@@ -40,13 +41,13 @@ class WorkOrderController extends Controller
                 $success = $this->workOrderModel->updateWorkOrderStatus($woId, $newStatus);
                 
                 if ($success) {
-                    // Jika database berhasil di-update, arahkan kembali (refresh) ke layar utama
                     $this->redirect('/mechanic/panel');
                     return;
                 }
             }
             
-            die("🚨 Error: Gagal memproses update status.");
+            // Jika gagal, kembalikan ke halaman utama dengan membawa informasi gagal tanpa merusak halaman
+            $this->redirect('/mechanic/panel?status=failed');
         }
     }
 }
