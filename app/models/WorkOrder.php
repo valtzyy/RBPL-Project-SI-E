@@ -19,14 +19,15 @@ class WorkOrder extends Model
         $query = "SELECT 
                     wo.*, 
                     c.name AS customer_name, 
-                    sb.vehicle_name AS vehicle_model, 
-                    '-' AS vehicle_color,
+                    CONCAT(v.brand, ' ', v.type) AS vehicle_model, 
+                    v.color AS vehicle_color,
                     sc.plate_number AS license_plate,
                     sb.booking_date 
                   FROM {$this->table} wo
                   JOIN service_bookings sb ON wo.booking_id = sb.id
                   JOIN service_customers sc ON sb.service_customer_id = sc.id
                   JOIN customers c ON sc.customer_id = c.id
+                  JOIN vehicles v ON sb.vehicle_id = v.id
                   WHERE wo.assigned_mechanic = ?
                   ORDER BY wo.created_at DESC";
 

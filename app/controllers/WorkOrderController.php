@@ -17,8 +17,9 @@ class WorkOrderController extends Controller
      */
     public function index() 
     {
-        // Diubah ke angka 5 sesuai dengan ID akun mekanik aktif di database riil kalian
-        $mechanicId = 5; 
+        // Mendapatkan ID mekanik dari session jika sistem login sudah terintegrasi, 
+        // fallback ke ID 5 untuk keperluan testing mandiri / sinkronisasi awal.
+        $mechanicId = (int) ($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? $_SESSION['id'] ?? 5); 
         
         $orders = $this->workOrderModel->getByMechanic($mechanicId);
         $this->view('bengkel/mechanic_panel', ['orders' => $orders]);
