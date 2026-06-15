@@ -4,8 +4,8 @@
 //  Format: $router->get('/path', 'NamaController@namaMethod')
 // ============================================================
 
-// Halaman Utama
-$router->get('/',           'HomeController@index');
+// 1. Ini rute untuk MEMBUKA FORM (Halaman sebelum post)
+$router->get('/document',       'DocumentController@tampilkanForm');
 
 // Auth
 $router->get('/login',       'AuthController@showLogin');
@@ -24,9 +24,8 @@ $router->post('/admin/users/:id/deactivate','UserManagementController@deactivate
 $router->get('/change-password',  'ProfileController@editPassword');
 $router->post('/change-password', 'ProfileController@updatePassword');
 
-// Users - CRUD
-$router->get('/users',         'UserController@index');
-$router->get('/users/:id',     'UserController@show');
-$router->post('/users',        'UserController@store');
-$router->post('/users/:id',    'UserController@update');
-$router->post('/users/delete', 'UserController@destroy');
+// 2. Ini rute untuk MEMPROSES UPLOAD (Saat tombol diklik)
+$router->post('/document',      'DocumentController@simpanDokumen');
+
+// 3. Ini rute untuk MELIHAT HASIL (Menggunakan query parameter ?id=)
+$router->get('/document/view',  'DocumentController@bukaDokumen');
