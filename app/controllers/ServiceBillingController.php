@@ -28,14 +28,15 @@ class ServiceBillingController extends Controller
     }
 
      /**
-     * GET /service-billing/plate/:plateNumber
+     * GET /service-billing/:plateNumber
      * Tampilkan data tagihan dengan nomor plat kendaraan tertentu (dipanggil oleh JS di halaman index).
      */
     public function findByPlateNumber(string $plateNumber): void
     {
         header('Content-Type: application/json; charset=utf-8');
 
-        $data = $this->model->findByPlateNumber($plateNumber);
+        $decoded = urldecode($plateNumber);
+        $data = $this->model->findByPlateNumber($decoded);
 
         $this->view('service-billing/test', [
             'title'   => 'Tagihan Kasir Bengkel',
@@ -43,17 +44,17 @@ class ServiceBillingController extends Controller
         ]);
 
     }
-    
+
     /**
-     * GET /service-billing/:id
+     * GET /service-billing/detail/:plateNumber
      * Kembalikan JSON detail satu tagihan (dipanggil oleh JS di halaman index).
      */
-    public function detail(string $id): void
+    public function detail(string $plateNumber): void
     {
         header('Content-Type: application/json; charset=utf-8');
 
-
-        $detail = $this->model->findBillingDetail((int) $id);
+        $decode = urldecode($plateNumber);
+        $detail = $this->model->findBillingDetail($decode);
 
         if (!$detail) {
             http_response_code(404);
@@ -61,9 +62,26 @@ class ServiceBillingController extends Controller
             return;
         }
 
-        $this->view('service-billing/test', [
-            'title'   => 'Tagihan Kasir Bengkel',
+        $this->view('service-billing/detail/index', [
+            'title'   => 'Detail Tagihan Kasir Bengkel',
             'detail' => $detail,
+        ]);
+    }
+
+    /**
+     * GET /service-billing/detail/history/:plateNumber
+     * Tampilkan riwayat perubahan tagihan dengan nomor plat kendaraan tertentu (dipanggil oleh JS di halaman index).
+     */
+    public function detailLog(string $plateNumber): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $decode = urldecode($plateNumber);
+        $detailLog = $this->model->getHistoryByPlateNumber($decode);
+
+        $this->view('service-billing/detail/history/index', [
+            'title'   => 'Riwayat Service Kendaraan',
+            'detailLog' => $detailLog
         ]);
     }
 
