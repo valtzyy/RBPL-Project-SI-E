@@ -56,4 +56,36 @@ class SparepartController extends Controller {
             }
         }
     }
+
+    public function testView(): void {
+        $this->view('test_sparepart', ['title' => 'Test API Request Sparepart']);
+    }
+
+    public function request(): void {
+        header('Content-Type: application/json');
+
+        $sparepart_id = $this->input('sparepart_id');
+        $work_order_id = $this->input('work_order_id');
+        $quantity = $this->input('quantity');
+
+        if (!$sparepart_id || !$work_order_id || !$quantity) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Parameter tidak lengkap.']);
+            return;
+        }
+
+        $result = $this->sparepartModel->requestParts((int) $sparepart_id, (int) $work_order_id, (int) $quantity);
+
+        if ($result['success']) {
+            http_response_code(200);
+        } else {
+            http_response_code(400);
+        }
+
+        echo json_encode($result);
+    }
+
+    public function workOrderView(): void {
+        $this->view('mekanik/work_order', ['title' => 'Mekanik Work Order']);
+    }
 }

@@ -15,5 +15,8 @@ $router->post('/users/:id',    'UserController@update');
 $router->post('/users/delete', 'UserController@destroy');
 
 // API - Sparepart
+$router->get('/api/sparepart/test', 'SparepartController@testView');
+$router->post('/api/sparepart/request', 'SparepartController@request');
 $router->get('/sparepart/create', 'SparepartController@createView');
 $router->post('/sparepart/store', 'SparepartController@store');
+$router->get('/mekanik/work-order', 'SparepartController@workOrderView');
