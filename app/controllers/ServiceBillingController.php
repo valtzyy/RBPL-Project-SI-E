@@ -21,7 +21,7 @@ class ServiceBillingController extends Controller
     {
         $tagihan = $this->model->allWithBillingDetail();
 
-        $this->view('service-billing/index', [
+        $this->view('service-billing/test', [
             'title'   => 'Tagihan Kasir Bengkel',
             'tagihan' => $tagihan,
         ]);
