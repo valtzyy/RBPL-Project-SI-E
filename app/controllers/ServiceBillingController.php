@@ -23,10 +23,27 @@ class ServiceBillingController extends Controller
 
         $this->view('service-billing/test', [
             'title'   => 'Tagihan Kasir Bengkel',
-            'tagihan' => $tagihan,
+            'tagihan' => $tagihan ? $tagihan : ["Tidak ada tagihan yang ditemukan."],
         ]);
     }
 
+     /**
+     * GET /service-billing/plate/:plateNumber
+     * Tampilkan data tagihan dengan nomor plat kendaraan tertentu (dipanggil oleh JS di halaman index).
+     */
+    public function findByPlateNumber(string $plateNumber): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $data = $this->model->findByPlateNumber($plateNumber);
+
+        $this->view('service-billing/test', [
+            'title'   => 'Tagihan Kasir Bengkel',
+            'tagihan' => $data ? $data : ["Tidak ada plat yg sesuai"],
+        ]);
+
+    }
+    
     /**
      * GET /service-billing/:id
      * Kembalikan JSON detail satu tagihan (dipanggil oleh JS di halaman index).
@@ -34,6 +51,7 @@ class ServiceBillingController extends Controller
     public function detail(string $id): void
     {
         header('Content-Type: application/json; charset=utf-8');
+
 
         $detail = $this->model->findBillingDetail((int) $id);
 
@@ -43,6 +61,11 @@ class ServiceBillingController extends Controller
             return;
         }
 
-        echo json_encode($detail);
+        $this->view('service-billing/test', [
+            'title'   => 'Tagihan Kasir Bengkel',
+            'detail' => $detail,
+        ]);
     }
+
+    
 }
