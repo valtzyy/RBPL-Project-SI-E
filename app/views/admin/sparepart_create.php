@@ -1,4 +1,9 @@
 <div class="form-container">
+    <?php if (isset($_GET['success'])): ?>
+        <div style="background-color: #d1e7dd; color: #0f5132; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center; font-weight: bold;">
+            ✓ Master Data Sparepart Berhasil Disimpan!
+        </div>
+    <?php endif; ?>
     <div class="form-header">
         <h2>Master Data Sparepart</h2>
         <p>Masukkan data suku cadang baru ke dalam sistem inventori DealerLink.</p>

@@ -79,11 +79,8 @@
                     setTimeout(() => {
                         overlay.classList.remove('active');
 
-                        // Menghapus data simulasi form agar bersih lagi
-                        form.reset();
-
                         // CATATAN: Jika backend sudah siap, gunakan baris di bawah ini:
-                        // form.submit(); 
+                        form.submit(); 
                     }, 1200);
 
                 }, 1500); // Waktu putaran spinner
