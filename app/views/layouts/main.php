@@ -1,4 +1,3 @@
-<!-- app/views/layouts/main.php -->
 <!DOCTYPE html>
 <html lang="id">
 
@@ -29,6 +28,9 @@
             const overlay = document.getElementById('toast-overlay');
             const toastIcon = document.getElementById('toast-icon');
             const toastText = document.getElementById('toast-text');
+            
+            // Tangkap tombol submit-nya
+            const submitBtn = form.querySelector('.btn-submit');
 
             // IDE 1: Validasi Real-Time (Saat kursor meninggalkan input / blur)
             inputs.forEach(input => {
@@ -46,11 +48,11 @@
                 });
             });
 
-            // IDE 2: Mencegah submit langsung & memunculkan animasi
+            // INTEGRASI PBI-13.2: Mengirim data ke Database nyata via AJAX
             form.addEventListener('submit', function(e) {
-                e.preventDefault(); // Tahan pengiriman data asli ke server
+                e.preventDefault(); // Tahan pengiriman form bawaan browser
 
-                // Pastikan tidak ada kolom yang kosong
+                // Jalankan pengecekan validasi sebelum mengirim
                 let isValid = true;
                 inputs.forEach(input => {
                     if (input.value.trim() === '') {
@@ -59,31 +61,76 @@
                     }
                 });
 
-                if (!isValid) return; // Jika ada error, batalkan animasi
+                if (!isValid) return; // Batalkan proses jika form kosong
 
-                // 1. Munculkan kotak dengan Spinner
-                overlay.classList.add('active');
-                toastIcon.className = 'spinner'; // Pastikan ikonnya spinner
-                toastIcon.innerHTML = '';
-                toastText.textContent = 'Menyimpan data...';
-                toastText.style.color = 'var(--text-main)';
+                // --- TRIK PRO UX: Matikan tombol agar tidak bisa di-klik ganda ---
+                if (submitBtn) submitBtn.disabled = true;
 
-                // 2. Simulasi loading (1.5 detik), lalu berubah jadi Ceklis Hijau
-                setTimeout(() => {
-                    toastIcon.className = 'checkmark'; // Ganti kelas CSS ke ceklis
-                    toastIcon.innerHTML = '✓';
-                    toastText.textContent = 'Berhasil disimpan!';
-                    toastText.style.color = '#10b981';
+                // 1. Munculkan Animasi Spinner (Mulai Menyimpan)
+                if (overlay) {
+                    overlay.classList.add('active');
+                    toastIcon.className = 'spinner'; 
+                    toastIcon.innerHTML = '';
+                    toastText.textContent = 'Menyimpan data...';
+                    toastText.style.color = 'var(--text-main)';
+                }
 
-                    // 3. Tunggu sebentar agar user bisa melihat ceklis, lalu tutup dan submit
+                // 2. Bungkus seluruh data inputan form
+                const formData = new FormData(form);
+
+                // 3. Tembak endpoint POST buatan Back-End
+                fetch('/sparepart/store', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest' 
+                    },
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // JIKA SUKSES: Ubah Spinner menjadi Ceklis Hijau resmi Figma
+                        toastIcon.className = 'checkmark'; 
+                        toastIcon.innerHTML = '✓';
+                        toastText.textContent = 'Berhasil disimpan!';
+                        toastText.style.color = 'var(--success-text)';
+
+                        // Bersihkan seluruh isi form agar siap menerima input baru
+                        form.reset();
+
+                        // Beri waktu 1.5 detik agar user bisa melihat ceklis sukses, lalu tutup overlay
+                        setTimeout(() => {
+                            overlay.classList.remove('active');
+                        }, 1500);
+
+                    } else {
+                        // JIKA GAGAL (Validasi controller gagal / SKU duplikat)
+                        toastIcon.className = ''; 
+                        toastIcon.innerHTML = '❌';
+                        toastText.textContent = data.message || 'Gagal menyimpan!';
+                        toastText.style.color = 'var(--danger)';
+
+                        setTimeout(() => {
+                            overlay.classList.remove('active');
+                        }, 2500);
+                    }
+                })
+                .catch(err => {
+                    // JIKA KONEKSI PUTUS / SERVER ERROR
+                    console.error("Error storing sparepart:", err);
+                    toastIcon.className = ''; 
+                    toastIcon.innerHTML = '⚠️';
+                    toastText.textContent = 'Terjadi kesalahan jaringan sistem.';
+                    toastText.style.color = 'var(--danger)';
+
                     setTimeout(() => {
                         overlay.classList.remove('active');
-
-                        // CATATAN: Jika backend sudah siap, gunakan baris di bawah ini:
-                        form.submit(); 
-                    }, 1200);
-
-                }, 1500); // Waktu putaran spinner
+                    }, 2500);
+                })
+                .finally(() => {
+                    // --- TRIK PRO UX: Nyalakan kembali tombol submit setelah request selesai (sukses/gagal) ---
+                    if (submitBtn) submitBtn.disabled = false;
+                });
             });
         });
     </script>
