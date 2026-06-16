@@ -3,18 +3,22 @@
 require_once ROOT_PATH . '/core/Controller.php';
 require_once ROOT_PATH . '/app/models/SparepartModel.php';
 
-class SparepartController extends Controller {
+class SparepartController extends Controller
+{
     private SparepartModel $sparepartModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->sparepartModel = new SparepartModel();
     }
 
-    public function createView(): void {
+    public function createView(): void
+    {
         $this->view('admin/sparepart_create', ['title' => 'Master Data Sparepart']);
     }
 
-    public function store(): void {
+    public function store(): void
+    {
         $sku = $this->input('kode_sparepart');
         $name = $this->input('nama_sparepart');
         $stock = $this->input('stok_awal');
@@ -57,11 +61,13 @@ class SparepartController extends Controller {
         }
     }
 
-    public function testView(): void {
+    public function testView(): void
+    {
         $this->view('test_sparepart', ['title' => 'Test API Request Sparepart']);
     }
 
-    public function request(): void {
+    public function request(): void
+    {
         header('Content-Type: application/json');
 
         $sparepart_id = $this->input('sparepart_id');
@@ -85,19 +91,27 @@ class SparepartController extends Controller {
         echo json_encode($result);
     }
 
-    public function workOrderView(): void {
+    public function workOrderView(): void
+    {
         $this->view('mekanik/work_order', ['title' => 'Mekanik Work Order']);
     }
 
-    public function search(): void {
+    public function invoiceView(): void
+    {
+        $this->view('kasir/invoice', ['title' => 'Kasir - Draft Invoice']);
+    }
+
+    public function search(): void
+    {
         header('Content-Type: application/json');
         $query = $this->input('q', '');
-        
+
         $results = $this->sparepartModel->searchParts($query);
         echo json_encode($results);
     }
 
-    public function invoiceDraft(): void {
+    public function invoiceDraft(): void
+    {
         header('Content-Type: application/json');
         $work_order_id = $this->input('work_order_id');
 
@@ -108,7 +122,7 @@ class SparepartController extends Controller {
         }
 
         $result = $this->sparepartModel->getInvoiceDraft((int) $work_order_id);
-        
+
         if ($result['success']) {
             http_response_code(200);
         } else {

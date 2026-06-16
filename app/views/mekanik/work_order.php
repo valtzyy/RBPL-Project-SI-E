@@ -1,43 +1,50 @@
-<div class="form-container" style="max-width: 600px; margin: 0 auto; padding-top: 20px;">
+<div class="form-container" style="max-width: 700px; margin: 0 auto; padding-top: 20px;">
     <div class="form-header">
-        <h2>Pencarian Suku Cadang</h2>
-        <p>Cari dan request sparepart dari gudang untuk Work Order aktif.</p>
+        <h2>Pencarian Suku Cadang Mekanik</h2>
+        <p>Cari, periksa stok gudang, dan lakukan request sparepart untuk Work Order aktif.</p>
     </div>
 
-    <div style="position: relative; margin-bottom: 24px;">
-        <div class="form-group" style="margin-bottom: 0;">
-            <input type="text" id="search_sparepart" class="form-input" placeholder=" " autocomplete="off">
-            <label for="search_sparepart" class="form-label">🔍 Cari Nama / SKU Sparepart...</label>
+    <div class="form-group" style="margin-bottom: 24px;">
+        <input type="number" id="input_wo_id_mekanik" class="form-input" placeholder=" " value="101" required>
+        <label for="input_wo_id_mekanik" class="form-label">Nomor Work Order Aktif</label>
+    </div>
+
+    <div class="form-group" style="position: relative; margin-bottom: 24px;">
+        <input type="text" id="search_sparepart" class="form-input" placeholder=" " autocomplete="off">
+        <label for="search_sparepart" class="form-label">🔍 Cari Nama / SKU Sparepart...</label>
+
+        <ul id="autocomplete-dropdown" class="autocomplete-dropdown"></ul>
+    </div>
+
+    <div id="stock-indicator" class="stock-card" style="display: none; flex-direction: column; gap: 16px; margin-bottom: 24px;">
+        <div style="border-bottom: 1px solid var(--border-light); padding-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 id="stock-name" style="margin: 0; color: var(--primary-dark); font-size: 18px;">Nama Sparepart</h3>
+                <p style="margin: 4px 0 0 0; color: var(--text-muted); font-size: 13px;">SKU: <span id="stock-sku">-</span></p>
+            </div>
+            <span id="stock-badge" class="badge">Status Stok</span>
         </div>
-
-        <ul id="autocomplete-dropdown" class="autocomplete-list"></ul>
-    </div>
-
-    <div id="stock-indicator" class="stock-card" style="flex-direction: column; align-items: stretch; gap: 16px;">
 
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div class="stock-info">
-                <span id="stock-sku" class="stock-sku" style="font-size: 12px; font-weight: 600; color: var(--primary);"></span>
-                <h3 id="stock-name" class="stock-name" style="margin: 4px 0; font-size: 18px;"></h3>
-                <p class="stock-qty" style="margin: 0; font-size: 14px; color: var(--text-muted);">
-                    Sisa di gudang: <strong id="stock-count" style="color: var(--text-main);"></strong> unit
-                </p>
-            </div>
-            <div class="stock-status">
-                <span id="stock-badge" class="badge"></span>
-            </div>
+            <span style="color: var(--text-main); font-weight: 500;">Stok Tersedia di Gudang:</span>
+            <span style="font-size: 20px; font-weight: 700; color: var(--text-main);"><span id="stock-count">0</span> unit</span>
         </div>
 
-        <div class="stock-action" style="border-top: 1px solid #e2e8f0; padding-top: 16px; display: flex; gap: 12px; align-items: center;">
-            <input type="number" id="request-qty" class="form-input" value="1" min="1" style="width: 80px; padding: 10px; margin: 0; border-radius: 8px; text-align: center;" title="Jumlah yang dibutuhkan">
-            <button id="btn-request-part" class="btn-submit" style="flex: 1; padding: 10px; margin: 0; border-radius: 8px;">Tambahkan ke Work Order</button>
+        <div style="display: flex; gap: 16px; align-items: flex-end; margin-top: 8px; border-top: 1px dashed var(--border-light); padding-top: 16px;">
+            <div class="form-group" style="flex: 1; margin: 0;">
+                <input type="number" id="request-qty" class="form-input" value="1" min="1" placeholder=" ">
+                <label for="request-qty" class="form-label">Jumlah Yang Diperlukan</label>
+            </div>
+            <button id="btn-request-part" class="btn-submit" style="margin: 0; padding: 0 28px; height: 48px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; font-weight: 600; font-size: 15px;">
+                Tambahkan ke Work Order
+            </button>
         </div>
-
     </div>
-    <div id="toast-overlay" class="toast-overlay">
-        <div class="toast-box">
-            <div id="toast-icon" class="spinner"></div>
-            <span id="toast-text" style="font-weight: 500; color: var(--text-main);">Memproses request...</span>
-        </div>
+</div>
+
+<div id="toast-overlay" class="toast-overlay">
+    <div class="toast-box">
+        <div id="toast-icon" class="spinner"></div>
+        <span id="toast-text" style="font-weight: 500; color: var(--text-main);">Memproses...</span>
     </div>
 </div>

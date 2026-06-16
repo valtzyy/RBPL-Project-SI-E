@@ -22,3 +22,4 @@ $router->post('/sparepart/store', 'SparepartController@store');
 $router->get('/api/sparepart/search', 'SparepartController@search');
 $router->get('/api/invoice/draft', 'SparepartController@invoiceDraft');
 $router->get('/mekanik/work-order', 'SparepartController@workOrderView');
+$router->get('/kasir/invoice', 'SparepartController@invoiceView');

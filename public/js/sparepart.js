@@ -1,177 +1,214 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('search_sparepart');
-    if (!searchInput) return;
+// public/js/sparepart.js
 
+document.addEventListener('DOMContentLoaded', function() {
+
+    // ====================================================================
+    // FITUR 1: MEKANIK - PENCARIAN & REQUEST Suku Cadang (PBI-13.3, 13.4, 13.5)
+    // ====================================================================
+    const searchInput = document.getElementById('search_sparepart');
     const dropdown = document.getElementById('autocomplete-dropdown');
     const stockCard = document.getElementById('stock-indicator');
+    
     const stockSku = document.getElementById('stock-sku');
     const stockName = document.getElementById('stock-name');
     const stockCount = document.getElementById('stock-count');
     const stockBadge = document.getElementById('stock-badge');
+    
+    let selectedSparepartId = null;
+    let currentFocus = -1; // Menghitung baris dropdown yang sedang aktif dipilih via keyboard
 
-    let currentFocus = -1; 
-    let selectedSparepartId = null; // Menyimpan ID part asli dari database
+    // --- PROTEKSI UI: Pengaturan Gaya Dropdown Otomatis Agar Melayang & Tanpa Bulet ---
+    if (dropdown) {
+        dropdown.style.listStyle = 'none';
+        dropdown.style.padding = '0';
+        dropdown.style.margin = '4px 0 0 0';
+        dropdown.style.position = 'absolute';
+        dropdown.style.top = '100%';
+        dropdown.style.left = '0';
+        dropdown.style.width = '100%';
+        dropdown.style.backgroundColor = 'white';
+        dropdown.style.border = '1px solid #e2e8f0';
+        dropdown.style.borderRadius = '8px';
+        dropdown.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+        dropdown.style.zIndex = '999';
+        dropdown.style.maxHeight = '250px'; // Batasi tinggi maksimal dropdown
+        dropdown.style.overflowY = 'auto';  // Aktifkan scrollbar jika item melimpah
+        dropdown.style.display = 'none'; 
+    }
 
-    // === Event 1: Input Pencarian (Kini menggunakan API Database) ===
-    searchInput.addEventListener('input', function() {
-        const query = this.value.trim();
-        dropdown.innerHTML = ''; 
-        currentFocus = -1; 
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const query = this.value;
+            currentFocus = -1; // Reset fokus setiap kali ada ketikan baru
 
-        if (query === '') {
-            stockCard.classList.remove('show');
-            dropdown.classList.remove('show');
-            return;
-        }
-
-        if (query.length < 2) {
-            dropdown.classList.remove('show');
-            return;
-        }
-
-        // Panggil API Pencarian buatan tim Back-End
-        fetch('/api/sparepart/search?q=' + encodeURIComponent(query))
-            .then(res => res.json())
-            .then(data => {
-                if (searchInput.value.trim() === '') return;
-                dropdown.classList.add('show');
-                dropdown.innerHTML = ''; 
-
-                if (data.length > 0) {
-                    data.forEach(item => {
-                        const li = document.createElement('li');
-                        li.className = 'dropdown-item';
-                        
-                        // Konversi format data dari BE agar cocok dengan UI kita
-                        li.dataset.item = JSON.stringify({
-                            id: item.id,
-                            sku: item.sku,
-                            nama: item.name,
-                            stok: parseInt(item.stock)
-                        });
-                        
-                        let textColor = '#10b981'; 
-                        if (item.stock == 0) textColor = '#ef4444'; 
-                        else if (item.stock <= 10) textColor = '#f59e0b'; 
-
-                        li.innerHTML = `
-                            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                                <div>
-                                    <div class="item-name">${item.name}</div>
-                                    <div class="item-sku">SKU: ${item.sku}</div>
-                                </div>
-                                <div style="text-align: right;">
-                                    <span style="font-size: 13px; font-weight: 700; color: ${textColor}">
-                                        ${item.stock} unit
-                                    </span>
-                                </div>
-                            </div>
-                        `;
-                        dropdown.appendChild(li);
-                    });
-                } else {
-                    // Tampilkan Empty State keren milikmu jika data tidak ada di database
-                    const li = document.createElement('li');
-                    li.className = 'dropdown-item empty-state';
-                    li.innerHTML = `
-                        <div style="text-align: center; color: var(--text-muted); padding: 12px 0;">
-                            <svg style="width:24px; height:24px; margin:0 auto 8px auto; opacity:0.5;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <div>Sparepart tidak ditemukan</div>
-                        </div>
-                    `;
-                    li.style.cursor = 'default';
-                    dropdown.appendChild(li);
-                }
-            })
-            .catch(err => console.error("Error fetching data:", err));
-    });
-
-    // === Event 2: Navigasi Keyboard ===
-    searchInput.addEventListener('keydown', function(e) {
-        const items = dropdown.getElementsByClassName('dropdown-item');
-        if (!dropdown.classList.contains('show') || items.length === 0) return;
-        if (items[0].classList.contains('empty-state')) return;
-
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            currentFocus++;
-            addActive(items);
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            currentFocus--;
-            addActive(items);
-        } else if (e.key === 'Enter') {
-            e.preventDefault();
-            if (currentFocus > -1 && items[currentFocus]) {
-                items[currentFocus].click(); 
+            if (query.length < 2) {
+                dropdown.style.display = 'none';
+                dropdown.innerHTML = '';
+                return;
             }
-        }
-    });
 
-    function addActive(items) {
-        if (!items) return;
-        removeActive(items);
-        if (currentFocus >= items.length) currentFocus = 0;
-        if (currentFocus < 0) currentFocus = (items.length - 1);
-        items[currentFocus].classList.add('keyboard-active');
-        items[currentFocus].scrollIntoView({ block: 'nearest' });
+            fetch('/api/sparepart/search?q=' + encodeURIComponent(query))
+                .then(res => res.json())
+                .then(response => {
+                    if (searchInput.value.trim() === '') return; 
+                    const data = response.data || response;
+
+                    dropdown.style.display = 'block'; 
+                    dropdown.innerHTML = ''; 
+
+                    if (data && data.length > 0) {
+                        data.forEach(item => {
+                            const li = document.createElement('li');
+                            li.className = 'dropdown-item';
+                            
+                            // Gaya Baris Dropdown
+                            li.style.padding = '12px 16px';
+                            li.style.cursor = 'pointer';
+                            li.style.borderBottom = '1px solid #f1f5f9';
+                            li.style.transition = 'background 0.15s';
+                            
+                            // Efek Hover Menggunakan Mouse (tetap sinkron dengan keyboard)
+                            li.addEventListener('mouseover', () => {
+                                removeActiveStyles();
+                                li.style.backgroundColor = '#f8fafc';
+                            });
+                            li.addEventListener('mouseout', () => {
+                                li.style.backgroundColor = 'transparent';
+                            });
+                            
+                            const itemName = item.name || item.nama_sparepart;
+                            const itemStock = item.stock !== undefined ? item.stock : item.stok;
+
+                            let badgeClass = 'badge-success';
+                            let badgeColor = '#22c55e'; 
+                            if (itemStock == 0) {
+                                badgeClass = 'badge-danger';
+                                badgeColor = '#ef4444'; 
+                            } else if (itemStock < 5) {
+                                badgeClass = 'badge-warning';
+                                badgeColor = '#eab308'; 
+                            }
+
+                            li.innerHTML = `
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="font-weight: 600; color: #1e293b; font-size: 14px;">${itemName}</div>
+                                        <div style="font-size: 12px; color: #64748b; margin-top: 2px;">SKU: ${item.sku}</div>
+                                    </div>
+                                    <span style="font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 9999px; background-color: ${badgeColor}20; color: ${badgeColor};" class="badge ${badgeClass}">${itemStock} unit</span>
+                                </div>
+                            `;
+                            
+                            // Aksi ketika item diklik mouse
+                            li.addEventListener('click', () => {
+                                selectItem(item, itemName, itemStock, badgeClass);
+                            });
+                            dropdown.appendChild(li);
+                        });
+                    } else {
+                        const li = document.createElement('li');
+                        li.style.padding = '12px 16px';
+                        li.style.color = '#64748b';
+                        li.style.fontSize = '14px';
+                        li.textContent = 'Sparepart tidak ditemukan';
+                        dropdown.appendChild(li);
+                    }
+                })
+                .catch(err => console.error("Error search API:", err));
+        });
+
+        // --- NAVIGASI KEYBOARD (Panah Atas, Panah Bawah, Enter) ---
+        searchInput.addEventListener('keydown', function(e) {
+            let listItems = dropdown.getElementsByTagName('li');
+            
+            // Jika dropdown sedang tutup atau kosong, abaikan fungsi keyboard
+            if (dropdown.style.display === 'none' || listItems.length === 0 || listItems[0].textContent === 'Sparepart tidak ditemukan') {
+                return;
+            }
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault(); // Mencegah kursor melompat di kotak input
+                currentFocus++;
+                setActiveRow(listItems);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                currentFocus--;
+                setActiveRow(listItems);
+            } else if (e.key === 'Enter') {
+                e.preventDefault(); // Mencegah submit form bawaan browser
+                if (currentFocus > -1 && listItems[currentFocus]) {
+                    listItems[currentFocus].click(); // Simulasikan klik pada baris yang aktif
+                }
+            }
+        });
+
+        // Sembunyikan dropdown jika klik di luar area input
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+                closeDropdown();
+            }
+        });
     }
 
-    function removeActive(items) {
-        for (let i = 0; i < items.length; i++) {
-            items[i].classList.remove('keyboard-active');
+    // Fungsi Pembantu 1: Menerapkan gaya aktif visual pada baris pilihan keyboard
+    function setActiveRow(items) {
+        if (!items) return false;
+        removeActiveStyles(); // Reset semua warna latar belakang terlebih dahulu
+        
+        if (currentFocus >= items.length) currentFocus = 0; // Jika mentok bawah, kembali ke atas
+        if (currentFocus < 0) currentFocus = items.length - 1; // Jika mentok atas, lompat ke paling bawah
+        
+        // Beri warna latar belakang penanda fokus aktif
+        items[currentFocus].style.backgroundColor = '#f1f5f9';
+        
+        // Pastikan baris yang aktif otomatis menggulir (scroll) ke dalam pandangan mata
+        items[currentFocus].scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest'
+        });
+    }
+
+    // Fungsi Pembantu 2: Membersihkan semua gaya background aktif
+    function removeActiveStyles() {
+        let listItems = dropdown.getElementsByTagName('li');
+        for (let i = 0; i < listItems.length; i++) {
+            listItems[i].style.backgroundColor = 'transparent';
         }
     }
 
-    // === Event 3: Klik Item Dropdown ===
-    dropdown.addEventListener('click', function(e) {
-        const itemEl = e.target.closest('.dropdown-item');
-        if (!itemEl || itemEl.classList.contains('empty-state')) return;
+    // Fungsi Pembantu 3: Menutup & mengosongkan kontainer dropdown
+    function closeDropdown() {
+        dropdown.style.display = 'none';
+        dropdown.innerHTML = '';
+        currentFocus = -1;
+    }
 
-        const itemData = JSON.parse(itemEl.dataset.item);
-
-        searchInput.value = itemData.nama;
-        dropdown.classList.remove('show');
-        showStockIndicator(itemData);
-    });
-
-    // === Fungsi Render Kartu Indikator Stok ===
-    function showStockIndicator(item) {
-        stockSku.textContent = `SKU: ${item.sku}`;
-        stockName.textContent = item.nama;
-        stockCount.textContent = item.stok;
-
-        stockBadge.className = 'badge';
-
-        if (item.stok > 10) {
-            stockBadge.classList.add('badge-success');
-            stockBadge.textContent = 'Stok Aman';
-        } else if (item.stok > 0 && item.stok <= 10) {
-            stockBadge.classList.add('badge-warning');
-            stockBadge.textContent = 'Stok Menipis';
-        } else {
-            stockBadge.classList.add('badge-danger');
-            stockBadge.textContent = 'Stok Habis';
-        }
-
-        // Simpan ID part dan reset quantity ke 1
+    // Fungsi Pembantu 4: Logika penanganan ketika item terpilih (via klik / Enter)
+    function selectItem(item, itemName, itemStock, badgeClass) {
+        searchInput.value = itemName;
+        closeDropdown();
+        
         selectedSparepartId = item.id;
-        const qtyInput = document.getElementById('request-qty');
-        if (qtyInput) qtyInput.value = 1;
+        
+        if (stockCard) {
+            stockCard.classList.add('show');
+            stockCard.style.display = 'flex'; 
+        }
+        if (stockSku) stockSku.textContent = item.sku;
+        if (stockName) stockName.textContent = itemName;
+        if (stockCount) stockCount.textContent = itemStock;
+        if (stockBadge) {
+            stockBadge.textContent = itemStock > 0 ? (itemStock < 5 ? 'Stok Menipis' : 'Stok Aman') : 'Habis';
+            stockBadge.className = 'badge ' + badgeClass;
+        }
 
-        stockCard.classList.add('show');
+        const btnRequest = document.getElementById('btn-request-part');
+        if(btnRequest) {
+            btnRequest.disabled = itemStock === 0;
+        }
     }
 
-    // Tutup dropdown jika klik area luar
-    document.addEventListener('click', function(e) {
-        if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.remove('show');
-        }
-    });
-
-    // === Event 4: Tombol Request (Menghubungkan PBI-13.5) ===
+    // Aksi tombol Tambah ke Work Order (Mekanik)
     const btnRequest = document.getElementById('btn-request-part');
     const toastOverlay = document.getElementById('toast-overlay');
     const toastIcon = document.getElementById('toast-icon');
@@ -182,12 +219,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const qty = document.getElementById('request-qty').value;
             if (!selectedSparepartId) return;
 
+            const woIdMekanikInput = document.getElementById('input_wo_id_mekanik');
+            const woIdMekanik = woIdMekanikInput ? woIdMekanikInput.value : 101;
+
             const formData = new FormData();
             formData.append('sparepart_id', selectedSparepartId);
-            formData.append('work_order_id', 101); // Sesuai data dummy WO
+            formData.append('work_order_id', woIdMekanik); 
             formData.append('quantity', qty);
 
-            // 1. Munculkan Animasi Spinner saat mulai mengirim data
             if (toastOverlay) {
                 toastOverlay.classList.add('active');
                 toastIcon.className = 'spinner';
@@ -197,7 +236,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             btnRequest.disabled = true;
 
-            // 2. Tembak API Back-End
             fetch('/api/sparepart/request', {
                 method: 'POST',
                 body: formData
@@ -205,31 +243,29 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    // 3A. Jika Berhasil: Ubah jadi Ceklis Hijau
                     if (toastOverlay) {
                         toastIcon.className = 'checkmark';
                         toastIcon.innerHTML = '✓';
                         toastText.textContent = 'Berhasil ditambahkan!';
-                        toastText.style.color = '#10b981';
+                        toastText.style.color = 'var(--success-text)';
 
-                        // Sembunyikan kotak setelah 1.5 detik agar user bisa melihat ceklisnya
                         setTimeout(() => {
                             toastOverlay.classList.remove('active');
-                            stockCard.classList.remove('show');
+                            if (stockCard) {
+                                stockCard.classList.remove('show');
+                                stockCard.style.display = 'none';
+                            }
                             searchInput.value = '';
+                            selectedSparepartId = null;
                         }, 1500);
                     }
                 } else {
-                    // 3B. Jika Gagal (misal stok habis): Tampilkan pesan error
                     if (toastOverlay) {
-                        toastIcon.className = ''; // Hapus spinner
+                        toastIcon.className = '';
                         toastIcon.innerHTML = '❌';
-                        toastText.textContent = data.message;
-                        toastText.style.color = '#ef4444';
-
-                        setTimeout(() => {
-                            toastOverlay.classList.remove('active');
-                        }, 2500);
+                        toastText.textContent = data.message || 'Gagal menambahkan';
+                        toastText.style.color = 'var(--danger)';
+                        setTimeout(() => toastOverlay.classList.remove('active'), 2500);
                     }
                 }
             })
@@ -238,10 +274,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     toastIcon.className = '';
                     toastIcon.innerHTML = '⚠️';
                     toastText.textContent = 'Terjadi kesalahan sistem.';
-                    
-                    setTimeout(() => {
-                        toastOverlay.classList.remove('active');
-                    }, 2500);
+                    toastText.style.color = 'var(--danger)';
+                    setTimeout(() => toastOverlay.classList.remove('active'), 2500);
                 }
             })
             .finally(() => {
@@ -249,4 +283,148 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // ====================================================================
+    // FITUR 2: KASIR - TARIK INVOICE DRAFT (PBI-13.6)
+    // ====================================================================
+    const btnLoadInvoice = document.getElementById('btn-load-invoice');
+    const invoiceCard = document.getElementById('invoice-card');
+    const invoiceItems = document.getElementById('invoice-items');
+    const invTotal = document.getElementById('inv-total');
+    const invWoStr = document.getElementById('inv-wo');
+
+    if (btnLoadInvoice) {
+        btnLoadInvoice.addEventListener('click', function() {
+            const woIdInput = document.getElementById('input_wo_id');
+            const woId = woIdInput ? woIdInput.value : null;
+            
+            const toastOverlayKasir = document.getElementById('toast-overlay');
+            const toastIconKasir = document.getElementById('toast-icon');
+            const toastTextKasir = document.getElementById('toast-text');
+            
+            if (!toastOverlayKasir) return; 
+            
+            if (!woId) {
+                toastOverlayKasir.classList.add('active');
+                toastIconKasir.className = '';
+                toastIconKasir.innerHTML = '⚠️';
+                toastTextKasir.textContent = 'Masukkan nomor Work Order!';
+                toastTextKasir.style.color = 'var(--warning)';
+                setTimeout(() => toastOverlayKasir.classList.remove('active'), 2000);
+                return;
+            }
+
+            const originalText = btnLoadInvoice.innerText;
+            btnLoadInvoice.innerText = 'Mencari...';
+            btnLoadInvoice.disabled = true;
+
+            toastOverlayKasir.classList.add('active');
+            toastIconKasir.className = 'spinner';
+            toastIconKasir.innerHTML = '';
+            toastTextKasir.textContent = 'Mencari data tagihan...';
+            toastTextKasir.style.color = 'var(--text-main)';
+
+            fetch('/api/invoice/draft?work_order_id=' + woId)
+                .then(res => res.json())
+                .then(data => {
+                    invoiceItems.innerHTML = '';
+
+                    if (data && data.success && data.spareparts && data.spareparts.length > 0) {
+                        toastIconKasir.className = 'checkmark';
+                        toastIconKasir.innerHTML = '✓';
+                        toastTextKasir.textContent = 'Tagihan ditemukan!';
+                        toastTextKasir.style.color = 'var(--success-text)';
+                        setTimeout(() => toastOverlayKasir.classList.remove('active'), 1000);
+
+                        invoiceCard.style.display = 'flex';
+                        invWoStr.textContent = woId;
+
+                        data.spareparts.forEach(item => {
+                            const price = parseFloat(item.price);
+                            const subtotal = parseFloat(item.subtotal);
+
+                            invoiceItems.innerHTML += `
+                                <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-body); padding: 12px; border-radius: 8px;">
+                                    <div>
+                                        <p style="margin: 0; font-weight: 600; color: var(--text-main); font-size: 15px;">${item.name}</p>
+                                        <p style="margin: 0; font-size: 13px; color: var(--text-muted);">${item.quantity}x @ Rp ${price.toLocaleString('id-ID')}</p>
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-main);">
+                                        Rp ${subtotal.toLocaleString('id-ID')}
+                                    </div>
+                                </div>
+                            `;
+                        });
+
+                        const biayaJasa = parseFloat(data.service_fee || 100000);
+                        
+                        invoiceItems.innerHTML += `
+                            <div style="display: flex; justify-content: space-between; align-items: center; background: #FFF7ED; padding: 12px; border-radius: 8px; border: 1px solid #FFEDD5;">
+                                <div>
+                                    <p style="margin: 0; font-weight: 600; color: #C2410C; font-size: 15px;">Biaya Jasa Servis / Mekanik</p>
+                                    <p style="margin: 0; font-size: 13px; color: #EA580C;">Flat Rate</p>
+                                </div>
+                                <div style="font-weight: 600; color: #C2410C;">
+                                    Rp ${biayaJasa.toLocaleString('id-ID')}
+                                </div>
+                            </div>
+                        `;
+
+                        const grandTotal = parseFloat(data.total_amount || 0);
+                        invTotal.textContent = 'Rp ' + grandTotal.toLocaleString('id-ID');
+
+                    } else {
+                        invoiceCard.style.display = 'none';
+                        toastIconKasir.className = '';
+                        toastIconKasir.innerHTML = '❌';
+                        toastTextKasir.textContent = data.message || ('WO #' + woId + ' kosong / tidak ditemukan.');
+                        toastTextKasir.style.color = 'var(--danger)';
+                        setTimeout(() => toastOverlayKasir.classList.remove('active'), 2500);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error fetching invoice:', err);
+                    toastIconKasir.className = '';
+                    toastIconKasir.innerHTML = '⚠️';
+                    toastTextKasir.textContent = 'Terjadi kesalahan sistem.';
+                    toastTextKasir.style.color = 'var(--danger)';
+                    setTimeout(() => toastOverlayKasir.classList.remove('active'), 2500);
+                })
+                .finally(() => {
+                    btnLoadInvoice.innerText = originalText;
+                    btnLoadInvoice.disabled = false;
+                });
+        });
+    }
+
+    // ====================================================================
+    // FITUR 3: KASIR - CETAK & SELESAIKAN (PBI-13.6 Tambahan)
+    // ====================================================================
+    const btnPrint = document.getElementById('btn-print-invoice');
+    
+    if (btnPrint) {
+        btnPrint.addEventListener('click', function() {
+            const toastOverlayPrint = document.getElementById('toast-overlay');
+            const toastIconPrint = document.getElementById('toast-icon');
+            const toastTextPrint = document.getElementById('toast-text');
+
+            if (toastOverlayPrint) {
+                toastOverlayPrint.classList.add('active');
+                toastIconPrint.className = 'checkmark';
+                toastIconPrint.innerHTML = '✓';
+                toastTextPrint.textContent = 'Transaksi Selesai! Mencetak struk...';
+                toastTextPrint.style.color = 'var(--success-text)';
+            }
+
+            setTimeout(() => {
+                window.print();
+            }, 1000);
+
+            setTimeout(() => {
+                if (toastOverlayPrint) toastOverlayPrint.classList.remove('active');
+                window.location.reload(); 
+            }, 3000);
+        });
+    }
+
 });
