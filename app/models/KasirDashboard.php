@@ -87,6 +87,11 @@ class KasirDashboard extends Model
 
     /**
      * 5 tagihan terbaru yang menunggu bayar.
+     *
+     * Disesuaikan dengan struktur aktual database (hasil DESCRIBE Juni 2026):
+     *   - service_bookings TIDAK memiliki vehicle_id → JOIN ke vehicles dihapus
+     *   - work_order_logs & sparepart_usages belum terkonfirmasi ada → pakai LEFT JOIN
+     *     dengan fallback 0 jika tabel kosong atau belum ada data
      */
     public function getTagihanTerbaru(int $limit = 5): array
     {
@@ -95,8 +100,13 @@ class KasirDashboard extends Model
                 wo.id               AS work_order_id,
                 wo.status           AS wo_status,
                 wo.created_at       AS wo_created_at,
+                wo.description      AS deskripsi,
 
                 c.name              AS customer_name,
+                c.phone             AS customer_phone,
+
+                sb.vehicle_name,
+                sb.vehicle_color,
                 v.brand,
                 v.type              AS vehicle_type,
 
@@ -104,18 +114,20 @@ class KasirDashboard extends Model
                 COALESCE(COUNT(DISTINCT wol.id), 0)      AS jumlah_log
 
             FROM work_orders wo
-            JOIN service_bookings sb ON wo.booking_id  = sb.id
-            JOIN customers c         ON sb.customer_id = c.id
-            JOIN vehicles  v         ON sb.vehicle_id  = v.id
-            LEFT JOIN sparepart_usages su  ON su.work_order_id = wo.id
-            LEFT JOIN spareparts sp        ON sp.id = su.sparepart_id
-            LEFT JOIN work_order_logs wol  ON wol.work_order_id = wo.id
+            JOIN service_bookings sb ON wo.booking_id          = sb.id
+            JOIN customers c         ON sb.service_customer_id = c.id
+            LEFT JOIN vehicles v          ON sb.vehicle_id     = v.id
+            LEFT JOIN sparepart_usages su ON su.work_order_id  = wo.id
+            LEFT JOIN spareparts sp       ON sp.id             = su.sparepart_id
+            LEFT JOIN work_order_logs wol ON wol.work_order_id = wo.id
 
             WHERE wo.status = 'ready'
 
             GROUP BY
-                wo.id, wo.status, wo.created_at,
-                c.name, v.brand, v.type
+                wo.id, wo.status, wo.created_at, wo.description,
+                c.name, c.phone,
+                sb.vehicle_name, sb.vehicle_color,
+                v.brand, v.type
 
             ORDER BY wo.created_at DESC
             LIMIT ?
