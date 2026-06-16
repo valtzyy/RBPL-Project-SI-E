@@ -88,4 +88,12 @@ class SparepartController extends Controller {
     public function workOrderView(): void {
         $this->view('mekanik/work_order', ['title' => 'Mekanik Work Order']);
     }
+
+    public function search(): void {
+        header('Content-Type: application/json');
+        $query = $this->input('q', '');
+        
+        $results = $this->sparepartModel->searchParts($query);
+        echo json_encode($results);
+    }
 }

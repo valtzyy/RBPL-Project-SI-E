@@ -40,4 +40,10 @@ class SparepartModel extends Model {
             return ['success' => false, 'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()];
         }
     }
+
+    public function searchParts(string $query): array {
+        $stmt = $this->db->prepare("SELECT id, sku, name, stock, price FROM {$this->table} WHERE name LIKE ? OR sku LIKE ? LIMIT 10");
+        $stmt->execute(["%{$query}%", "%{$query}%"]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

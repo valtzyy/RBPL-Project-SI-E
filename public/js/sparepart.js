@@ -9,14 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const stockCount = document.getElementById('stock-count');
     const stockBadge = document.getElementById('stock-badge');
 
-    const spareparts = [
-        { id: 1, sku: 'OLI-FST-01', nama: 'Oli Mesin Fastron 10W-40', stok: 24 },
-        { id: 2, sku: 'KMP-RM-INV', nama: 'Kampas Rem Depan Innova', stok: 8 },
-        { id: 3, sku: 'BUSI-NGK-IR', nama: 'Busi Iridium NGK', stok: 0 },
-        { id: 4, sku: 'FLT-UD-RZE', nama: 'Filter Udara Raize', stok: 15 },
-        { id: 5, sku: 'AK-GS-45', nama: 'Aki GS Astra 45Ah', stok: 2 }
-    ];
-
     let currentFocus = -1; // Mengingat urutan item yang sedang disorot keyboard
 
     // Event 1: Input Pencarian
@@ -36,53 +28,65 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const filteredData = spareparts.filter(item => 
-            item.nama.toLowerCase().includes(query) || item.sku.toLowerCase().includes(query)
-        );
+        // Ambil data langsung dari API backend secara real-time
+        fetch('/api/sparepart/search?q=' + encodeURIComponent(query))
+            .then(res => res.json())
+            .then(data => {
+                const filteredData = data.map(item => ({
+                    id: item.id,
+                    sku: item.sku,
+                    nama: item.name,
+                    stok: parseInt(item.stock)
+                }));
 
-        dropdown.classList.add('show'); // Tampilkan kotak dropdown
+                dropdown.classList.add('show'); // Tampilkan kotak dropdown
+                dropdown.innerHTML = ''; 
 
-        if (filteredData.length > 0) {
-            // Jika data cocok, gambar list itemnya
-            filteredData.forEach(item => {
-                const li = document.createElement('li');
-                li.className = 'dropdown-item';
-                li.dataset.item = JSON.stringify(item);
-                
-                let textColor = '#10b981'; 
-                if (item.stok === 0) textColor = '#ef4444'; 
-                else if (item.stok <= 10) textColor = '#f59e0b'; 
+                if (filteredData.length > 0) {
+                    // Jika data cocok, gambar list itemnya
+                    filteredData.forEach(item => {
+                        const li = document.createElement('li');
+                        li.className = 'dropdown-item';
+                        li.dataset.item = JSON.stringify(item);
+                        
+                        let textColor = '#10b981'; 
+                        if (item.stok === 0) textColor = '#ef4444'; 
+                        else if (item.stok <= 10) textColor = '#f59e0b'; 
 
-                li.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                        <div>
-                            <div class="item-name">${item.nama}</div>
-                            <div class="item-sku">SKU: ${item.sku}</div>
+                        li.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                <div>
+                                    <div class="item-name">${item.nama}</div>
+                                    <div class="item-sku">SKU: ${item.sku}</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <span style="font-size: 13px; font-weight: 700; color: ${textColor}">
+                                        ${item.stok} unit
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+                        dropdown.appendChild(li);
+                    });
+                } else {
+                    // IDE 1: Munculkan Empty State jika tidak ada yang cocok
+                    const li = document.createElement('li');
+                    li.className = 'dropdown-item empty-state';
+                    li.innerHTML = `
+                        <div style="text-align: center; color: var(--text-muted); padding: 12px 0;">
+                            <svg style="width:24px; height:24px; margin:0 auto 8px auto; opacity:0.5;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>Sparepart tidak ditemukan</div>
                         </div>
-                        <div style="text-align: right;">
-                            <span style="font-size: 13px; font-weight: 700; color: ${textColor}">
-                                ${item.stok} unit
-                            </span>
-                        </div>
-                    </div>
-                `;
-                dropdown.appendChild(li);
+                    `;
+                    li.style.cursor = 'default'; // Kursor biasa, bukan tangan
+                    dropdown.appendChild(li);
+                }
+            })
+            .catch(err => {
+                console.error("Error fetching spareparts:", err);
             });
-        } else {
-            // IDE 1: Munculkan Empty State jika tidak ada yang cocok
-            const li = document.createElement('li');
-            li.className = 'dropdown-item empty-state';
-            li.innerHTML = `
-                <div style="text-align: center; color: var(--text-muted); padding: 12px 0;">
-                    <svg style="width:24px; height:24px; margin:0 auto 8px auto; opacity:0.5;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div>Sparepart tidak ditemukan</div>
-                </div>
-            `;
-            li.style.cursor = 'default'; // Kursor biasa, bukan tangan
-            dropdown.appendChild(li);
-        }
     });
 
     // IDE 2: Event 2.1 - Navigasi Keyboard
