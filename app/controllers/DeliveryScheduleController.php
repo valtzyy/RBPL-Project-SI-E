@@ -44,7 +44,7 @@ class DeliveryScheduleController extends Controller
         ]);
     }
 
-    // POST /delivery — simpan jadwal baru
+    // POST /delivery
     public function store(): void
     {
         $transactionId = (int) $this->input('transaction_id');
@@ -63,7 +63,7 @@ class DeliveryScheduleController extends Controller
         $this->redirect('/delivery');
     }
 
-    // POST /delivery/:id/confirm — simpan tanda tangan
+    // POST /delivery/:id/confirm
     public function confirm(string $id): void
     {
         $schedule = $this->deliveryModel->findWithDetail((int) $id);
@@ -75,33 +75,22 @@ class DeliveryScheduleController extends Controller
         $signaturePath = '';
 
         if ($signatureData) {
-            // Ubah base64 menjadi file PNG
             $imageData = base64_decode(
                 preg_replace('#^data:image/\w+;base64,#i', '', $signatureData)
             );
-
-            // Nama file unik
             $fileName  = 'signature_' . $id . '_' . time() . '.png';
-
-            // Lokasi folder penyimpanan
             $uploadDir = ROOT_PATH . '/public/uploads/signatures/';
 
-            // Buat folder jika belum ada
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
 
-            // Simpan file PNG ke folder
             file_put_contents($uploadDir . $fileName, $imageData);
-
-            // Simpan PATH/lokasi file ke database
             $signaturePath = '/uploads/signatures/' . $fileName;
         }
 
-        // Update database dengan path tanda tangan
         $this->deliveryModel->confirmDelivery((int) $id, $signaturePath);
 
-        // Ubah status kendaraan jadi sold dan kurangi stok
         if (!empty($schedule['vehicle_id'])) {
             $this->deliveryModel->markVehicleSold((int) $schedule['vehicle_id']);
             $this->deliveryModel->reduceVehicleStock((int) $schedule['vehicle_id']);

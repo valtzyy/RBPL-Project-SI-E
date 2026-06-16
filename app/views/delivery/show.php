@@ -3,7 +3,10 @@
     <div style="border:1px solid #ccc; border-radius:8px; padding:20px; margin-bottom:20px;">
         <h2 style="margin-top:0; font-size:16px; color:#555;">Informasi Jadwal</h2>
         <table style="width:100%;">
-            <tr><td style="padding:8px; font-weight:bold; width:40%;">Nama Customer</td><td style="padding:8px;"><?= htmlspecialchars($schedule['customer_name']) ?></td></tr>
+            <tr><td style="padding:8px; font-weight:bold; width:40%;">Nama Customer</td><td style="padding:8px;"><?= htmlspecialchars($schedule['customer_name'] ?? '-') ?></td></tr>
+            <tr><td style="padding:8px; font-weight:bold;">No. KTP</td><td style="padding:8px;"><?= htmlspecialchars($schedule['customer_ktp'] ?? '-') ?></td></tr>
+            <tr><td style="padding:8px; font-weight:bold;">No. HP</td><td style="padding:8px;"><?= htmlspecialchars($schedule['customer_phone'] ?? '-') ?></td></tr>
+            <tr><td style="padding:8px; font-weight:bold;">Alamat</td><td style="padding:8px;"><?= htmlspecialchars($schedule['customer_address'] ?? '-') ?></td></tr>
             <tr><td style="padding:8px; font-weight:bold;">Kendaraan</td><td style="padding:8px;"><?= htmlspecialchars($schedule['brand'] . ' ' . $schedule['type'] . ' - ' . $schedule['color']) ?></td></tr>
             <tr><td style="padding:8px; font-weight:bold;">No. Rangka</td><td style="padding:8px;"><?= htmlspecialchars($schedule['chassis_number']) ?></td></tr>
             <tr><td style="padding:8px; font-weight:bold;">Metode Pembayaran</td><td style="padding:8px;"><?= htmlspecialchars(ucfirst($schedule['payment_type'] ?? '-')) ?></td></tr>
@@ -42,7 +45,7 @@
         <h2 style="margin-top:0; font-size:16px; color:#555;">Serah Terima Sudah Selesai</h2>
         <?php if (!empty($schedule['signature_path'])): ?>
             <p>Tanda tangan customer:</p>
-            <img src="<?= htmlspecialchars($schedule['signature_path']) ?>" style="max-width:400px; border:1px solid #ccc; border-radius:4px;">
+           <img src="<?= htmlspecialchars($schedule['signature_path']) ?>"
         <?php endif; ?>
         <p>Dikonfirmasi pada: <?= htmlspecialchars($schedule['confirmed_at'] ?? '-') ?></p>
     </div>

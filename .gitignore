@@ -3,3 +3,6 @@
 .ca.pem
 .cert.pem
 public/uploads/
+vendor/
+composer.lock
+public/uploads/

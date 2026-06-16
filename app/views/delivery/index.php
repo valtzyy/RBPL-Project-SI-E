@@ -28,7 +28,7 @@
                     <?php foreach ($schedules as $i => $s): ?>
                         <tr>
                             <td style="padding:18px 24px; border-bottom:1px solid #f1f4f8; color:#334155; font-size:14px;"><?= $i + 1 ?></td>
-                            <td style="padding:18px 24px; border-bottom:1px solid #f1f4f8; color:#1e293b; font-weight:600; font-size:14px;"><?= htmlspecialchars($s['customer_name']) ?></td>
+                            <td style="padding:18px 24px; border-bottom:1px solid #f1f4f8; color:#1e293b; font-weight:600; font-size:14px;"><?= htmlspecialchars($s['customer_name']?? '-') ?></td>
                             <td style="padding:18px 24px; border-bottom:1px solid #f1f4f8; color:#334155; font-size:14px;"><?= htmlspecialchars($s['brand'] . ' ' . $s['type'] . ' - ' . $s['color']) ?></td>
                             <td style="padding:18px 24px; border-bottom:1px solid #f1f4f8; color:#334155; font-size:14px;"><?= htmlspecialchars($s['scheduled_date']) ?></td>
                             <td style="padding:18px 24px; border-bottom:1px solid #f1f4f8;">

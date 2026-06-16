@@ -9,11 +9,13 @@ class DeliverySchedule extends Model
             SELECT ds.*, st.id as trx_id, st.status as trx_status,
                    st.transaction_code, pt.name as payment_type,
                    v.brand, v.type, v.color, v.chassis_number,
-                   c.name as customer_name
+                   c.name as customer_name, c.phone as customer_phone,
+                   bc.address as customer_address, bc.ktp_number as customer_ktp
             FROM delivery_schedules ds
             JOIN sales_transactions st ON ds.transaction_id = st.id
             LEFT JOIN vehicles v ON st.vehicle_id = v.id
-            LEFT JOIN customers c ON ds.customer_id = c.id
+            LEFT JOIN buyer_customers bc ON st.customer_id = bc.id
+            LEFT JOIN customers c ON bc.customer_id = c.id
             LEFT JOIN payment_types pt ON st.payment_type = pt.id
             ORDER BY ds.scheduled_date ASC
         ");
@@ -26,11 +28,14 @@ class DeliverySchedule extends Model
             SELECT ds.*, st.id as trx_id, st.status as trx_status,
                    st.transaction_code, pt.name as payment_type,
                    v.brand, v.type, v.color, v.chassis_number, v.id as vehicle_id,
-                   c.name as customer_name, c.id as customer_id
+                   c.name as customer_name, c.phone as customer_phone,
+                   bc.address as customer_address, bc.ktp_number as customer_ktp,
+                   bc.id as buyer_customer_id
             FROM delivery_schedules ds
             JOIN sales_transactions st ON ds.transaction_id = st.id
             LEFT JOIN vehicles v ON st.vehicle_id = v.id
-            LEFT JOIN customers c ON ds.customer_id = c.id
+            LEFT JOIN buyer_customers bc ON st.customer_id = bc.id
+            LEFT JOIN customers c ON bc.customer_id = c.id
             LEFT JOIN payment_types pt ON st.payment_type = pt.id
             WHERE ds.id = ?
         ");
@@ -84,10 +89,11 @@ class DeliverySchedule extends Model
     {
         $stmt = $this->db->query("
             SELECT st.id, st.transaction_code, pt.name as payment_type,
-                   c.name as customer_name, c.id as customer_id,
+                   c.name as customer_name, bc.id as customer_id,
                    v.brand, v.type, v.color
             FROM sales_transactions st
-            JOIN customers c ON st.customer_id = c.id
+            JOIN buyer_customers bc ON st.customer_id = bc.id
+            JOIN customers c ON bc.customer_id = c.id
             JOIN vehicles v ON st.vehicle_id = v.id
             LEFT JOIN payment_types pt ON st.payment_type = pt.id
             LEFT JOIN delivery_schedules ds ON ds.transaction_id = st.id

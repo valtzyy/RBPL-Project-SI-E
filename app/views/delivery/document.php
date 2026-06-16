@@ -11,6 +11,9 @@
     <p style="font-weight:bold; border-bottom:1px solid #ccc; padding-bottom:4px;">Data Customer</p>
     <table style="width:100%; margin-bottom:20px;">
         <tr><td style="padding:8px; font-weight:bold; width:35%;">Nama Customer</td><td style="padding:8px;">: <?= htmlspecialchars($schedule['customer_name']) ?></td></tr>
+        <tr><td style="padding:8px; font-weight:bold;">No. KTP</td><td style="padding:8px;">: <?= htmlspecialchars($schedule['customer_ktp'] ?? '-') ?></td></tr>
+        <tr><td style="padding:8px; font-weight:bold;">No. HP</td><td style="padding:8px;">: <?= htmlspecialchars($schedule['customer_phone'] ?? '-') ?></td></tr>
+        <tr><td style="padding:8px; font-weight:bold;">Alamat</td><td style="padding:8px;">: <?= htmlspecialchars($schedule['customer_address'] ?? '-') ?></td></tr>
         <tr><td style="padding:8px; font-weight:bold;">No. Transaksi</td><td style="padding:8px;">: <?= htmlspecialchars($schedule['transaction_code']) ?></td></tr>
         <tr><td style="padding:8px; font-weight:bold;">Metode Pembayaran</td><td style="padding:8px;">: <?= htmlspecialchars(ucfirst($schedule['payment_type'] ?? '-')) ?></td></tr>
     </table>
