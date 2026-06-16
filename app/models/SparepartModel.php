@@ -46,4 +46,44 @@ class SparepartModel extends Model {
         $stmt->execute(["%{$query}%", "%{$query}%"]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getInvoiceDraft(int $work_order_id): array {
+        // Ambil data work order
+        $stmtWo = $this->db->prepare("SELECT * FROM work_orders WHERE id = ?");
+        $stmtWo->execute([$work_order_id]);
+        $workOrder = $stmtWo->fetch(PDO::FETCH_ASSOC);
+
+        if (!$workOrder) {
+            return ['success' => false, 'message' => 'Work order tidak ditemukan.'];
+        }
+
+        // Ambil item sparepart yang digunakan
+        $stmtParts = $this->db->prepare("
+            SELECT su.id as usage_id, su.quantity, s.id as sparepart_id, s.name, s.sku, s.price, 
+                   (su.quantity * s.price) as subtotal
+            FROM sparepart_usages su
+            JOIN spareparts s ON su.sparepart_id = s.id
+            WHERE su.work_order_id = ?
+        ");
+        $stmtParts->execute([$work_order_id]);
+        $parts = $stmtParts->fetchAll(PDO::FETCH_ASSOC);
+
+        $totalPartsAmount = 0;
+        foreach ($parts as $part) {
+            $totalPartsAmount += $part['subtotal'];
+        }
+
+        // Contoh tarif jasa dasar (Flat rate)
+        $serviceFee = 100000.00; 
+        $totalAmount = $serviceFee + $totalPartsAmount;
+
+        return [
+            'success' => true,
+            'work_order' => $workOrder,
+            'service_fee' => $serviceFee,
+            'spareparts' => $parts,
+            'total_spareparts_amount' => $totalPartsAmount,
+            'total_amount' => $totalAmount
+        ];
+    }
 }

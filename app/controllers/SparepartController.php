@@ -96,4 +96,25 @@ class SparepartController extends Controller {
         $results = $this->sparepartModel->searchParts($query);
         echo json_encode($results);
     }
+
+    public function invoiceDraft(): void {
+        header('Content-Type: application/json');
+        $work_order_id = $this->input('work_order_id');
+
+        if (!$work_order_id) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Parameter work_order_id wajib diisi.']);
+            return;
+        }
+
+        $result = $this->sparepartModel->getInvoiceDraft((int) $work_order_id);
+        
+        if ($result['success']) {
+            http_response_code(200);
+        } else {
+            http_response_code(404);
+        }
+
+        echo json_encode($result);
+    }
 }
