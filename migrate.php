@@ -39,10 +39,37 @@ switch ($command) {
         break;
 
     case 'seed':
-        echo "Menjalankan seeder...\n\n";
+        echo "Menjalankan semua seeder...\n\n";
+
+        // 1. Payment Types (dependency untuk transaksi)
+        require_once ROOT_PATH . '/database/seeders/PaymentTypeSeeder.php';
+        (new PaymentTypeSeeder($db))->run();
+
+        // 2. Users
         require_once ROOT_PATH . '/database/seeders/UserSeeder.php';
-        $seeder = new UserSeeder($db);
-        $seeder->run();
+        (new UserSeeder($db))->run();
+
+        // 3. Sales Transactions Tunai (perlu customer, vehicle, user, payment_type)
+        require_once ROOT_PATH . '/database/seeders/SalesTransactionSeeder.php';
+        (new SalesTransactionSeeder($db))->run();
+
+        // 4. Payments dummy (perlu transaksi)
+        require_once ROOT_PATH . '/database/seeders/PaymentSeeder.php';
+        (new PaymentSeeder($db))->run();
+        break;
+
+    // Jalankan hanya seeder khusus PBI-5.8 (payment flow)
+    case 'seed:finance':
+        echo "Menjalankan seeder Finance (PBI-5.8)...\n\n";
+
+        require_once ROOT_PATH . '/database/seeders/PaymentTypeSeeder.php';
+        (new PaymentTypeSeeder($db))->run();
+
+        require_once ROOT_PATH . '/database/seeders/SalesTransactionSeeder.php';
+        (new SalesTransactionSeeder($db))->run();
+
+        require_once ROOT_PATH . '/database/seeders/PaymentSeeder.php';
+        (new PaymentSeeder($db))->run();
         break;
 
     default:

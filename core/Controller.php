@@ -18,13 +18,19 @@ class Controller
             exit("View tidak ditemukan: {$name}.php");
         }
 
-        $layoutPath = ROOT_PATH . '/app/views/layouts/main.php';
+        $layoutPath = ROOT_PATH . '/app/views/layout/main.php';
 
         if (file_exists($layoutPath)) {
             ob_start();
             require $viewPath;
             $content = ob_get_clean();
-            require $layoutPath;
+            
+            // Bypass layout if view is already a full HTML document
+            if (stripos(trim($content), '<!DOCTYPE') === 0 || stripos(trim($content), '<html') === 0) {
+                echo $content;
+            } else {
+                require $layoutPath;
+            }
             return;
         }
 

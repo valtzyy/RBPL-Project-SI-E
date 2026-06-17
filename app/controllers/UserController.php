@@ -56,13 +56,4 @@ class UserController extends Controller {
         $this->userModel->delete($id);
         $this->redirect('/users');
     }
-
-    /**Hitung rincian tagihan*/
-    public function showRincianTagihan(string $id): void {
-    $tagihan = $this->tagihanModel->find($id);
-    if (!$tagihan) {
-        die("Tagihan tidak ditemukan.");
-    }
-    $this->view('tagihan', ['title' => 'Rincian Tagihan', 'tagihan' => $tagihan]);
-}
 }
