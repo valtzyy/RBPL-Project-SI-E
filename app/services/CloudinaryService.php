@@ -13,7 +13,7 @@ class CloudinaryService
     private $uploadApi;
     private $config;
 
-   public function __construct()
+    public function __construct()
     {
         // Path absolut yang paling aman untuk Windows & Linux
         $cfgPath = dirname(__DIR__, 2) . '/config/cloudinary.php';
@@ -39,14 +39,16 @@ class CloudinaryService
             'url' => ['secure' => true],
         ]);
 
-        // Guzzle dengan SSL off khusus Cloudinary (Penyelamat cURL Error 60 Windows)
-        $brutalHttpClient = new GuzzleClient(['verify' => false]);
+        // Guzzle dengan SSL on khusus Cloudinary (Penyelamat cURL Error 60 Windows)
+        $brutalHttpClient = new GuzzleClient([
+            'verify' => dirname(__DIR__, 2) . '/config/certs/cacert.pem'
+        ]);
 
         // Paksa UploadApi pakai config + guzzle kustom
         $this->uploadApi = new UploadApi($this->config, $brutalHttpClient);
     }
     /**
-     * 1. Fungsi untuk Upload Gambar secara PRIVATE
+     * Upload img ke cloudinary dengan delivery type 'private' (File asli tetap rahasia, tapi bisa dibuat link sementara yang aman)
      */
     public function uploadPrivateImage($fileTmpPath, $folderName)
     {
@@ -56,7 +58,6 @@ class CloudinaryService
                 'type'   => 'private',
                 'overwrite' => true,
             ]);
-
             return $response['public_id'];
         } catch (Exception $e) {
             throw new Exception("Cloudinary Error: " . $e->getMessage());
@@ -64,19 +65,15 @@ class CloudinaryService
     }
 
     /**
-     * 2. Fungsi untuk membuat link sementara yang bisa dibuka
+     *  Dapatkan gambar dari public Id yg tersimpan di file_path
      */
     public function getPrivateImageUrl($publicId, $expiration = 600)
     {
         try {
             $cld = new Cloudinary($this->config);
-            $waktuHangus = time() + $expiration;
-
             $url = $cld->image($publicId)
                 ->deliveryType('private')
                 ->signUrl(true, ['expires_at' => time() + $expiration])
-                ->signUrl(true)           
-                ->addTransformation("expires_at=$waktuHangus") 
                 ->toUrl();
 
             return $url;
