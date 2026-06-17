@@ -18,7 +18,7 @@ class Controller
             exit("View tidak ditemukan: {$name}.php");
         }
 
-        $layoutPath = ROOT_PATH . '/app/views/layouts/main.php';
+        $layoutPath = ROOT_PATH . '/app/views/layout/main.php';
 
         if (file_exists($layoutPath)) {
             ob_start();
@@ -45,5 +45,22 @@ class Controller
     protected function input(string $key, mixed $default = null): mixed
     {
         return $_POST[$key] ?? $_GET[$key] ?? $default;
+    }
+
+    protected function json(array $payload, int $status = 200): void
+    {
+        http_response_code($status);
+        header('Content-Type: application/json; charset=UTF-8');
+        echo json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+
+    protected function download(string $content, string $filename, string $contentType): void
+    {
+        header('Content-Description: File Transfer');
+        header('Content-Type: ' . $contentType);
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Content-Length: ' . strlen($content));
+        header('Cache-Control: no-store, no-cache, must-revalidate');
+        echo $content;
     }
 }
