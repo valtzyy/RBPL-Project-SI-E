@@ -1,0 +1,331 @@
+/* =========================================================
+   DEALERLINK DMS - MAIN STYLESHEET
+   Berdasarkan UI/UX Figma Design System
+   ========================================================= */
+
+:root {
+    /* --- Palette Resmi DealerLink Figma --- */
+    
+    /* Background & Surface */
+    --bg-body: #EFF4FF;      /* Latar belakang utama aplikasi */
+    --bg-surface: #FFFFFF;   /* Latar belakang card/form putih */
+    --bg-active: #D3E4FE;    /* Sorotan menu aktif / hover dropdown */
+
+    /* Typography & Teks */
+    --text-main: #0B1C30;    /* Teks Heading gelap / Nama Item */
+    --text-body: #45464D;    /* Teks paragraf / label biasa */
+    --text-muted: #76777D;   /* Teks placeholder / info sekunder */
+    
+    /* Borders */
+    --border-light: #C6C6CD; /* Garis tepi form dan tabel yang lembut */
+
+    /* Aksen & Brand Colors */
+    --primary-dark: #131B2E; /* Tombol utama gelap / Card Summary gelap */
+    --primary-hover: #000000;/* Hover state tombol */
+    --accent-green: #6CF8BB; /* Tombol simpan hijau terang & Badge sukses */
+    --accent-green-text: #006C49; /* Teks di atas warna hijau terang */
+
+    /* Status Badges */
+    --success: #6CF8BB;
+    --success-text: #006C49;
+    --warning: #F59E0B;      
+    --danger: #EF4444;        
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-body);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 20px;
+}
+
+/* --- Layout & Card Containers --- */
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.form-container, .stock-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(11, 28, 48, 0.04);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.form-header {
+    margin-bottom: 24px;
+}
+
+.form-header h2 {
+    color: var(--text-main);
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.form-header p {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* --- Form Elements & Floating Labels --- */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.form-group {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    font-size: 15px;
+    color: var(--text-main);
+    background-color: transparent;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.form-input:focus {
+    border-color: var(--primary-dark);
+    box-shadow: 0 0 0 3px var(--bg-active);
+}
+
+.form-label {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 15px;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    background-color: var(--bg-surface);
+    padding: 0 4px;
+}
+
+/* Floating label logic */
+.form-input:focus ~ .form-label,
+.form-input:not(:placeholder-shown) ~ .form-label {
+    top: 0;
+    font-size: 12px;
+    color: var(--primary-dark);
+    font-weight: 600;
+}
+
+/* Input with Prefix (Rp) */
+.input-with-prefix {
+    padding-left: 45px;
+}
+.prefix {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-weight: 500;
+}
+.input-with-prefix:focus ~ .prefix,
+.input-with-prefix:not(:placeholder-shown) ~ .prefix {
+    color: var(--text-main);
+}
+
+/* Error States */
+.error-message {
+    color: var(--danger);
+    font-size: 12px;
+    margin-top: 6px;
+    display: none;
+}
+.has-error .form-input {
+    border-color: var(--danger);
+}
+.has-error .error-message {
+    display: block;
+}
+
+/* --- Buttons --- */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-submit {
+    background-color: var(--primary-dark);
+    color: var(--bg-surface);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-submit:hover:not(:disabled) {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.btn-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* --- Autocomplete Dropdown --- */
+.autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(11, 28, 48, 0.1);
+    margin-top: 8px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    list-style-type: none; 
+    padding-left: 0; 
+    margin-bottom: 0;
+}
+
+.autocomplete-list.show {
+    display: block;
+}
+
+.dropdown-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.2s ease;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover, .dropdown-item.keyboard-active {
+    background-color: var(--bg-body);
+    border-left: 3px solid var(--primary-dark);
+}
+
+.item-name {
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.item-sku {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* --- Stock Indicator --- */
+.stock-card {
+    display: none; /* Sembunyi secara default */
+}
+.stock-card.show {
+    display: flex;
+}
+
+.badge {
+    padding: 6px 12px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-success { 
+    background-color: var(--success); 
+    color: var(--success-text); 
+}
+.badge-warning { 
+    background-color: var(--warning); 
+    color: white; 
+}
+.badge-danger { 
+    background-color: var(--danger); 
+    color: white; 
+}
+
+/* --- Toast Notification (Loading & Ceklis) --- */
+.toast-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(11, 28, 48, 0.4);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 9999;
+}
+
+.toast-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.toast-box {
+    background: var(--bg-surface);
+    padding: 24px 32px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(11, 28, 48, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.toast-overlay.active .toast-box {
+    transform: translateY(0);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--bg-active);
+    border-top-color: var(--primary-dark);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.checkmark {
+    width: 40px;
+    height: 40px;
+    background-color: var(--success);
+    color: var(--success-text);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
