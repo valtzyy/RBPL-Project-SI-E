@@ -49,7 +49,7 @@ class DocumentController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            // 1. Ambil data teks Base64 yang sudah terbukti masuk tadi
+            
             $base64Data = $_POST['file_base64'] ?? null;
 
             if (empty($base64Data)) {
@@ -64,19 +64,20 @@ class DocumentController
                 if (!$publicId) {
                     throw new Exception("Gagal mendapatkan Public ID dari Cloudinary.");
                 }
-
+                echo "<h3>Upload Berhasil!</h3>";
+                // var_dump($publicId); // Debug: Tampilkan Public ID yang diterima dari Cloudinary
                 // 3. SIMPAN PUBLIC ID KE DATABASE AIVEN CLOUD
                 // Ambil koneksi PDO Aiven lu (silakan sesuaikan method panggilannya, misal $this->db)
                 $db = $this->getAivenConnection();
 
                 // Contoh query: sesuaikan 'documents', 'cloudinary_id', dll dengan struktur tabel lu
-                $query = "INSERT INTO documents (cloudinary_id, nama_file, created_at) VALUES (:cloudinary_id, :nama_file, NOW())";
-                $stmt = $db->prepare($query);
+                // $query = "INSERT INTO documents (cloudinary_id, nama_file, created_at) VALUES (:cloudinary_id, :nama_file, NOW())";
+                // $stmt = $db->prepare($query);
 
-                $stmt->execute([
-                    ':cloudinary_id' => $publicId, // String pendek dari Cloudinary, misal: 'arsip_rahasia/p9x8q7...'
-                    ':nama_file'     => 'Dokumen Rahasia ' . time()
-                ]);
+                // $stmt->execute([
+                //     ':cloudinary_id' => $publicId, // String pendek dari Cloudinary, misal: 'arsip_rahasia/p9x8q7...'
+                //     ':nama_file'     => 'Dokumen Rahasia ' . time()
+                // ]);
 
                 // 4. REDIRECT KE HALAMAN VIEW
                 header("Location: /document/view?id=" . urlencode($publicId));
@@ -113,7 +114,7 @@ class DocumentController
     {
         // Kita ambil langsung menggunakan $_GET['id'] bawaan PHP
         $id = isset($_GET['id']) ? $_GET['id'] : '';
-
+    
         if (empty($id)) {
             die("ID Dokumen tidak ditemukan!");
         }
