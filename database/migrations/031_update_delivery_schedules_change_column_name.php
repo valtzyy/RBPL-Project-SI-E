@@ -16,7 +16,7 @@ return new class {
         $db->exec("
             ALTER TABLE delivery_schedules
             DROP COLUMN signature_path,
-            ADD COLUMN signature_base64 LONGTEXT NULL
+            ADD COLUMN signature_base64 LONGTEXT NULL AFTER status
         ");
     }
 };

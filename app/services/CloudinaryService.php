@@ -75,6 +75,8 @@ class CloudinaryService
             $url = $cld->image($publicId)
                 ->deliveryType('private')
                 ->signUrl(true, ['expires_at' => time() + $expiration])
+                ->signUrl(true)           
+                ->addTransformation("expires_at=$waktuHangus") 
                 ->toUrl();
 
             return $url;
