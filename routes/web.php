@@ -65,9 +65,9 @@ $router->post('/sales-transactions/:id/status', 'SalesTransactionController@upda
 
 // Transactions - Sprint 4
 $router->get('/transactions',           'SalesTransactionController@index');
-$router->post('/transactions',          'SalesTransactionController@store');
 $router->get('/transactions/create',    'SalesTransactionController@create');
 $router->get('/transactions/:id',       'SalesTransactionController@show');
+$router->post('/transactions',          'SalesTransactionController@store');
 
 // Sprint 5 - Pembayaran Tunai (Admin & Finance)
 $router->get('/admin/transactions',             'AdminTransactionController@index');
@@ -84,4 +84,44 @@ $router->get('/vehicles/available',     'VehicleController@available');
 
 // Customers - Sprint 4
 $router->get('/customers',              'CustomerController@index');
+$router->get('/customers/create',       'CustomerController@create');
+$router->post('/customers',             'CustomerController@store');
 $router->get('/customers/:id',          'CustomerController@show');
+
+// Booking Servis - Sprint 10
+$router->get('/booking',             'BookingController@index');
+$router->get('/booking/check-slot',  'BookingController@checkSlot');
+$router->post('/booking/create-customer', 'BookingController@createCustomer');
+$router->post('/booking/store',      'BookingController@store');
+$router->get('/booking/queue',       'BookingController@queue');
+$router->post('/booking/confirm',    'BookingController@confirm');
+$router->post('/booking/reject',     'BookingController@reject');
+$router->get('/booking/inspect/:id', 'BookingController@inspectForm');
+$router->post('/booking/inspect/:id/convert', 'BookingController@convertToWorkOrder');
+
+// ============================================================
+// SPRINT 11 - Eksekusi & Work Order Servis
+
+
+// 1. Menampilkan Halaman Panel Kerja Mekanik (UI Ter-assign)
+$router->get('/mechanic/panel', 'WorkOrderController@index');
+
+// 2. API/Action untuk Mengubah Progres Item / Status Kerja Mekanik
+$router->post('/mechanic/work-order/update-status', 'WorkOrderController@updateStatus');
+
+// 3. Menampilkan Halaman Tambah Log & History Log
+$router->get('/mechanic/work-order/log', 'WorkOrderController@addLogForm');
+
+// 4. API/Action untuk Menyimpan Log Baru
+$router->post('/mechanic/work-order/log/store', 'WorkOrderController@storeLog');
+// ============================================================
+
+// sprint-12 pembayaran services
+$router->get('/service-billing',      'ServiceBillingController@index');
+$router->get('/service-billing/:plateNumber', 'ServiceBillingController@findByPlateNumber');
+$router->get('/service-billing/detail/:plateNumber',  'ServiceBillingController@detail');
+$router->get('/service-billing/detail/history/:plateNumber',  'ServiceBillingController@detailLog');
+
+$router->get('/kasir/dashboard', 'KasirController@dashboard');
+$router->get('/kasir/nota',      'KasirController@nota');
+$router->get('/kasir/riwayat',   'KasirController@riwayat');

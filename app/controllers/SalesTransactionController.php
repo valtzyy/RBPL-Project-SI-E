@@ -3,6 +3,7 @@ require_once ROOT_PATH . '/app/models/SalesTransaction.php';
 require_once ROOT_PATH . '/app/models/Customer.php';
 require_once ROOT_PATH . '/app/models/Vehicle.php';
 require_once ROOT_PATH . '/app/services/SalesTransactionService.php';
+require_once ROOT_PATH . '/app/models/BuyerCustomer.php';
 
 class SalesTransactionController extends Controller
 {
@@ -27,12 +28,22 @@ class SalesTransactionController extends Controller
     // POST /transactions — simpan transaksi baru
     public function store(): void
     {
-        $customerId  = $this->input('customer_id');
+        $customerId  = (int) $this->input('customer_id');
+        $ktpNumber   = $this->input('ktp_number');
+        $address     = $this->input('address');
         $vehicleId   = $this->input('vehicle_id');
         $paymentType = (int) $this->input('payment_type');
         $salesUserId = $_SESSION['user_id'] ?? 2;
 
         try {
+            // Simpan ke tabel buyer_customers
+            (new BuyerCustomer())->create([
+                'customer_id' => $customerId,
+                'ktp_number'  => $ktpNumber,
+                'address'     => $address,
+            ]);
+
+            // Simpan transaksi
             $transaction = new SalesTransaction();
             $transaction->create([
                 'transaction_code' => $transaction->generateCode(),
@@ -43,9 +54,9 @@ class SalesTransactionController extends Controller
                 'status'           => 'process',
             ]);
 
+            // Set kendaraan jadi held
             (new Vehicle())->setHeld((int) $vehicleId);
 
-            // Routing berdasarkan metode pembayaran (PBI-4.4.4)
             if ($paymentType === 1) {
                 $this->redirect('/credit-applications/create?vehicle_id=' . $vehicleId);
             } else {
