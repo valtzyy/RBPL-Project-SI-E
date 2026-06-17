@@ -1,4 +1,4 @@
 .env*
 .env
-.ca.pem
+ca.pem
 .cert.pem
