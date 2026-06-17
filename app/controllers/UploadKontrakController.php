@@ -23,10 +23,17 @@ class UploadKontrakController extends Controller
             }
 
             $id_kredit = isset($_POST['id_kredit']) ? (int)$_POST['id_kredit'] : 0;
+            $file_type = isset($_POST['file_type']) ? trim($_POST['file_type']) : 'SlipGaji';
 
             if ($id_kredit <= 0) {
                 http_response_code(400);
                 throw new Exception("Parameter 'id_kredit' wajib diisi.");
+            }
+
+            $allowedFileTypes = ['KTP', 'KK', 'SlipGaji'];
+            if (!in_array($file_type, $allowedFileTypes)) {
+                http_response_code(400);
+                throw new Exception("Parameter 'file_type' tidak valid. Gunakan: KTP, KK, atau SlipGaji.");
             }
 
             // Instantiate models
@@ -126,7 +133,7 @@ class UploadKontrakController extends Controller
             try {
                 $creditDocModel->create([
                     'credit_application_id' => $id_kredit,
-                    'file_type' => 'PK', // Menggunakan 'PK' asli agar sesuai dengan ENUM database
+                    'file_type' => $file_type,
                     'file_path' => $dbPath
                 ]);
             } catch (Exception $dbEx) {
@@ -138,12 +145,12 @@ class UploadKontrakController extends Controller
             }
 
             $response["status"] = "success";
-            $response["message"] = "Dokumen Perjanjian Kontrak (PK) digital berhasil diunggah dan disimpan.";
+            $response["message"] = "Dokumen (" . $file_type . ") berhasil diunggah dan disimpan.";
             $response["data"] = [
                 "id_kredit" => $id_kredit,
                 "file_name" => $newFilename,
                 "file_path" => $dbPath,
-                "file_type" => "PK",
+                "file_type" => $file_type,
                 "file_size_bytes" => $file['size']
             ];
 

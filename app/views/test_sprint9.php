@@ -125,19 +125,28 @@
         </div>
     </div>
 
-    <!-- FORM 3: UPLOAD KONTRAK -->
+    <!-- FORM 3: UPLOAD DOKUMEN -->
     <div class="form-section">
-        <h2>📄 Unggah Dokumen Perjanjian Kontrak (PK)</h2>
-        <p>Mengunggah file kontrak digital bertipe PK (PDF, JPG, JPEG, atau PNG) berukuran maksimal 2MB.</p>
+        <h2>📄 Unggah Dokumen Kredit</h2>
+        <p>Mengunggah dokumen pendukung kredit (PDF, JPG, JPEG, atau PNG) berukuran maksimal 2MB.</p>
 
         <form id="formUpload" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="u_id_kredit">ID Kredit (credit_applications.id)</label>
                 <input type="number" id="u_id_kredit" name="id_kredit" value="1" required min="1">
             </div>
+
+            <div class="form-group">
+                <label for="file_type">Simpan Sebagai Tipe Dokumen</label>
+                <select id="file_type" name="file_type" required>
+                    <option value="SlipGaji">SlipGaji (Slip Gaji)</option>
+                    <option value="KTP">KTP (Kartu Tanda Penduduk)</option>
+                    <option value="KK">KK (Kartu Keluarga)</option>
+                </select>
+            </div>
             
             <div class="form-group">
-                <label for="file_kontrak">File Kontrak (PDF/Image max 2MB)</label>
+                <label for="file_kontrak">File Dokumen (PDF/Image max 2MB)</label>
                 <input type="file" id="file_kontrak" name="file_kontrak" accept=".pdf,.jpg,.jpeg,.png" required>
             </div>
             

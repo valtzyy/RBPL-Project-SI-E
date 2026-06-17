@@ -2,14 +2,9 @@
 -- SKEMA DATABASE SPRINT 9 (KREDIT & LEASING - APPROVAL & UANG MUKA)
 -- ====================================================================
 -- Penulis: Antigravity (Senior Backend Developer Expert)
--- Deskripsi: File SQL ini berisi query penyesuaian skema database untuk
---            tabel bahasa Inggris bawaan DBeaver Anda.
+-- Deskripsi: Dokumen ini menjelaskan skema database asli dan hubungannya
+--            untuk modul kredit & leasing Sprint 9.
 -- ====================================================================
-
--- 1. Menambahkan tipe file 'PK' (Perjanjian Kontrak) pada ENUM kolom file_type
---    di tabel `credit_documents` agar berkas kontrak digital bisa disimpan.
-ALTER TABLE `credit_documents` 
-MODIFY COLUMN `file_type` ENUM('KTP', 'KK', 'SlipGaji', 'PK') NOT NULL;
 
 -- Catatan Penting untuk Farel:
 -- - Tabel transaksi utama adalah `sales_transactions` dengan primary key `id`.
