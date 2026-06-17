@@ -45,7 +45,7 @@ class SalesTransactionController extends Controller
 
             // Simpan transaksi
             $transaction = new SalesTransaction();
-            $transaction->create([
+            $transactionId = $transaction->create([
                 'transaction_code' => $transaction->generateCode(),
                 'customer_id'      => $customerId,
                 'vehicle_id'       => $vehicleId,
@@ -57,10 +57,24 @@ class SalesTransactionController extends Controller
             // Set kendaraan jadi held
             (new Vehicle())->setHeld((int) $vehicleId);
 
-            if ($paymentType === 1) {
-                $this->redirect('/credit-applications/create?vehicle_id=' . $vehicleId);
+            // Jika bukan kredit (paymentType != 1), maka otomatis buat tagihan payment
+            if ($paymentType !== 1) {
+                require_once ROOT_PATH . '/app/models/Payment.php';
+                $vehicle = (new Vehicle())->find((int) $vehicleId);
+                $vehiclePrice = $vehicle['price'] ?? 0;
+
+                (new Payment())->create([
+                    'transaction_id' => $transactionId,
+                    'amount'         => $vehiclePrice,
+                    'payment_date'   => date('Y-m-d'),
+                    'status'         => 'pending'
+                ]);
+
+                // Redirect ke daftar transaksi admin/kasir/sales
+                $this->redirect('/transactions?success=1');
             } else {
-                $this->redirect('/payments/create?vehicle_id=' . $vehicleId);
+                // Jika kredit
+                $this->redirect('/credit-applications/create?vehicle_id=' . $vehicleId);
             }
 
         } catch (Exception $e) {
