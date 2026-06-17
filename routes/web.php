@@ -12,3 +12,12 @@ $router->post('/document',      'DocumentController@simpanDokumen');
 
 // 3. Ini rute untuk MELIHAT HASIL (Menggunakan query parameter ?id=)
 $router->get('/document/view',  'DocumentController@bukaDokumen');
+
+// ============================================================
+// RUTE SPRINT 9 (Kredit & Leasing - Approval & Uang Muka)
+// ============================================================
+$router->post('/webhook-approval', 'WebhookApprovalController@process');
+$router->post('/verifikasi-dp',    'VerifikasiDpController@process');
+$router->post('/upload-kontrak',   'UploadKontrakController@process');
+$router->post('/reset-sprint9',    'ResetSprint9Controller@process');
+$router->get('/test-sprint9',      'TestSprint9Controller@index');
