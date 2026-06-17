@@ -22,4 +22,10 @@ $router->get('/mechanic/panel', 'WorkOrderController@index');
 
 // 2. API/Action untuk Mengubah Progres Item / Status Kerja Mekanik
 $router->post('/mechanic/work-order/update-status', 'WorkOrderController@updateStatus');
+
+// 3. Menampilkan Halaman Tambah Log & History Log
+$router->get('/mechanic/work-order/log', 'WorkOrderController@addLogForm');
+
+// 4. API/Action untuk Menyimpan Log Baru
+$router->post('/mechanic/work-order/log/store', 'WorkOrderController@storeLog');
 // ============================================================
