@@ -1,5 +1,18 @@
 <?php
 // app/models/ServiceBilling.php
+//
+// CATATAN PERBAIKAN (Juni 2026):
+// Versi sebelumnya mengasumsikan tabel `service_customers` dengan kolom
+// `plate_number` sebagai jalur ERD. Hasil DESCRIBE terhadap database aktual
+// mengonfirmasi tabel itu TIDAK ADA. Struktur sebenarnya:
+//
+//   service_bookings.service_customer_id  →  customers.id   (langsung, tanpa tabel perantara)
+//   service_bookings.vehicle_id           →  vehicles.id    (kolom ini memang ada)
+//   service_bookings.vehicle_name / vehicle_color           (fallback bila vehicle_id NULL)
+//
+// Identifier yang dipakai untuk lookup detail dikembalikan ke work_order_id,
+// karena tidak ada plate_number di database dan JS pemanggil (service-billing/index.php)
+// memang mengirim work_order_id, bukan nomor plat.
 
 require_once ROOT_PATH . '/core/Model.php';
 
@@ -8,70 +21,77 @@ class ServiceBilling extends Model
     protected string $table = 'work_orders';
 
     /**
-     * Semua daftar tagihan all ready to use untuk halaman index.
+     * Semua daftar tagihan siap pakai untuk halaman index.
      */
     public function allWithBillingDetail(): array
     {
-
         $stmt = $this->db->query("
-           SELECT 
+            SELECT
                 wo.id                 AS work_order_id,
                 wo.status             AS wo_status,
                 wo.description        AS wo_description,
                 wo.created_at         AS wo_created_at,
 
                 sb.booking_date,
-                sb.vehicle_name       AS vehicle_name,
-                sc.plate_number       AS number_plate,
+                sb.vehicle_name,
+                sb.vehicle_color,
+
+                v.brand,
+                v.type                AS vehicle_type,
+                v.color,
+                v.chassis_number,
 
                 c.name                AS customer_name,
-                c.phone               AS customer_phone
+                c.phone               AS customer_phone,
+
+                COALESCE(SUM(sp.price * su.quantity), 0) AS total_komponen,
+                (SELECT COUNT(*) FROM work_order_logs wol WHERE wol.work_order_id = wo.id) AS jumlah_log
 
             FROM work_orders wo
-            JOIN service_bookings sb        ON wo.booking_id = sb.id
-            JOIN service_customers sc       ON sb.service_customer_id = sc.id  -- Jalur ERD yang benar
-            JOIN customers c                ON sc.customer_id = c.id           -- Jalur ERD yang benar
-            WHERE wo.status = 'done' 
+            JOIN service_bookings sb       ON wo.booking_id          = sb.id
+            JOIN customers c                ON sb.service_customer_id = c.id
+            LEFT JOIN vehicles v            ON sb.vehicle_id          = v.id
+            LEFT JOIN sparepart_usages su   ON su.work_order_id       = wo.id
+            LEFT JOIN spareparts sp         ON su.sparepart_id        = sp.id
+
+            WHERE wo.status IN ('ready', 'done')
+
+            GROUP BY
+                wo.id, wo.status, wo.description, wo.created_at,
+                sb.booking_date, sb.vehicle_name, sb.vehicle_color,
+                v.brand, v.type, v.color, v.chassis_number,
+                c.name, c.phone
+
             ORDER BY wo.created_at DESC
         ");
 
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $grouped = [];
+        foreach ($rows as &$row) {
+            $row['biaya_jasa']  = $this->hitungBiayaJasaDariLog((int) $row['jumlah_log']);
+            $row['grand_total'] = (float) $row['total_komponen'] + $row['biaya_jasa'];
 
-        foreach ($rows as $row) {
-            $woId = $row['work_order_id'];
-
-            // Jika rumah utama Work Order belum dibuat di array, buat sekali saja
-            if (!isset($grouped[$woId])) {
-                $grouped[$woId] = [
-                    'work_order_id'   => $row['work_order_id'],
-                    'wo_status'       => $row['wo_status'],
-                    'wo_description'  => $row['wo_description'],
-                    'wo_created_at'   => $row['wo_created_at'],
-                    'booking_date'    => $row['booking_date'],
-                    'vehicle_name'    => $row['vehicle_name'],
-                    'plate_number'    => $row['number_plate'],
-                    'customer_name'   => $row['customer_name'],
-                    'customer_phone'  => $row['customer_phone'],
-                ];
+            // Fallback nama kendaraan: utamakan data master vehicles,
+            // baru pakai vehicle_name/vehicle_color dari service_bookings jika vehicle_id NULL
+            if (!$row['brand'] && !$row['vehicle_type']) {
+                $row['brand']        = $row['vehicle_name'] ?? '-';
+                $row['vehicle_type'] = '';
+                $row['color']        = $row['vehicle_color'] ?? null;
             }
         }
-        return array_values($grouped);
+        unset($row);
+
+        return $rows;
     }
 
     /**
-     * Semua tagihan bengkel yang siap atau sudah selesai dibayar.
-     * Kalkulasi: total_komponen = SUM(harga_satuan × qty sparepart)
-     *            biaya_jasa     = Rp 150.000 flat + Rp 25.000 per log mekanik
-     *            grand_total    = total_komponen + biaya_jasa
+     * Detail satu tagihan berdasarkan work_order_id, lengkap dengan rincian sparepart.
+     * Dipanggil oleh ServiceBillingController::detail() yang menerima ID dari fetch() di JS.
      */
-    public function findBillingDetail(string $plateNumber): array|false
+    public function findBillingDetail(int $workOrderId): array|false
     {
-        var_dump($plateNumber);
-        try {
-            $sql = "
-           SELECT 
+        $sql = "
+            SELECT
                 wo.id                 AS work_order_id,
                 wo.status             AS wo_status,
                 wo.description        AS wo_description,
@@ -79,90 +99,91 @@ class ServiceBilling extends Model
 
                 sb.id                 AS booking_id,
                 sb.booking_date,
-                sb.vehicle_name       AS vehicle_name,
+                sb.vehicle_name,
+                sb.vehicle_color,
 
-                sc.plate_number       AS number_plate,
+                v.brand,
+                v.type                AS vehicle_type,
+                v.color,
+                v.chassis_number,
 
                 c.name                AS customer_name,
                 c.phone               AS customer_phone,
 
-                -- Menarik data sparepart per item pemakaian
+                u.name                AS mechanic_name,
+
                 su.sparepart_id       AS sparepart_id,
                 sp.name               AS nama_sparepart,
+                sp.sku                AS sku,
                 su.quantity           AS quantity,
                 sp.price              AS harga_satuan,
-                (sp.price * su.quantity) AS total_komponen_item,
-                
-                -- SUBQUERY: Menghitung total log mekanik per Work Order untuk biaya jasa
+                (sp.price * su.quantity) AS subtotal_item,
+
                 (SELECT COUNT(*) FROM work_order_logs wol WHERE wol.work_order_id = wo.id) AS jumlah_log
 
             FROM work_orders wo
-            JOIN service_bookings sb        ON wo.booking_id = sb.id
-            JOIN service_customers sc       ON sb.service_customer_id = sc.id  -- Jalur ERD yang benar
-            JOIN customers c                ON sc.customer_id = c.id           -- Jalur ERD yang benar
-            LEFT JOIN sparepart_usages su   ON su.work_order_id = wo.id        -- Menghubungkan ke banyak su
-            LEFT JOIN spareparts sp         ON su.sparepart_id = sp.id         -- Menarik nama dari spareparts
-            WHERE wo.status = 'done' AND sc.plate_number = :plateNumber
+            JOIN service_bookings sb       ON wo.booking_id          = sb.id
+            JOIN customers c                ON sb.service_customer_id = c.id
+            LEFT JOIN vehicles v            ON sb.vehicle_id          = v.id
+            LEFT JOIN users u               ON wo.assigned_mechanic   = u.id
+            LEFT JOIN sparepart_usages su   ON su.work_order_id       = wo.id
+            LEFT JOIN spareparts sp         ON su.sparepart_id        = sp.id
+            WHERE wo.id = :workOrderId
         ";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindValue(':plateNumber', $plateNumber, PDO::PARAM_STR);
-            $stmt->execute();
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // 2. PROSES GROUPING: Mengelompokkan banyak 'su' ke dalam masing-masing Work Order
-            $grouped = [];
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':workOrderId', $workOrderId, PDO::PARAM_INT);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            foreach ($rows as $row) {
-                $woId = $row['work_order_id'];
-
-                // Jika rumah utama Work Order belum dibuat di array, buat sekali saja
-                if (!isset($grouped[$woId])) {
-                    $grouped[$woId] = [
-                        'work_order_id'   => $row['work_order_id'],
-                        'wo_status'       => $row['wo_status'],
-                        'wo_description'  => $row['wo_description'],
-                        'wo_created_at'   => $row['wo_created_at'],
-                        'booking_id'      => $row['booking_id'],
-                        'booking_date'    => $row['booking_date'],
-                        'vehicle_name'    => $row['vehicle_name'],
-                        'customer_name'   => $row['customer_name'],
-                        'customer_phone'  => $row['customer_phone'],
-                        'number_plate'     => $row['number_plate'],
-                        'jumlah_log'      => $row['jumlah_log'],
-                        'biaya_jasa'      => $this->hitungBiayaJasaDariLog((int) $row['jumlah_log']),
-                        'total_komponen'  => 0, // Akan diakumulasikan dari semua su di bawah
-                        'grand_total'     => 0,
-                        'spareparts'      => []  // Wadah kosong untuk menampung banyak sparepart
-                    ];
-                }
-
-                // Jika baris database saat ini mengandung sparepart, masukkan ke sub-array 'spareparts'
-                if ($row['sparepart_id'] !== null) {
-                    $grouped[$woId]['spareparts'][] = [
-                        'sparepart_id'   => $row['sparepart_id'],
-                        'nama_sparepart' => $row['nama_sparepart'],
-                        'quantity'       => (int) $row['quantity'],
-                        'harga_satuan'   => (float) $row['harga_satuan'],
-                        'subtotal'       => (float) $row['total_komponen_item']
-                    ];
-
-                    // Tambahkan subtotal komponen ini ke total akumulasi komponen Work Order terkait
-                    $grouped[$woId]['total_komponen'] += (float) $row['total_komponen_item'];
-                }
-            }
-
-            // 3. FINALISASI: Hitung grand_total untuk setiap Work Order setelah semua sparepart terkumpul
-            foreach ($grouped as &$wo) {
-                $wo['grand_total'] = $wo['total_komponen'] + $wo['biaya_jasa'];
-            }
-            unset($wo);
-
-            // Mengembalikan data berupa array index angka (0, 1, 2, dst) yang siap digunakan di View
-            return array_values($grouped);
-        } catch (PDOException $e) {
-            error_log("DB Error: " . $e->getMessage());
-            return [];
+        if (empty($rows)) {
+            return false;
         }
+
+        $first = $rows[0];
+
+        $brand       = $first['brand'] ?: ($first['vehicle_name'] ?? '-');
+        $vehicleType = $first['brand'] ? $first['vehicle_type'] : '';
+        $color       = $first['color'] ?? $first['vehicle_color'] ?? null;
+
+        $detail = [
+            'work_order_id'   => $first['work_order_id'],
+            'wo_status'       => $first['wo_status'],
+            'wo_description'  => $first['wo_description'],
+            'wo_created_at'   => $first['wo_created_at'],
+            'booking_id'      => $first['booking_id'],
+            'booking_date'    => $first['booking_date'],
+            'brand'           => $brand,
+            'vehicle_type'    => $vehicleType,
+            'color'           => $color,
+            'chassis_number'  => $first['chassis_number'],
+            'customer_name'   => $first['customer_name'],
+            'customer_phone'  => $first['customer_phone'],
+            'mechanic_name'   => $first['mechanic_name'],
+            'jumlah_log'      => (int) $first['jumlah_log'],
+            'biaya_jasa'      => $this->hitungBiayaJasaDariLog((int) $first['jumlah_log']),
+            'total_komponen'  => 0,
+            'grand_total'     => 0,
+            'spareparts'      => [],
+        ];
+
+        foreach ($rows as $row) {
+            if ($row['sparepart_id'] !== null) {
+                $detail['spareparts'][] = [
+                    'sparepart_id'   => $row['sparepart_id'],
+                    'nama_sparepart' => $row['nama_sparepart'],
+                    'sku'            => $row['sku'],
+                    'quantity'       => (int) $row['quantity'],
+                    'harga_satuan'   => (float) $row['harga_satuan'],
+                    'subtotal'       => (float) $row['subtotal_item'],
+                ];
+                $detail['total_komponen'] += (float) $row['subtotal_item'];
+            }
+        }
+
+        $detail['grand_total'] = $detail['total_komponen'] + $detail['biaya_jasa'];
+
+        return $detail;
     }
 
     /**
@@ -176,72 +197,13 @@ class ServiceBilling extends Model
     }
 
     /**
-     * Get tagihan berdasarkan nomor plat kendaraan.
+     * Riwayat servis (log + sparepart) untuk satu work order.
+     * Tetap diidentifikasi via work_order_id, bukan plate_number.
      */
-    public function findByPlateNumber(string $plateNumber): array
+    public function getHistoryByWorkOrderId(int $workOrderId): array|false
     {
-        try {
-            $sql = "
-           SELECT 
-                wo.id                 AS work_order_id,
-                wo.status             AS wo_status,
-                wo.description        AS wo_description,
-                wo.created_at         AS wo_created_at,
-
-                sb.booking_date,
-                sb.vehicle_name       AS vehicle_name,
-                sc.plate_number       AS number_plate,
-
-                c.name                AS customer_name,
-                c.phone               AS customer_phone
-
-            FROM work_orders wo
-            JOIN service_bookings sb        ON wo.booking_id = sb.id
-            JOIN service_customers sc       ON sb.service_customer_id = sc.id  -- Jalur ERD yang benar
-            JOIN customers c                ON sc.customer_id = c.id           -- Jalur ERD yang benar
-            WHERE wo.status = 'done' AND sc.plate_number = :plateNumber
-            LIMIT 1
-        ";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindValue(':plateNumber', $plateNumber, PDO::PARAM_STR);
-            $stmt->execute();
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            $grouped = [];
-
-            foreach ($rows as $row) {
-                $woId = $row['work_order_id'];
-
-                // Jika rumah utama Work Order belum dibuat di array, buat sekali saja
-                if (!isset($grouped[$woId])) {
-                    $grouped[$woId] = [
-                        'work_order_id'   => $row['work_order_id'],
-                        'wo_status'       => $row['wo_status'],
-                        'wo_description'  => $row['wo_description'],
-                        'wo_created_at'   => $row['wo_created_at'],
-                        'booking_date'    => $row['booking_date'],
-                        'vehicle_name'    => $row['vehicle_name'],
-                        'plate_number'    => $row['number_plate'],
-                        'customer_name'   => $row['customer_name'],
-                        'customer_phone'  => $row['customer_phone'],
-                    ];
-                }
-            }
-            return array_values($grouped);
-        } catch (PDOException $e) {
-            error_log("DB Error: " . $e->getMessage());
-            return [];
-        }
-    }
-
-    /**
-     * Get history service ketika history diakses saat detail.
-     */
-    public function getHistoryByPlateNumber(string $plateNumber): array
-    {
-        try {
-            $sql = "
-            SELECT 
+        $sql = "
+            SELECT
                 wo.id AS work_order_id,
                 wo.status AS wo_status,
                 wo.description AS wo_description,
@@ -259,55 +221,51 @@ class ServiceBilling extends Model
             LEFT JOIN work_order_logs wol ON wo.id = wol.work_order_id
             LEFT JOIN sparepart_usages su ON wo.id = su.work_order_id
             LEFT JOIN spareparts sp ON su.sparepart_id = sp.id
-            JOIN service_bookings sb ON wo.booking_id = sb.id
-            JOIN service_customers sc ON sb.service_customer_id = sc.id
-            WHERE sc.plate_number = :plateNumber
+            WHERE wo.id = :workOrderId
         ";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindValue(':plateNumber', $plateNumber, PDO::PARAM_STR);
-            $stmt->execute();
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // Grouping hasil
-            $grouped = [];
-            foreach ($rows as $row) {
-                $woId = $row['work_order_id'];
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':workOrderId', $workOrderId, PDO::PARAM_INT);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                if (!isset($grouped[$woId])) {
-                    $grouped[$woId] = [
-                        'work_order_id' => $row['work_order_id'],
-                        'wo_status'     => $row['wo_status'],
-                        'wo_description' => $row['wo_description'],
-                        'wo_created_at' => $row['wo_created_at'],
-                        'logs'          => [],
-                        'spareparts'    => []
-                    ];
-                }
+        if (empty($rows)) {
+            return false;
+        }
 
-                // Masukkan log
-                if ($row['log_id'] !== null) {
-                    $grouped[$woId]['logs'][] = [
-                        'log_id'      => $row['log_id'],
-                        'log_status'  => $row['log_status'],
-                        'log_notes'   => $row['log_notes'],
-                        'log_created' => $row['log_created_at']
-                    ];
-                }
+        $result = [
+            'work_order_id'  => $rows[0]['work_order_id'],
+            'wo_status'      => $rows[0]['wo_status'],
+            'wo_description' => $rows[0]['wo_description'],
+            'wo_created_at'  => $rows[0]['wo_created_at'],
+            'logs'           => [],
+            'spareparts'     => [],
+        ];
 
-                // Masukkan sparepart
-                if ($row['usage_id'] !== null) {
-                    $grouped[$woId]['spareparts'][] = [
-                        'usage_id'       => $row['usage_id'],
-                        'sparepart_name' => $row['sparepart_name'],
-                        'quantity'       => $row['sparepart_qty']
-                    ];
-                }
+        $seenLogs  = [];
+        $seenParts = [];
+
+        foreach ($rows as $row) {
+            if ($row['log_id'] !== null && !isset($seenLogs[$row['log_id']])) {
+                $seenLogs[$row['log_id']] = true;
+                $result['logs'][] = [
+                    'log_id'      => $row['log_id'],
+                    'log_status'  => $row['log_status'],
+                    'log_notes'   => $row['log_notes'],
+                    'log_created' => $row['log_created_at'],
+                ];
             }
 
-            return array_values($grouped);
-        } catch (PDOException $e) {
-            error_log("DB Error: " . $e->getMessage());
-            return [];
+            if ($row['usage_id'] !== null && !isset($seenParts[$row['usage_id']])) {
+                $seenParts[$row['usage_id']] = true;
+                $result['spareparts'][] = [
+                    'usage_id'       => $row['usage_id'],
+                    'sparepart_name' => $row['sparepart_name'],
+                    'quantity'       => $row['sparepart_qty'],
+                ];
+            }
         }
+
+        return $result;
     }
 }
