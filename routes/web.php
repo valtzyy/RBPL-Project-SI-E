@@ -61,3 +61,17 @@ $router->post('/api/inventory/delete/:id', 'VehicleController@apiDelete');
 // Backend hooks untuk integrasi modul procurement dan sales
 $router->post('/procurement-receipts', 'ProcurementReceiptController@store');
 $router->post('/sales-transactions/:id/status', 'SalesTransactionController@updateStatus');
+
+
+// Transactions - Sprint 4
+$router->get('/transactions',           'SalesTransactionController@index');
+$router->post('/transactions',          'SalesTransactionController@store');
+$router->get('/transactions/create',    'SalesTransactionController@create');
+$router->get('/transactions/:id',       'SalesTransactionController@show');
+
+// Vehicles - Sprint 4
+$router->get('/vehicles/available',     'VehicleController@available');
+
+// Customers - Sprint 4
+$router->get('/customers',              'CustomerController@index');
+$router->get('/customers/:id',          'CustomerController@show');

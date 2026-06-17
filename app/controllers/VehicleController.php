@@ -1,10 +1,19 @@
 <?php
-
+require_once ROOT_PATH . '/app/models/Vehicle.php';
 require_once ROOT_PATH . '/core/Controller.php';
 require_once ROOT_PATH . '/app/services/VehicleInventoryService.php';
 
 class VehicleController extends Controller
 {
+    // GET /vehicles/available — daftar kendaraan tersedia
+    public function available(): void
+    {
+        $vehicles = (new Vehicle())->getAvailable();
+        $this->view('vehicles/available', ['vehicles' => $vehicles]);
+    }
+
+
+
     private VehicleInventoryService $inventoryService;
 
     public function __construct()
