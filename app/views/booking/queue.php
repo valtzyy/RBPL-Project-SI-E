@@ -14,7 +14,7 @@
     <div class="stats-row">
         <div class="stat-card">
             <h3>Sisa Kuota Hari Ini</h3>
-            <p class="stat-value"><?= $remaining ?> Unit</p>
+            <p class="stat-value"><?= $remaining === -1 ? 'Tanpa Batas' : $remaining . ' Unit' ?></p>
         </div>
         <div class="stat-card">
             <h3>Total Antrean</h3>
