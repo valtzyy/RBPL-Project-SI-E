@@ -19,25 +19,25 @@ class DeliverySchedule extends Model
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function findWithDetail(int $id): array|false
-    {
-        $stmt = $this->db->prepare("
-            SELECT ds.*, st.id as trx_id, st.status as trx_status,
-                   st.transaction_code, st.payment_type,
-                   v.brand, v.type, v.color, v.chassis_number, v.id as vehicle_id,
-                   c.name as customer_name, c.phone as customer_phone,
-                   bc.ktp_number as customer_ktp, bc.address as customer_address
-            FROM delivery_schedules ds
-            JOIN sales_transactions st ON ds.transaction_id = st.id
-            LEFT JOIN vehicles v ON st.vehicle_id = v.id
-            LEFT JOIN customers c ON ds.customer_id = c.id
-            LEFT JOIN buyer_customers bc ON bc.customer_id = c.id
-            WHERE ds.id = ?
-        ");
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
+   public function findWithDetail(int $id): array|false
+{
+    $stmt = $this->db->prepare("
+        SELECT ds.*, st.id as trx_id, st.status as trx_status,
+               st.transaction_code, pt.name as payment_type,
+               v.brand, v.type, v.color, v.chassis_number, v.id as vehicle_id,
+               c.name as customer_name, c.phone as customer_phone,
+               bc.ktp_number as customer_ktp, bc.address as customer_address
+        FROM delivery_schedules ds
+        JOIN sales_transactions st ON ds.transaction_id = st.id
+        LEFT JOIN vehicles v ON st.vehicle_id = v.id
+        LEFT JOIN customers c ON ds.customer_id = c.id
+        LEFT JOIN buyer_customers bc ON bc.customer_id = c.id
+        LEFT JOIN payment_types pt ON st.payment_type = pt.id
+        WHERE ds.id = ?
+    ");
+    $stmt->execute([$id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
     public function findByTransaction(int $transactionId): array|false
     {
         $stmt = $this->db->prepare("
