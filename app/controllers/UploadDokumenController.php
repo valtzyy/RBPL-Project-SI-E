@@ -1,10 +1,10 @@
 <?php
-// app/controllers/UploadKontrakController.php
+// app/controllers/UploadDokumenController.php
 
 require_once ROOT_PATH . '/app/models/CreditApplication.php';
 require_once ROOT_PATH . '/app/models/CreditDocument.php';
 
-class UploadKontrakController extends Controller
+class UploadDokumenController extends Controller
 {
     public function process()
     {
@@ -36,21 +36,21 @@ class UploadKontrakController extends Controller
                 throw new Exception("Parameter 'file_type' tidak valid. Gunakan: KTP, KK, atau SlipGaji.");
             }
 
-            // Instantiate models
+            // Inisialisasi model database
             $creditAppModel = new CreditApplication();
             $creditDocModel = new CreditDocument();
 
-            // 1. Cek apakah pengajuan kredit ada di database
+            // 1. Cek apakah pengajuan kredit tersedia
             $creditApp = $creditAppModel->find($id_kredit);
             if (!$creditApp) {
                 http_response_code(404);
                 throw new Exception("Pengajuan kredit dengan ID tersebut tidak ditemukan.");
             }
 
-            // 2. Cek apakah ada file yang diunggah
+            // 2. Cek unggahan file
             if (!isset($_FILES['file_kontrak']) || $_FILES['file_kontrak']['error'] === UPLOAD_ERR_NO_FILE) {
                 http_response_code(400);
-                throw new Exception("File kontrak ('file_kontrak') wajib diunggah.");
+                throw new Exception("File dokumen ('file_kontrak') wajib diunggah.");
             }
 
             $file = $_FILES['file_kontrak'];
@@ -85,7 +85,7 @@ class UploadKontrakController extends Controller
                 throw new Exception("Ekstensi file tidak valid. Hanya diperbolehkan: .pdf, .jpg, .jpeg, atau .png.");
             }
 
-            // 5. Validasi MIME Type secara riil (Lebih aman dari sekadar cek ekstensi)
+            // 5. Validasi MIME Type secara riil
             $tmpPath = $file['tmp_name'];
             $mimeType = null;
             if (function_exists('finfo_open')) {
@@ -109,7 +109,7 @@ class UploadKontrakController extends Controller
                 throw new Exception("Konten file (MIME type) tidak aman atau tidak sesuai.");
             }
 
-            // 6. Tentukan folder tujuan upload dan pastikan folder tersebut ada
+            // 6. Tentukan folder penyimpanan berkas
             $uploadDir = ROOT_PATH . '/storage/uploads/contracts/';
             if (!is_dir($uploadDir)) {
                 if (!mkdir($uploadDir, 0775, true)) {

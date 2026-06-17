@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Suite Panel Kredit & Leasing (Plain HTML)</title>
+    <title>Panel Uji Coba / Debug Untuk Sprint 9</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -53,19 +53,32 @@
             white-space: pre-wrap;
             word-wrap: break-word;
         }
+        .warning-banner {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border: 1px solid #ffeeba;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
 
-    <h1>Testing Panel UI (Plain HTML)</h1>
-    <p>Gunakan tombol reset di bawah untuk membersihkan data uji coba (Kredit ID 1 & Transaksi ID 1) sebelum melakukan simulasi baru.</p>
+    <div class="warning-banner">
+        <strong>⚠️ Halaman Debug / Pengujian Sementara</strong><br>
+        Halaman ini dibuat khusus untuk memverifikasi alur API backend. Dapat dihapus saat website siap dideploy ke server production.
+    </div>
+
+    <h1>Panel Pengujian Backend</h1>
+    <p>Gunakan tombol reset di bawah untuk mengembalikan data database uji coba ke status awal (Pending / Belum Bayar DP).</p>
 
     <button id="btnResetData" class="btn-reset">🔄 Reset Data Uji Coba</button>
 
     <!-- FORM 1: WEBHOOK APPROVAL -->
     <div class="form-section">
         <h2>⚡ Webhook Approval Leasing</h2>
-        <p>Menerima keputusan kredit dari lembaga leasing luar. Men-trigger status transaksi ke antrean serah terima jika DP lunas.</p>
+        <p>Simulasi penerimaan status kelayakan kredit dari lembaga leasing luar.</p>
         
         <form id="formWebhook">
             <div class="form-group">
@@ -98,7 +111,7 @@
     <!-- FORM 2: VERIFIKASI DP -->
     <div class="form-section">
         <h2>💰 Verifikasi Down Payment (DP)</h2>
-        <p>Staf Finance mencatat pelunasan DP customer. Men-trigger status transaksi ke antrean serah terima jika kredit disetujui.</p>
+        <p>Simulasi pencatatan pelunasan DP customer oleh staf Finance dealer.</p>
 
         <form id="formFinance">
             <div class="form-group">
@@ -128,7 +141,7 @@
     <!-- FORM 3: UPLOAD DOKUMEN -->
     <div class="form-section">
         <h2>📄 Unggah Dokumen Kredit</h2>
-        <p>Mengunggah dokumen pendukung kredit (PDF, JPG, JPEG, atau PNG) berukuran maksimal 2MB.</p>
+        <p>Simulasi pengunggahan dokumen kelengkapan kredit (PDF/Gambar max 2MB).</p>
 
         <form id="formUpload" enctype="multipart/form-data">
             <div class="form-group">
@@ -218,14 +231,14 @@
             }
         });
 
-        // C. Handle Form Upload Kontrak PK (Menggunakan FormData)
+        // C. Handle Form Upload Dokumen (Menggunakan FormData)
         document.getElementById('formUpload').addEventListener('submit', async function(e) {
             e.preventDefault();
             const form = e.target;
             const formData = new FormData(form);
             
             try {
-                const response = await fetch('/upload-kontrak', {
+                const response = await fetch('/upload-dokumen', {
                     method: 'POST',
                     body: formData
                 });
@@ -245,7 +258,7 @@
             btn.innerHTML = "⏳ Sedang Mereset...";
             
             try {
-                const response = await fetch('/reset-sprint9', { method: 'POST' });
+                const response = await fetch('/debug-reset', { method: 'POST' });
                 const data = await response.json();
                 
                 if (data.status === "success") {

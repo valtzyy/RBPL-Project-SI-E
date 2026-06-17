@@ -1,12 +1,12 @@
 <?php
-// app/controllers/ResetSprint9Controller.php
+// app/controllers/DebugResetController.php
 
 require_once ROOT_PATH . '/app/models/CreditApplication.php';
 require_once ROOT_PATH . '/app/models/DownPayment.php';
 require_once ROOT_PATH . '/app/models/CreditDecision.php';
 require_once ROOT_PATH . '/app/models/SalesTransaction.php';
 
-class ResetSprint9Controller extends Controller
+class DebugResetController extends Controller
 {
     public function process()
     {
