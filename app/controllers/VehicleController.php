@@ -209,7 +209,7 @@ class VehicleController extends Controller
         return $_POST;
     }
 
-    private function json(array $payload, int $status = 200): void
+    protected function json(array $payload, int $status = 200): void
     {
         http_response_code($status);
         header('Content-Type: application/json');

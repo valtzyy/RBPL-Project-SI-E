@@ -18,7 +18,7 @@ class SalesTransaction extends Model
                 COALESCE(v.price, 0) AS price,
                 COALESCE(u.name, '-') AS sales_name
             FROM {$this->table} st
-            LEFT JOIN buyer_customers bc ON st.customer_id = bc.id
+            LEFT JOIN buyer_customers bc ON st.customer_id = bc.customer_id
             LEFT JOIN customers c ON bc.customer_id = c.id
             LEFT JOIN vehicles  v ON st.vehicle_id  = v.id
             LEFT JOIN users     u ON st.sales_user_id = u.id
@@ -28,35 +28,50 @@ class SalesTransaction extends Model
         return $stmt->fetchAll();
     }
 
-    public function create(array $data): int
+    public function store(): void
     {
-        // 1. Ambil data asli dari tabel customers
-        $stmt = $this->db->prepare("SELECT * FROM customers WHERE id = ?");
-        $stmt->execute([$data['customer_id']]);
-        $customer = $stmt->fetch();
+        $customerId  = (int) $this->input('customer_id');
+        $ktpNumber   = $this->input('ktp_number');
+        $address     = $this->input('address');
+        $vehicleId   = $this->input('vehicle_id');
+        $paymentType = (int) $this->input('payment_type');
+        $salesUserId = $_SESSION['user_id'] ?? 2;
 
-        if (!$customer) {
-            throw new Exception("Data customer tidak ditemukan!");
+        try {
+            $transaction = new SalesTransaction();
+            $transactionId = $transaction->create([
+                'transaction_code' => $transaction->generateCode(),
+                'customer_id'      => $customerId,
+                'vehicle_id'       => $vehicleId,
+                'sales_user_id'    => $salesUserId,
+                'payment_type'     => $paymentType,
+                'status'           => 'process',
+                'ktp_number'       => $ktpNumber,
+                'address'          => $address,
+            ]);
+
+            (new Vehicle())->setHeld((int) $vehicleId);
+
+            if ($paymentType !== 1) {
+                require_once ROOT_PATH . '/app/models/Payment.php';
+                $vehicle = (new Vehicle())->find((int) $vehicleId);
+                $vehiclePrice = $vehicle['price'] ?? 0;
+
+                (new Payment())->create([
+                    'transaction_id' => $transactionId,
+                    'amount'         => $vehiclePrice,
+                    'payment_date'   => date('Y-m-d'),
+                    'status'         => 'pending'
+                ]);
+
+                $this->redirect('/transactions');
+            } else {
+                $this->redirect('/credit-applications/create?vehicle_id=' . $vehicleId);
+            }
+
+        } catch (Exception $e) {
+            echo '<pre>ERROR: ' . $e->getMessage() . '</pre>';
         }
-
-        // 2. Insert ke tabel bridge buyer_customers sesuai struktur ERD
-        $stmt = $this->db->prepare("
-            INSERT INTO buyer_customers (customer_id, address, ktp_number)
-            VALUES (?, ?, ?)
-        ");
-        $stmt->execute([
-            $customer['id'],
-            $customer['address'] ?? '-',
-            $customer['ktp_number'] ?? '-'
-        ]);
-        
-        $buyerCustomerId = (int) $this->db->lastInsertId();
-
-        // 3. Timpa customer_id menjadi ID dari buyer_customers untuk tabel sales_transactions
-        $data['customer_id'] = $buyerCustomerId;
-
-        // 4. Panggil create bawaan Model untuk menyimpan transaksi
-        return parent::create($data);
     }
 
     public function generateCode(): string
@@ -64,7 +79,6 @@ class SalesTransaction extends Model
         return 'TRX-' . strtoupper(uniqid());
     }
 
-<<<<<<< HEAD
     public function getAllWithPaymentDetails(): array
     {
         $stmt = $this->db->prepare("
@@ -98,21 +112,3 @@ class SalesTransaction extends Model
         return $stmt->execute([$status, $id]);
     }
 }
-=======
-
-
-    // JOIN dengan payment_types untuk validasi payment_type di PBI-8.4
-    public function findWithPaymentType(int $id): array|false
-    {
-        $stmt = $this->db->prepare(
-            "SELECT st.*, pt.name AS payment_name
-             FROM {$this->table} st
-             JOIN payment_types pt ON pt.id = st.payment_type
-             WHERE st.id = ?
-             LIMIT 1"
-        );
-        $stmt->execute([$id]);
-        return $stmt->fetch();
-    }
-}
->>>>>>> sprint-8
