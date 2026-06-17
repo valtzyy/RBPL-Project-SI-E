@@ -24,6 +24,10 @@ class Controller
             $layoutPath = ROOT_PATH . '/app/views/layout/main.php';
         }
 
+        if (!file_exists($layoutPath)) {
+            $layoutPath = ROOT_PATH . '/app/views/layout/main.php';
+        }
+
         if (file_exists($layoutPath)) {
             ob_start();
             require $viewPath;

@@ -146,3 +146,22 @@ $router->get('/api/sparepart/search', 'SparepartController@search');
 $router->get('/api/invoice/draft', 'SparepartController@invoiceDraft');
 $router->get('/mekanik/work-order', 'SparepartController@workOrderView');
 $router->get('/kasir/invoice', 'SparepartController@invoiceView');
+
+// ============================================================
+// [SPRINT 14] - MANAJEMEN SUKU CADANG GUDANG & DASHBOARD
+// ============================================================
+
+// Modul Gudang Suku Cadang & Purchase Order (PO)
+$router->get('/sparepart',           'SparepartController@index');
+$router->post('/sparepart/po/store', 'SparepartController@storePO');
+$router->get('/sparepart/po/terima', 'SparepartController@terimaPO'); // Jika menerima pakai query string (?id=)
+
+// Modul Dashboard Eksekutif / Manajerial
+$router->get('/dashboard',            'DashboardController@index');
+
+// API Endpoints untuk Data Visualisasi (Chart.js / Recharts)
+$router->get('/api/dashboard/kpi',            'DashboardController@apiKpi');
+$router->get('/api/dashboard/trends',         'DashboardController@apiTrenServis');
+$router->get('/api/dashboard/sales-trends',   'DashboardController@apiSalesTrends');
+$router->get('/api/dashboard/inventory-kpi',  'DashboardController@apiInventoryKpi');
+$router->get('/api/dashboard/details',        'DashboardController@apiDetails');
