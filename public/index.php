@@ -5,6 +5,7 @@ define('ROOT_PATH', dirname(__DIR__));
 require_once ROOT_PATH . '/config/database.php';
 $app = require ROOT_PATH . '/config/app.php';
 
+
 if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
         'lifetime' => 0,
@@ -29,6 +30,7 @@ require_once ROOT_PATH . '/core/Database.php';
 require_once ROOT_PATH . '/core/Model.php';
 require_once ROOT_PATH . '/core/Controller.php';
 require_once ROOT_PATH . '/core/Router.php';
+require_once ROOT_PATH . '/core/Auth.php';
 
 $router = new Router();
 
