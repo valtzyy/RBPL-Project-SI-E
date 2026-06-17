@@ -53,7 +53,8 @@ class CloudinaryService
         try {
             $response = $this->uploadApi->upload($fileTmpPath, [
                 'folder' => $folderName,
-                'type'   => 'private'
+                'type'   => 'private',
+                'overwrite' => true,
             ]);
 
             return $response['public_id'];
@@ -73,8 +74,7 @@ class CloudinaryService
 
             $url = $cld->image($publicId)
                 ->deliveryType('private')
-                ->signUrl(true)           
-                ->addTransformation("expires_at=$waktuHangus") 
+                ->signUrl(true, ['expires_at' => time() + $expiration])
                 ->toUrl();
 
             return $url;

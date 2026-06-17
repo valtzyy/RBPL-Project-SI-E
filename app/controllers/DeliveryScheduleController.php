@@ -1,14 +1,17 @@
 <?php
 require_once ROOT_PATH . '/core/Controller.php';
 require_once ROOT_PATH . '/app/models/DeliverySchedule.php';
+require_once ROOT_PATH . '/app/services/CloudinaryService.php';
 
 class DeliveryScheduleController extends Controller
 {
     private DeliverySchedule $deliveryModel;
+    private CloudinaryService $cloudinary;
 
     public function __construct()
     {
         $this->deliveryModel = new DeliverySchedule();
+        $this->cloudinary    = new CloudinaryService();
     }
 
     // GET /delivery
@@ -38,9 +41,16 @@ class DeliveryScheduleController extends Controller
         if (!$schedule) {
             die("Jadwal tidak ditemukan.");
         }
+
+        $signatureUrl = '';
+        if (!empty($schedule['signature_path'])) {
+            $signatureUrl = $this->cloudinary->getPrivateImageUrl($schedule['signature_path']);
+        }
+
         $this->view('delivery/show', [
-            'title'    => 'Detail Serah Terima',
-            'schedule' => $schedule,
+            'title'        => 'Detail Serah Terima',
+            'schedule'     => $schedule,
+            'signatureUrl' => $signatureUrl,
         ]);
     }
 
@@ -78,15 +88,16 @@ class DeliveryScheduleController extends Controller
             $imageData = base64_decode(
                 preg_replace('#^data:image/\w+;base64,#i', '', $signatureData)
             );
-            $fileName  = 'signature_' . $id . '_' . time() . '.png';
-            $uploadDir = ROOT_PATH . '/public/uploads/signatures/';
+            $tmpFile = ROOT_PATH . '/public/uploads/signatures/tmp_' . $id . '_' . time() . '.png';
 
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
+            if (!is_dir(dirname($tmpFile))) {
+                mkdir(dirname($tmpFile), 0755, true);
             }
 
-            file_put_contents($uploadDir . $fileName, $imageData);
-            $signaturePath = '/uploads/signatures/' . $fileName;
+            file_put_contents($tmpFile, $imageData);
+            $publicId      = $this->cloudinary->uploadPrivateImage($tmpFile, 'signatures');
+            $signaturePath = $publicId;
+            unlink($tmpFile);
         }
 
         $this->deliveryModel->confirmDelivery((int) $id, $signaturePath);
@@ -106,9 +117,16 @@ class DeliveryScheduleController extends Controller
         if (!$schedule) {
             die("Jadwal tidak ditemukan.");
         }
+
+        $signatureUrl = '';
+        if (!empty($schedule['signature_path'])) {
+            $signatureUrl = $this->cloudinary->getPrivateImageUrl($schedule['signature_path']);
+        }
+
         $this->view('delivery/document', [
-            'title'    => 'Dokumen Serah Terima',
-            'schedule' => $schedule,
+            'title'        => 'Dokumen Serah Terima',
+            'schedule'     => $schedule,
+            'signatureUrl' => $signatureUrl,
         ]);
     }
 }

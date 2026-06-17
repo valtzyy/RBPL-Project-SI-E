@@ -30,9 +30,9 @@
         <tr><td style="padding:8px; font-weight:bold;">Catatan</td><td style="padding:8px;">: <?= htmlspecialchars($schedule['notes'] ?? '-') ?></td></tr>
         <tr><td style="padding:8px; font-weight:bold;">Dikonfirmasi</td><td style="padding:8px;">: <?= htmlspecialchars($schedule['confirmed_at'] ?? '-') ?></td></tr>
     </table>
-    <?php if (!empty($schedule['signature_path'])): ?>
+    <?php if (!empty($signatureUrl)): ?>
     <p style="font-weight:bold; border-bottom:1px solid #ccc; padding-bottom:4px;">Tanda Tangan Customer</p>
-    <img src="<?= htmlspecialchars($schedule['signature_path']) ?>" style="max-width:300px; border:1px solid #ccc; border-radius:4px; margin-bottom:20px;">
+    <img src="<?= htmlspecialchars($signatureUrl) ?>" style="max-width:300px; border:1px solid #ccc; border-radius:4px; margin-bottom:20px;">
     <?php endif; ?>
     <div style="display:flex; justify-content:space-between; margin-top:60px;">
         <div style="text-align:center; width:200px;">

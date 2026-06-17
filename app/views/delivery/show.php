@@ -43,9 +43,9 @@
     <?php else: ?>
     <div style="border:1px solid #ccc; border-radius:8px; padding:20px;">
         <h2 style="margin-top:0; font-size:16px; color:#555;">Serah Terima Sudah Selesai</h2>
-        <?php if (!empty($schedule['signature_path'])): ?>
+        <?php if (!empty($signatureUrl)): ?>
             <p>Tanda tangan customer:</p>
-           <img src="<?= htmlspecialchars($schedule['signature_path']) ?>"
+           <img src="<?= htmlspecialchars($signatureUrl) ?>" style="max-width:400px; border:1px solid #ccc; border-radius:4px;">
         <?php endif; ?>
         <p>Dikonfirmasi pada: <?= htmlspecialchars($schedule['confirmed_at'] ?? '-') ?></p>
     </div>
