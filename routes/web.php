@@ -69,16 +69,6 @@ $router->get('/transactions/create',    'SalesTransactionController@create');
 $router->get('/transactions/:id',       'SalesTransactionController@show');
 $router->post('/transactions',          'SalesTransactionController@store');
 
-// Sprint 5 - Pembayaran Tunai (Admin & Finance)
-$router->get('/admin/transactions',             'AdminTransactionController@index');
-$router->get('/admin/transactions/:id',         'AdminTransactionController@show');
-$router->get('/admin/transactions/:id/receipt', 'AdminTransactionController@downloadReceipt');
-
-// Sprint 5 - Finance: Verifikasi Pembayaran
-$router->get('/finance/payments',                'FinanceController@index');
-$router->get('/finance/payments/:id',            'FinanceController@show');
-$router->post('/finance/payments/:id/verify',    'FinanceController@verifyPayment');
-
 // Vehicles - Sprint 4
 $router->get('/vehicles/available',     'VehicleController@available');
 
@@ -99,39 +89,12 @@ $router->post('/booking/reject',     'BookingController@reject');
 $router->get('/booking/inspect/:id', 'BookingController@inspectForm');
 $router->post('/booking/inspect/:id/convert', 'BookingController@convertToWorkOrder');
 
-// ============================================================
-// SPRINT 11 - Eksekusi & Work Order Servis
-
-
-// 1. Menampilkan Halaman Panel Kerja Mekanik (UI Ter-assign)
-$router->get('/mechanic/panel', 'WorkOrderController@index');
-
-// 2. API/Action untuk Mengubah Progres Item / Status Kerja Mekanik
-$router->post('/mechanic/work-order/update-status', 'WorkOrderController@updateStatus');
-
-// 3. Menampilkan Halaman Tambah Log & History Log
-$router->get('/mechanic/work-order/log', 'WorkOrderController@addLogForm');
-
-// 4. API/Action untuk Menyimpan Log Baru
-$router->post('/mechanic/work-order/log/store', 'WorkOrderController@storeLog');
-// ============================================================
-
-// sprint-12 pembayaran services
-$router->get('/service-billing',      'ServiceBillingController@index');
-$router->get('/service-billing/:plateNumber', 'ServiceBillingController@findByPlateNumber');
-$router->get('/service-billing/detail/:plateNumber',  'ServiceBillingController@detail');
-$router->get('/service-billing/detail/history/:plateNumber',  'ServiceBillingController@detailLog');
-
-$router->get('/kasir/dashboard', 'KasirController@dashboard');
-$router->get('/kasir/nota',      'KasirController@nota');
-$router->get('/kasir/riwayat',   'KasirController@riwayat');
-
-
-// ============================================================
-// RUTE SPRINT 9 (Kredit & Leasing - Approval & Uang Muka)
-// ============================================================
-$router->post('/webhook-approval', 'WebhookApprovalController@process');
-$router->post('/verifikasi-dp',    'VerifikasiDpController@process');
-$router->post('/upload-kontrak',   'UploadKontrakController@process');
-$router->post('/reset-sprint9',    'ResetSprint9Controller@process');
-$router->get('/test-sprint9',      'TestSprint9Controller@index');
+// ===========================
+// Sprint 6 - Serah Terima
+// ===========================
+$router->get('/delivery',                      'DeliveryScheduleController@index');
+$router->get('/delivery/create',               'DeliveryScheduleController@create');
+$router->get('/delivery/:id',                  'DeliveryScheduleController@show');
+$router->get('/delivery/:id/document',         'DeliveryScheduleController@document');
+$router->post('/delivery',                     'DeliveryScheduleController@store');
+$router->post('/delivery/:id/confirm',         'DeliveryScheduleController@confirm');
