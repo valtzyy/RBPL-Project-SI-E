@@ -63,4 +63,37 @@ class SalesTransaction extends Model
     {
         return 'TRX-' . strtoupper(uniqid());
     }
+
+    public function getAllWithPaymentDetails(): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT 
+                st.*,
+                COALESCE(c.name, '-') AS customer_name,
+                COALESCE(c.phone, '-') AS customer_phone,
+                COALESCE(v.brand, '-') AS brand,
+                COALESCE(v.type, '-') AS type,
+                COALESCE(v.color, '-') AS color,
+                COALESCE(v.price, 0) AS price,
+                COALESCE(v.price, 0) AS total_amount,
+                p.id AS payment_id,
+                p.amount AS payment_amount,
+                p.payment_date,
+                p.status AS payment_status
+            FROM {$this->table} st
+            LEFT JOIN buyer_customers bc ON st.customer_id = bc.id
+            LEFT JOIN customers c ON bc.customer_id = c.id
+            LEFT JOIN vehicles  v ON st.vehicle_id  = v.id
+            LEFT JOIN payments  p ON st.id = p.transaction_id
+            ORDER BY st.created_at DESC
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function updateStatus(int $id, string $status): bool
+    {
+        $stmt = $this->db->prepare("UPDATE {$this->table} SET status = ? WHERE id = ?");
+        return $stmt->execute([$status, $id]);
+    }
 }

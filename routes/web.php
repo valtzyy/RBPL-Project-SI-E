@@ -69,6 +69,12 @@ $router->post('/transactions',          'SalesTransactionController@store');
 $router->get('/transactions/create',    'SalesTransactionController@create');
 $router->get('/transactions/:id',       'SalesTransactionController@show');
 
+// Sprint 5 - Pembayaran Tunai (Admin & Finance)
+$router->get('/admin/transactions',             'AdminTransactionController@index');
+$router->get('/admin/transactions/:id',         'AdminTransactionController@show');
+$router->get('/admin/transactions/:id/receipt', 'AdminTransactionController@downloadReceipt');
+$router->post('/finance/payments/:id/verify',   'FinanceController@verifyPayment');
+
 // Vehicles - Sprint 4
 $router->get('/vehicles/available',     'VehicleController@available');
 
