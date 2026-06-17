@@ -2,3 +2,5 @@
 .env
 ca.pem
 .cert.pem
+echo "vendor/" >> .gitignore
+echo "public/uploads/" >> .gitignore
