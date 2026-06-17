@@ -10,7 +10,6 @@ class ServiceBooking extends Model {
         $this->quota = $config['booking_quota'];
     }
 
-    // Hitung booking per tanggal
     public function countBookingsByDate(string $date): int {
         $stmt = $this->db->prepare("
             SELECT COUNT(*) as total
@@ -22,60 +21,71 @@ class ServiceBooking extends Model {
         return (int) ($stmt->fetch()['total'] ?? 0);
     }
 
-    // Cek apakah slot tanggal masih tersedia
+    public function countActiveWorkOrders(): int {
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*) as total
+            FROM work_orders
+            WHERE status = 'in_progress'
+        ");
+        $stmt->execute();
+        return (int) ($stmt->fetch()['total'] ?? 0);
+    }
+
     public function isSlotAvailable(string $date): bool {
+        if ($this->countActiveWorkOrders() >= 5) {
+            return false;
+        }
         return $this->countBookingsByDate($date) < $this->quota;
     }
 
-    // Ambil sisa slot di tanggal tertentu
     public function getRemainingSlot(string $date): int {
-        $booked = $this->countBookingsByDate($date);
-        return max(0, $this->quota - $booked);
+        if ($this->countActiveWorkOrders() >= 5) {
+            return 0;
+        }
+        return max(0, $this->quota - $this->countBookingsByDate($date));
     }
 
-    // Simpan booking baru
+    // Simpan booking baru — sesuai skema final
     public function storeBooking(array $data): bool {
+        $inTransaction = $this->db->inTransaction();
         try {
-            $this->db->beginTransaction();
+            if (!$inTransaction) {
+                $this->db->beginTransaction();
+            }
 
-            // Validasi customer ada di DB
+            // Validasi service_customer ada
             $stmt = $this->db->prepare(
-                "SELECT id FROM customers WHERE id = ? LIMIT 1"
+                "SELECT id FROM service_customers WHERE id = ? LIMIT 1"
             );
-            $stmt->execute([$data['customer_id']]);
+            $stmt->execute([$data['service_customer_id']]);
             if (!$stmt->fetch()) {
-                $this->db->rollBack();
+                if (!$inTransaction) {
+                    $this->db->rollBack();
+                }
                 return false;
             }
 
-            // Validasi vehicle ada & statusnya available
-            $stmt = $this->db->prepare(
-                "SELECT id FROM vehicles
-                 WHERE id = ? AND status = 'available' LIMIT 1"
-            );
-            $stmt->execute([$data['vehicle_id']]);
-            if (!$stmt->fetch()) {
-                $this->db->rollBack();
-                return false;
-            }
-
-            // Insert — strict 5 kolom sesuai skema
+            // Insert — sesuai 5 kolom skema final
             $stmt = $this->db->prepare("
                 INSERT INTO {$this->table}
-                    (customer_id, vehicle_id, booking_date, status)
-                VALUES (?, ?, ?, 'queued')
+                    (booking_date, status, service_customer_id, vehicle_name)
+                VALUES (?, 'queued', ?, ?)
             ");
             $stmt->execute([
-                $data['customer_id'],
-                $data['vehicle_id'],
                 $data['booking_date'],
+                $data['service_customer_id'],
+                $data['vehicle_name'],
             ]);
 
-            $this->db->commit();
+            if (!$inTransaction) {
+                $this->db->commit();
+            }
             return true;
 
         } catch (Exception $e) {
-            $this->db->rollBack();
+            if (!$inTransaction && $this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
             error_log("BookingError: " . $e->getMessage());
             return false;
         }
@@ -86,22 +96,24 @@ class ServiceBooking extends Model {
         $date = $date ?? date('Y-m-d');
         $stmt = $this->db->prepare("
             SELECT sb.*,
-                   c.name  AS customer_name,
-                   c.phone AS customer_phone,
-                   v.brand AS vehicle_brand,
-                   v.type  AS vehicle_type
+                   c.name         AS customer_name,
+                   c.phone        AS customer_phone,
+                   sc.plate_number,
+                   wo.status      AS wo_status
             FROM   {$this->table} sb
-            JOIN   customers c ON c.id = sb.customer_id
-            JOIN   vehicles  v ON v.id = sb.vehicle_id
+            JOIN   service_customers sc ON sc.id = sb.service_customer_id
+            JOIN   customers         c  ON c.id  = sc.customer_id
+            LEFT JOIN work_orders    wo ON wo.booking_id = sb.id
             WHERE  sb.booking_date = ?
               AND  sb.status IN ('queued', 'confirmed')
-            ORDER  BY sb.id ASC
+            ORDER  BY 
+                   (CASE WHEN wo.status = 'in_progress' THEN 1 ELSE 0 END) ASC,
+                   sb.id ASC
         ");
         $stmt->execute([$date]);
         return $stmt->fetchAll();
     }
 
-    // Update status booking
     public function updateStatus(int $id, string $status): bool {
         $stmt = $this->db->prepare(
             "UPDATE {$this->table} SET status = ? WHERE id = ?"
@@ -109,17 +121,15 @@ class ServiceBooking extends Model {
         return $stmt->execute([$status, $id]);
     }
 
-    // Cari booking by ID
     public function findById(int $id): ?array {
         $stmt = $this->db->prepare("
             SELECT sb.*,
-                   c.name  AS customer_name,
-                   c.phone AS customer_phone,
-                   v.brand AS vehicle_brand,
-                   v.type  AS vehicle_type
+                   c.name         AS customer_name,
+                   c.phone        AS customer_phone,
+                   sc.plate_number
             FROM   {$this->table} sb
-            JOIN   customers c ON c.id = sb.customer_id
-            JOIN   vehicles  v ON v.id = sb.vehicle_id
+            JOIN   service_customers sc ON sc.id = sb.service_customer_id
+            JOIN   customers         c  ON c.id  = sc.customer_id
             WHERE  sb.id = ?
         ");
         $stmt->execute([$id]);
