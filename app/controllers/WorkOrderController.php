@@ -29,7 +29,7 @@ class WorkOrderController extends Controller
     }
 
     /**
-     * Menerima kiriman request POST dari tombol aksi perubahan status
+     * Menerima kiriman request POST dari tombol aksi perubahan status utama
      */
     public function updateStatus(): void 
     {
@@ -38,16 +38,13 @@ class WorkOrderController extends Controller
             $newStatus = $this->input('status');
 
             if ($woId > 0 && !empty($newStatus)) {
-                $mappedStatus = $this->mapLogStatusToWorkOrderStatus($newStatus);
                 // =========================================================================
                 // [PBI-11.4] & [PBI-11.6] EKSEKUSI API TRIGGER PENGALIHAN STATUS WORK ORDER
                 // Memproses aksi tombol dari web untuk merubah status pengerjaan secara real-time
                 // =========================================================================
-                $success = $this->workOrderModel->updateWorkOrderStatus($woId, $mappedStatus);
+                $success = $this->workOrderModel->updateWorkOrderStatus($woId, $newStatus);
                 
                 if ($success) {
-                    // Masukkan ke log juga agar history tercatat otomatis saat status diubah langsung dari panel
-                    $this->workOrderLogModel->createLog($woId, $newStatus, 'Perubahan status langsung dari panel kerja.');
                     $this->redirect('/mechanic/panel');
                     return;
                 }
@@ -84,7 +81,7 @@ class WorkOrderController extends Controller
     }
 
     /**
-     * Menyimpan log baru ke dalam tabel log dan memperbarui status work order utama
+     * Menyimpan log baru ke dalam tabel log
      */
     public function storeLog(): void
     {
@@ -94,38 +91,16 @@ class WorkOrderController extends Controller
             $notes = $this->input('notes', '');
 
             if ($woId > 0 && !empty($status)) {
-                $mappedStatus = $this->mapLogStatusToWorkOrderStatus($status);
-                // Mulai pencatatan ke log
+                // Mulai pencatatan ke log (hanya log status pengerjaan, tidak memodifikasi status utama)
                 $successLog = $this->workOrderLogModel->createLog($woId, $status, $notes);
-                // Update status di work order utama
-                $successWO = $this->workOrderModel->updateWorkOrderStatus($woId, $mappedStatus);
 
-                if ($successLog && $successWO) {
+                if ($successLog) {
                     $this->redirect('/mechanic/work-order/log?id=' . $woId . '&status=success');
                     return;
                 }
             }
 
             $this->redirect('/mechanic/work-order/log?id=' . $woId . '&status=failed');
-        }
-    }
-
-    /**
-     * Memetakan status log ke status kolom enum tabel work_orders
-     */
-    private function mapLogStatusToWorkOrderStatus(string $logStatus): string
-    {
-        switch ($logStatus) {
-            case 'started':
-            case 'paused':
-            case 'rework':
-                return 'in_progress';
-            case 'checked':
-                return 'ready';
-            case 'closed':
-                return 'done';
-            default:
-                return 'in_progress';
         }
     }
 }

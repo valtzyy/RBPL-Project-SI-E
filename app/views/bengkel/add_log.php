@@ -291,67 +291,76 @@
             </div>
 
             <div class="detail-group">
-                <div class="detail-label">Status Saat Ini</div>
+                <div class="detail-label">Status Utama</div>
                 <div class="detail-value">
                     <?php
-                    $currentStatus = $order['latest_log_status'] ?: $order['status'];
-                    $badgeClass = 'badge-in-progress';
-                    $statusLabel = 'Dikerjakan';
+                    $mainStatus = $order['status'];
+                    $mainBadgeClass = 'badge-in-progress';
+                    $mainStatusLabel = 'In Progress';
+                    if ($mainStatus === 'done') {
+                        $mainBadgeClass = 'badge-done';
+                        $mainStatusLabel = 'Done';
+                    } elseif ($mainStatus === 'ready') {
+                        $mainBadgeClass = 'badge-ready';
+                        $mainStatusLabel = 'Ready';
+                    }
+                    ?>
+                    <span class="badge <?= $mainBadgeClass ?>"><?= $mainStatusLabel ?></span>
+                    <small style="color: #64748b; display: block; margin-top: 4px;">*Dapat diubah langsung dari Panel Kerja</small>
+                </div>
+            </div>
 
-                    switch ($currentStatus) {
+            <div class="detail-group">
+                <div class="detail-label">Status Pengerjaan Saat Ini</div>
+                <div class="detail-value">
+                    <?php
+                    $logStatus = $order['latest_log_status'];
+                    $logBadgeClass = 'badge-paused';
+                    $logStatusLabel = 'Belum Mulai';
+
+                    switch ($logStatus) {
                         case 'started':
-                            $badgeClass = 'badge-started';
-                            $statusLabel = 'Started';
+                            $logBadgeClass = 'badge-started';
+                            $logStatusLabel = 'Started';
                             break;
                         case 'paused':
-                            $badgeClass = 'badge-paused';
-                            $statusLabel = 'Paused';
+                            $logBadgeClass = 'badge-paused';
+                            $logStatusLabel = 'Paused';
                             break;
                         case 'checked':
-                            $badgeClass = 'badge-checked';
-                            $statusLabel = 'Checked';
+                            $logBadgeClass = 'badge-checked';
+                            $logStatusLabel = 'Checked';
                             break;
                         case 'rework':
-                            $badgeClass = 'badge-rework';
-                            $statusLabel = 'Rework';
+                            $logBadgeClass = 'badge-rework';
+                            $logStatusLabel = 'Rework';
                             break;
                         case 'closed':
-                            $badgeClass = 'badge-closed';
-                            $statusLabel = 'Closed';
-                            break;
-                        case 'in_progress':
-                            $badgeClass = 'badge-in-progress';
-                            $statusLabel = 'In Progress';
-                            break;
-                        case 'ready':
-                            $badgeClass = 'badge-ready';
-                            $statusLabel = 'Ready';
-                            break;
-                        case 'done':
-                            $badgeClass = 'badge-done';
-                            $statusLabel = 'Done';
+                            $logBadgeClass = 'badge-closed';
+                            $logStatusLabel = 'Closed';
                             break;
                     }
                     ?>
-                    <span class="badge <?= $badgeClass ?>"><?= $statusLabel ?></span>
+                    <span class="badge <?= $logBadgeClass ?>"><?= $logStatusLabel ?></span>
+                    <small style="color: #64748b; display: block; margin-top: 4px;">*Dapat diubah melalui form di samping</small>
                 </div>
             </div>
         </div>
 
         <!-- Form Tambah Log -->
         <div class="card">
-            <h3 class="card-title">📝 Tambah Log & Perbarui Status</h3>
+            <h3 class="card-title">📝 Tambah Log Status Pengerjaan</h3>
             <form action="/mechanic/work-order/log/store" method="POST">
                 <input type="hidden" name="work_order_id" value="<?= $order['id'] ?>">
 
                 <div class="form-group">
                     <label class="form-label" for="status">Status Pekerjaan Baru</label>
                     <select name="status" id="status" class="form-select" required>
-                        <option value="started" <?= $currentStatus === 'started' ? 'selected' : '' ?>>Started</option>
-                        <option value="paused" <?= $currentStatus === 'paused' ? 'selected' : '' ?>>Paused</option>
-                        <option value="checked" <?= $currentStatus === 'checked' ? 'selected' : '' ?>>Checked</option>
-                        <option value="rework" <?= $currentStatus === 'rework' ? 'selected' : '' ?>>Rework</option>
-                        <option value="closed" <?= $currentStatus === 'closed' ? 'selected' : '' ?>>Closed</option>
+                        <option value="started" <?= $logStatus === 'started' ? 'selected' : '' ?>>Started</option>
+                        <option value="paused" <?= $logStatus === 'paused' ? 'selected' : '' ?>>Paused</option>
+                        <option value="checked" <?= $logStatus === 'checked' ? 'selected' : '' ?>>Checked</option>
+                        <option value="rework" <?= $logStatus === 'rework' ? 'selected' : '' ?>>Rework</option>
+                        <option value="closed" <?= $logStatus === 'closed' ? 'selected' : '' ?>>Closed</option>
                     </select>
                 </div>
 
