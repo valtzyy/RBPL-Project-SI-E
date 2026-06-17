@@ -22,8 +22,15 @@ class Database
             $options = $config['options'] ?? [];
 
             if ($certPath !== '') {
-                $options[PDO::MYSQL_ATTR_SSL_CA] = $certPath;
-                $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = true;
+                $sslCaAttribute = defined('Pdo\Mysql::ATTR_SSL_CA')
+                    ? constant('Pdo\Mysql::ATTR_SSL_CA')
+                    : PDO::MYSQL_ATTR_SSL_CA;
+                $sslVerifyAttribute = defined('Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT')
+                    ? constant('Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT')
+                    : PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT;
+
+                $options[$sslCaAttribute] = $certPath;
+                $options[$sslVerifyAttribute] = true;
             }
 
             try {

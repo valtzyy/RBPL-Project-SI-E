@@ -43,6 +43,10 @@ switch ($command) {
         require_once ROOT_PATH . '/database/seeders/UserSeeder.php';
         $seeder = new UserSeeder($db);
         $seeder->run();
+
+        require_once ROOT_PATH . '/database/seeders/SparepartSeeder.php';
+        $sparepartSeeder = new SparepartSeeder($db);
+        $sparepartSeeder->run();
         break;
 
     default:

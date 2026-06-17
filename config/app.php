@@ -5,4 +5,5 @@ return [
     'env'     => $_ENV['APP_ENV']   ?? 'production',
     'debug'   => filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOLEAN),
     'url'     => $_ENV['APP_URL']   ?? 'http://localhost',
+    'booking_quota' => (int) ($_ENV['SERVICE_BOOKING_QUOTA'] ?? 5),
 ];
