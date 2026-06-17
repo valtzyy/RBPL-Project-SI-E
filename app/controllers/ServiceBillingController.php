@@ -1,5 +1,4 @@
 <?php
-// app/controllers/ServiceBillingController.php
 
 require_once ROOT_PATH . '/core/Controller.php';
 require_once ROOT_PATH . '/app/models/ServiceBilling.php';
@@ -15,46 +14,29 @@ class ServiceBillingController extends Controller
 
     /**
      * GET /service-billing
-     * Tampilkan daftar tagihan kasir bengkel.
+     * Tampilkan daftar tagihan kasir bengkel (PBI-12.1).
      */
     public function index(): void
     {
         $tagihan = $this->model->allWithBillingDetail();
 
-        $this->view('service-billing/test', [
+        $this->view('service-billing/index', [
             'title'   => 'Tagihan Kasir Bengkel',
-            'tagihan' => $tagihan ? $tagihan : ["Tidak ada tagihan yang ditemukan."],
+            'tagihan' => $tagihan,
         ]);
-    }
-
-     /**
-     * GET /service-billing/:plateNumber
-     * Tampilkan data tagihan dengan nomor plat kendaraan tertentu (dipanggil oleh JS di halaman index).
-     */
-    public function findByPlateNumber(string $plateNumber): void
-    {
-        header('Content-Type: application/json; charset=utf-8');
-
-        $decoded = urldecode($plateNumber);
-        $data = $this->model->findByPlateNumber($decoded);
-
-        $this->view('service-billing/test', [
-            'title'   => 'Tagihan Kasir Bengkel',
-            'tagihan' => $data ? $data : ["Tidak ada plat yg sesuai"],
-        ]);
-
     }
 
     /**
-     * GET /service-billing/detail/:plateNumber
-     * Kembalikan JSON detail satu tagihan (dipanggil oleh JS di halaman index).
+     * GET /service-billing/:id
+     * Kembalikan JSON detail satu tagihan berdasarkan work_order_id.
+     * Dipanggil oleh fetch() di service-billing/index.php saat modal dibuka.
      */
-    public function detail(string $plateNumber): void
+    public function detail(string $id): void
     {
         header('Content-Type: application/json; charset=utf-8');
 
-        $decode = urldecode($plateNumber);
-        $detail = $this->model->findBillingDetail($decode);
+        $workOrderId = (int) $id;
+        $detail      = $this->model->findBillingDetail($workOrderId);
 
         if (!$detail) {
             http_response_code(404);
@@ -62,28 +44,26 @@ class ServiceBillingController extends Controller
             return;
         }
 
-        $this->view('service-billing/detail/index', [
-            'title'   => 'Detail Tagihan Kasir Bengkel',
-            'detail' => $detail,
-        ]);
+        echo json_encode($detail);
     }
 
     /**
-     * GET /service-billing/detail/history/:plateNumber
-     * Tampilkan riwayat perubahan tagihan dengan nomor plat kendaraan tertentu (dipanggil oleh JS di halaman index).
+     * GET /service-billing/:id/history
+     * Kembalikan JSON riwayat log + sparepart untuk satu work order.
      */
-    public function detailLog(string $plateNumber): void
+    public function detailLog(string $id): void
     {
         header('Content-Type: application/json; charset=utf-8');
 
-        $decode = urldecode($plateNumber);
-        $detailLog = $this->model->getHistoryByPlateNumber($decode);
+        $workOrderId = (int) $id;
+        $history     = $this->model->getHistoryByWorkOrderId($workOrderId);
 
-        $this->view('service-billing/detail/history/index', [
-            'title'   => 'Riwayat Service Kendaraan',
-            'detailLog' => $detailLog
-        ]);
+        if (!$history) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Riwayat tidak ditemukan.']);
+            return;
+        }
+
+        echo json_encode($history);
     }
-
-    
 }
