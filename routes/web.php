@@ -73,7 +73,11 @@ $router->get('/transactions/:id',       'SalesTransactionController@show');
 $router->get('/admin/transactions',             'AdminTransactionController@index');
 $router->get('/admin/transactions/:id',         'AdminTransactionController@show');
 $router->get('/admin/transactions/:id/receipt', 'AdminTransactionController@downloadReceipt');
-$router->post('/finance/payments/:id/verify',   'FinanceController@verifyPayment');
+
+// Sprint 5 - Finance: Verifikasi Pembayaran
+$router->get('/finance/payments',                'FinanceController@index');
+$router->get('/finance/payments/:id',            'FinanceController@show');
+$router->post('/finance/payments/:id/verify',    'FinanceController@verifyPayment');
 
 // Vehicles - Sprint 4
 $router->get('/vehicles/available',     'VehicleController@available');
