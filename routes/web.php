@@ -77,3 +77,14 @@ $router->get('/customers',              'CustomerController@index');
 $router->get('/customers/create',       'CustomerController@create');
 $router->post('/customers',             'CustomerController@store');
 $router->get('/customers/:id',          'CustomerController@show');
+
+// Booking Servis - Sprint 10
+$router->get('/booking',             'BookingController@index');
+$router->get('/booking/check-slot',  'BookingController@checkSlot');
+$router->post('/booking/create-customer', 'BookingController@createCustomer');
+$router->post('/booking/store',      'BookingController@store');
+$router->get('/booking/queue',       'BookingController@queue');
+$router->post('/booking/confirm',    'BookingController@confirm');
+$router->post('/booking/reject',     'BookingController@reject');
+$router->get('/booking/inspect/:id', 'BookingController@inspectForm');
+$router->post('/booking/inspect/:id/convert', 'BookingController@convertToWorkOrder');
