@@ -18,22 +18,48 @@ class WorkOrder extends Model
         // PBI-11.1: Query JOIN multi-level melewati service_customers, customers, dan vehicles
         $query = "SELECT 
                     wo.*, 
+                    (SELECT status FROM work_order_logs WHERE work_order_id = wo.id ORDER BY created_at DESC LIMIT 1) AS latest_log_status,
                     c.name AS customer_name, 
-                    CONCAT(v.brand, ' ', v.type) AS vehicle_model, 
-                    v.color AS vehicle_color,
+                    COALESCE(CONCAT(v.brand, ' ', v.type), sb.vehicle_name, 'Tidak Diketahui') AS vehicle_model, 
+                    COALESCE(v.color, '-') AS vehicle_color,
                     sc.plate_number AS license_plate,
                     sb.booking_date 
                   FROM {$this->table} wo
-                  JOIN service_bookings sb ON wo.booking_id = sb.id
-                  JOIN service_customers sc ON sb.service_customer_id = sc.id
-                  JOIN customers c ON sc.customer_id = c.id
-                  JOIN vehicles v ON sb.vehicle_id = v.id
-                  WHERE wo.assigned_mechanic = ?
+                  LEFT JOIN service_bookings sb ON wo.booking_id = sb.id
+                  LEFT JOIN service_customers sc ON sb.service_customer_id = sc.id
+                  LEFT JOIN customers c ON sc.customer_id = c.id
+                  LEFT JOIN vehicles v ON sb.vehicle_id = v.id
                   ORDER BY wo.created_at DESC";
 
         $stmt = $this->db->prepare($query);
-        $stmt->execute([$mechanicId]);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Mengambil detail satu work order beserta informasi booking, customer, dan vehicle
+     */
+    public function getWorkOrderDetail(int $woId): array|false
+    {
+        $query = "SELECT 
+                    wo.*, 
+                    (SELECT status FROM work_order_logs WHERE work_order_id = wo.id ORDER BY created_at DESC LIMIT 1) AS latest_log_status,
+                    c.name AS customer_name, 
+                    COALESCE(CONCAT(v.brand, ' ', v.type), sb.vehicle_name, 'Tidak Diketahui') AS vehicle_model, 
+                    COALESCE(v.color, '-') AS vehicle_color,
+                    sc.plate_number AS license_plate,
+                    sb.booking_date 
+                  FROM {$this->table} wo
+                  LEFT JOIN service_bookings sb ON wo.booking_id = sb.id
+                  LEFT JOIN service_customers sc ON sb.service_customer_id = sc.id
+                  LEFT JOIN customers c ON sc.customer_id = c.id
+                  LEFT JOIN vehicles v ON sb.vehicle_id = v.id
+                  WHERE wo.id = ?
+                  LIMIT 1";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->execute([$woId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     /**

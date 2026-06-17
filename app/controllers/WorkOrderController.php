@@ -2,14 +2,17 @@
 // app/controllers/WorkOrderController.php
 
 require_once ROOT_PATH . '/app/models/WorkOrder.php';
+require_once ROOT_PATH . '/app/models/WorkOrderLog.php';
 
 class WorkOrderController extends Controller 
 {
     private WorkOrder $workOrderModel;
+    private WorkOrderLog $workOrderLogModel;
 
     public function __construct() 
     {
         $this->workOrderModel = new WorkOrder();
+        $this->workOrderLogModel = new WorkOrderLog();
     }
 
     /**
@@ -26,7 +29,7 @@ class WorkOrderController extends Controller
     }
 
     /**
-     * Menerima kiriman request POST dari tombol aksi perubahan status
+     * Menerima kiriman request POST dari tombol aksi perubahan status utama
      */
     public function updateStatus(): void 
     {
@@ -49,6 +52,55 @@ class WorkOrderController extends Controller
             
             // Jika gagal, kembalikan ke halaman utama dengan membawa informasi gagal tanpa merusak halaman
             $this->redirect('/mechanic/panel?status=failed');
+        }
+    }
+
+    /**
+     * Halaman form untuk menambahkan work order log beserta history log nya
+     */
+    public function addLogForm(): void
+    {
+        $woId = (int) $this->input('id');
+        if ($woId <= 0) {
+            $this->redirect('/mechanic/panel');
+            return;
+        }
+
+        $order = $this->workOrderModel->getWorkOrderDetail($woId);
+        if (!$order) {
+            $this->redirect('/mechanic/panel');
+            return;
+        }
+
+        $logs = $this->workOrderLogModel->getLogsByWorkOrderId($woId);
+
+        $this->view('bengkel/add_log', [
+            'order' => $order,
+            'logs'  => $logs
+        ]);
+    }
+
+    /**
+     * Menyimpan log baru ke dalam tabel log
+     */
+    public function storeLog(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $woId = (int) $this->input('work_order_id');
+            $status = $this->input('status');
+            $notes = $this->input('notes', '');
+
+            if ($woId > 0 && !empty($status)) {
+                // Mulai pencatatan ke log (hanya log status pengerjaan, tidak memodifikasi status utama)
+                $successLog = $this->workOrderLogModel->createLog($woId, $status, $notes);
+
+                if ($successLog) {
+                    $this->redirect('/mechanic/work-order/log?id=' . $woId . '&status=success');
+                    return;
+                }
+            }
+
+            $this->redirect('/mechanic/work-order/log?id=' . $woId . '&status=failed');
         }
     }
 }
