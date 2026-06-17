@@ -17,34 +17,10 @@ return new class {
             )
         ");
 
-        // 2. Buat View untuk Agregasi KPI Dealer (PBI-14.4 & PBI-14.6)
-        $db->exec("
-            CREATE OR REPLACE VIEW view_kpi_dealer AS
-            SELECT 
-                COUNT(st.id) AS total_units,
-                SUM(CASE WHEN st.status = 'lunas' THEN 1 ELSE 0 END) AS total_lunas,
-                SUM(CASE WHEN ca.status = 'rejected' THEN 1 ELSE 0 END) AS total_rejected
-            FROM sales_transactions st
-            LEFT JOIN credit_applications ca ON st.id = ca.transaction_id
-        ");
-
-        // 3. Buat View untuk Agregasi Tren Servis Bulanan (PBI-14.4 & PBI-14.7)
-        $db->exec("
-            CREATE OR REPLACE VIEW view_service_trends AS
-            SELECT 
-                MONTHNAME(date) AS month_name,
-                MONTH(date) AS month_num,
-                SUM(total_work_orders) AS total_services
-            FROM service_summary
-            GROUP BY MONTH(date), MONTHNAME(date)
-            ORDER BY month_num ASC
-        ");
     }
 
     public function down(PDO $db): void
     {
-        $db->exec("DROP VIEW IF EXISTS view_service_trends");
-        $db->exec("DROP VIEW IF EXISTS view_kpi_dealer");
         $db->exec("DROP TABLE IF EXISTS purchase_orders");
     }
 };

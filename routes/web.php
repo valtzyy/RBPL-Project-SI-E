@@ -27,5 +27,8 @@ $router->get('/sparepart/po/terima', 'SparepartController@terimaPO'); // Jika me
 $router->get('/dashboard',            'DashboardController@index');
 
 // API Endpoints untuk Data Visualisasi (Chart.js / Recharts)
-$router->get('/api/dashboard/kpi',    'DashboardController@apiKpi');
-$router->get('/api/dashboard/trends', 'DashboardController@apiTrenServis');
+$router->get('/api/dashboard/kpi',            'DashboardController@apiKpi');
+$router->get('/api/dashboard/trends',         'DashboardController@apiTrenServis');
+$router->get('/api/dashboard/sales-trends',   'DashboardController@apiSalesTrends');
+$router->get('/api/dashboard/inventory-kpi',  'DashboardController@apiInventoryKpi');
+$router->get('/api/dashboard/details',        'DashboardController@apiDetails');
