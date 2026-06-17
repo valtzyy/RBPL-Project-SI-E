@@ -1,5 +1,9 @@
 <h2>Transaksi Penjualan Baru</h2>
 
+<h2>Transaksi Penjualan Baru</h2>
+
+<h2>Transaksi Penjualan Baru</h2>
+
 <form method="POST" action="/transactions">
 
     <h3>Data Pelanggan</h3>
@@ -8,19 +12,27 @@
         <option value="">-- Pilih Pelanggan --</option>
         <?php foreach ($customers as $customer): ?>
             <option value="<?= $customer['id'] ?>">
-                <?= $customer['name'] ?> - <?= $customer['ktp_number'] ?>
+                <?= $customer['name'] ?> - <?= $customer['phone'] ?>
             </option>
         <?php endforeach; ?>
     </select>
+
+    <br>
+    <label>Nomor KTP</label>
+    <input type="text" name="ktp_number" required placeholder="16 digit NIK">
+
+    <br>
+    <label>Alamat</label>
+    <textarea name="address" required placeholder="Alamat sesuai KTP"></textarea>
 
     <h3>Pilih Kendaraan</h3>
     <select name="vehicle_id" required>
         <option value="">-- Pilih Kendaraan --</option>
         <?php foreach ($vehicles as $vehicle): ?>
             <option value="<?= $vehicle['id'] ?>">
-                <?= $vehicle['brand'] ?> <?= $vehicle['type'] ?> - 
-                <?= $vehicle['color'] ?> - 
-                Rp <?= number_format($vehicle['price'], 0, ',', '.') ?> - 
+                <?= $vehicle['brand'] ?> <?= $vehicle['type'] ?> -
+                <?= $vehicle['color'] ?> -
+                Rp <?= number_format($vehicle['price'], 0, ',', '.') ?> -
                 Stok: <?= $vehicle['stock_quantity'] ?>
             </option>
         <?php endforeach; ?>

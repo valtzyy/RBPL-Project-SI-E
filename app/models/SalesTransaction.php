@@ -13,7 +13,7 @@ class SalesTransaction extends Model
                 COALESCE(c.phone, '-') AS customer_phone,
                 COALESCE(v.brand, '-') AS brand,
                 COALESCE(v.type, '-') AS type,
-                COALESCE(v.color, '-') AS color,
+                COALESCE(v.color, '-') AS color,                   
                 COALESCE(v.price, 0) AS price,
                 COALESCE(u.name, '-') AS sales_name
             FROM {$this->table} st
@@ -40,14 +40,13 @@ class SalesTransaction extends Model
 
         // 2. Insert ke tabel bridge buyer_customers sesuai struktur ERD
         $stmt = $this->db->prepare("
-            INSERT INTO buyer_customers (customer_id, address, ktp_number, vehicle_id)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO buyer_customers (customer_id, address, ktp_number)
+            VALUES (?, ?, ?)
         ");
         $stmt->execute([
             $customer['id'],
             $customer['address'] ?? '-',
-            $customer['ktp_number'] ?? '-',
-            $data['vehicle_id']
+            $customer['ktp_number'] ?? '-'
         ]);
         
         $buyerCustomerId = (int) $this->db->lastInsertId();

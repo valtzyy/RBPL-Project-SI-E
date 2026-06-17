@@ -45,13 +45,15 @@ $router->post('/procurement/receipt/store', 'ProcurementController@storeReceipt'
 
 // Transactions - Sprint 4
 $router->get('/transactions',           'SalesTransactionController@index');
-$router->post('/transactions',          'SalesTransactionController@store');
 $router->get('/transactions/create',    'SalesTransactionController@create');
 $router->get('/transactions/:id',       'SalesTransactionController@show');
+$router->post('/transactions',          'SalesTransactionController@store');
 
 // Vehicles - Sprint 4
 $router->get('/vehicles/available',     'VehicleController@available');
 
 // Customers - Sprint 4
 $router->get('/customers',              'CustomerController@index');
+$router->get('/customers/create',       'CustomerController@create');
+$router->post('/customers',             'CustomerController@store');
 $router->get('/customers/:id',          'CustomerController@show');
