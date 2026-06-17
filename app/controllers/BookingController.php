@@ -53,11 +53,9 @@ class BookingController extends Controller {
 
         $this->jsonResponse([
             'date'      => $date,
-            'available' => $remaining > 0,
+            'available' => true,
             'remaining' => $remaining,
-            'message'   => $remaining > 0
-                ? "Slot tersedia: {$remaining} sisa"
-                : 'Slot penuh untuk tanggal ini.'
+            'message'   => 'Slot tersedia'
         ]);
     }
 

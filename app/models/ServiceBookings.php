@@ -32,17 +32,11 @@ class ServiceBooking extends Model {
     }
 
     public function isSlotAvailable(string $date): bool {
-        if ($this->countActiveWorkOrders() >= 5) {
-            return false;
-        }
-        return $this->countBookingsByDate($date) < $this->quota;
+        return true; // Booking tidak dibatasi oleh kuota harian atau kapasitas bengkel
     }
 
     public function getRemainingSlot(string $date): int {
-        if ($this->countActiveWorkOrders() >= 5) {
-            return 0;
-        }
-        return max(0, $this->quota - $this->countBookingsByDate($date));
+        return -1; // -1 melambangkan kuota tanpa batas (unlimited)
     }
 
     // Simpan booking baru — sesuai skema final
