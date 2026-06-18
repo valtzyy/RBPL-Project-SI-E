@@ -1,0 +1,123 @@
+# Dokumentasi Teknis Sprint 9: Kredit & Leasing (Approval & Uang Muka)
+
+Dokumentasi ini dibuat untuk mempermudah anggota tim lain dan dosen dalam memahami arsitektur, struktur kode, aliran data, serta keamanan yang telah dibangun untuk modul **Kredit & Leasing** pada aplikasi ini.
+
+Seluruh fitur telah selesai diimplementasikan menggunakan arsitektur **MVC (Model-View-Controller)** berbasis **PDO Native**, serta terhubung secara aman ke **Database Cloud Aiven MySQL**.
+
+---
+
+## 📂 1. Struktur Folder & Berkas Sprint 9
+
+Seluruh kode terorganisir dengan rapi dalam folder MVC sebagai berikut:
+
+```text
+RBPL-Project-SI-E/
+│
+├── app/
+│   ├── controllers/
+│   │   ├── WebhookApprovalController.php   # Menangani API persetujuan leasing (pihak ketiga)
+│   │   ├── VerifikasiDpController.php      # Menangani pencatatan pelunasan DP oleh Finance
+│   │   ├── UploadDokumenController.php     # Menangani pengunggahan berkas secara aman (KTP, KK, SlipGaji)
+│   │   ├── DebugController.php             # [TEST ONLY] Merender halaman pengujian (Testing Panel)
+│   │   └── DebugResetController.php        # [TEST ONLY] Mereset status data uji coba di database
+│   │
+│   ├── models/
+│   │   ├── CreditApplication.php           # Model untuk tabel credit_applications
+│   │   ├── CreditDecision.php              # Model untuk tabel credit_decisions
+│   │   ├── CreditDocument.php              # Model untuk tabel credit_documents
+│   │   ├── DownPayment.php                 # Model untuk tabel down_payments
+│   │   └── SalesTransaction.php            # Model untuk tabel sales_transactions
+│   │
+│   └── views/
+│       └── debug_panel.php                 # View uji coba plain HTML untuk tim FE & QA
+│
+├── routes/
+│   └── web.php                             # Registrasi rute URL aplikasi
+│
+└── storage/
+    └── uploads/
+        └── contracts/                      # Direktori penyimpanan fisik file unggahan
+```
+
+---
+
+## ⚡ 2. Alur Kerja Rute (Routes)
+
+Rute-rute berikut telah didaftarkan pada file `routes/web.php` dan terhubung otomatis ke Controller yang relevan:
+
+| URL Endpoint | Method | Controller & Method | Deskripsi |
+| :--- | :---: | :--- | :--- |
+| `/webhook-approval` | `POST` | `WebhookApprovalController@process` | Memproses respon persetujuan kredit dari leasing luar |
+| `/verifikasi-dp` | `POST` | `VerifikasiDpController@process` | Memverifikasi pembayaran uang muka oleh Finance |
+| `/upload-dokumen` | `POST` | `UploadDokumenController@process` | Mengunggah dokumen pendukung (KTP/KK/SlipGaji) |
+| `/debug-panel` | `GET` | `DebugController@index` | [Dev Only] Membuka panel UI testing |
+| `/debug-reset` | `POST` | `DebugResetController@process` | [Dev Only] Mereset data pengujian di database |
+
+---
+
+## ⚙️ 3. Deskripsi Fungsionalitas File
+
+### A. Controllers (Logika Bisnis)
+1. **`WebhookApprovalController.php`**
+   * Menerima payload JSON dari leasing luar berisi `id_kredit`, `status_approval` ('disetujui'/'ditolak'), dan `catatan`.
+   * Mengupdate status kelayakan kredit di database ke status `'approved'` atau `'rejected'`.
+   * Mencatat data riwayat keputusan ke tabel `credit_decisions`.
+   * Memanggil logika **PBI-9.6** (jika kredit disetujui, periksa apakah DP sudah lunas. Jika ya, ubah status transaksi utama menjadi `'lunas'`).
+2. **`VerifikasiDpController.php`**
+   * Menerima input data `id_kredit`, `nominal_dibayar`, dan `verified_by` (ID staf Finance).
+   * Mencatat tanggal dan nominal pelunasan ke tabel `down_payments`.
+   * Memanggil logika **PBI-9.6** (jika DP dilunasi, periksa apakah status kredit sudah disetujui. Jika ya, ubah status transaksi utama menjadi `'lunas'`).
+3. **`UploadDokumenController.php`**
+   * Mengamankan proses upload berkas dari user.
+   * Mendukung upload file dokumen gambar (JPG, JPEG, PNG) dan dokumen dokumen (PDF) berukuran maksimal 2MB.
+   * Menyimpan path berkas ke database `credit_documents` dengan type sesuai pilihan user (`KTP`, `KK`, atau `SlipGaji`).
+
+### B. Models (Manipulasi Database)
+* Seluruh model mewarisi kelas dasar `Model.php` yang mengemas kueri standar PDO (`find`, `create`, `update`, `delete`).
+* **`CreditApplication`** memiliki method custom `findWithTransactionStatus` untuk menggabungkan data status transaksi penjualan utama secara dinamis menggunakan perintah SQL `LEFT JOIN`.
+
+### C. View Uji Coba (`debug_panel.php`)
+* Didesain dengan **Plain HTML** tanpa gaya CSS berlebihan agar tim Frontend (FE) dapat mendesain ulang secara modular.
+* Menyediakan form interaktif berbasis Javascript `Fetch API` untuk menguji `/webhook-approval`, `/verifikasi-dp`, `/upload-dokumen`, serta tombol reset database `/debug-reset`.
+
+---
+
+## 🔄 4. Logika Otomatis PBI-9.6 (Gerbang Serah Terima)
+
+Modul delivery/serah terima hanya mendeteksi unit mobil yang siap dikirim apabila status transaksi penjualan di tabel `sales_transactions` telah bernilai `'lunas'`. 
+
+Sebuah transaksi penjualan kredit dinyatakan `'lunas'` secara otomatis apabila kedua kondisi berikut terpenuhi:
+1. **Kredit disetujui oleh leasing** (`credit_applications.status = 'approved'`).
+2. **Down Payment sudah dibayar** (`down_payments.paid_at` terisi).
+
+Aliran logikanya digambarkan pada diagram berikut:
+
+### Skenario A: Persetujuan Kredit Terlebih Dahulu (Leasing Approval First)
+1. **Penerimaan Keputusan Leasing:** Status kredit diupdate menjadi `'approved'` di tabel `credit_applications`.
+2. **Pengecekan Otomatis:** Sistem memeriksa tabel `down_payments` untuk transaksi terkait:
+   * **Jika DP Sudah Lunas:** Status transaksi (`sales_transactions.status`) otomatis diupdate menjadi **`'lunas'`** (siap masuk antrean serah terima).
+   * **Jika DP Belum Lunas:** Status transaksi tetap **`'process'`** (menunggu pembayaran DP dari pelanggan).
+
+### Skenario B: Pelunasan Uang Muka Terlebih Dahulu (DP Payment First)
+1. **Pencatatan DP oleh Finance:** Tanggal pelunasan dicatat di kolom `paid_at` pada tabel `down_payments`.
+2. **Pengecekan Otomatis:** Sistem memeriksa status pengajuan kredit terkait di tabel `credit_applications`:
+   * **Jika Kredit Sudah Approved:** Status transaksi (`sales_transactions.status`) otomatis diupdate menjadi **`'lunas'`** (siap masuk antrean serah terima).
+   * **Jika Kredit Belum Approved:** Status transaksi tetap **`'process'`** (menunggu keputusan persetujuan dari pihak leasing).
+
+---
+
+## 🔒 5. Fitur Keamanan yang Diterapkan
+
+1. **SQL Injection Prevention:**
+   Seluruh kueri SQL di dalam model menggunakan **PDO Prepared Statements** dengan *named placeholders* (contoh: `:id_kredit`, `:status`). Ini menjamin input data dari user disaring secara aman sebelum dieksekusi oleh MySQL.
+2. **Database Transactions:**
+   Untuk mencegah terjadinya kegagalan parsial (misal data riwayat keputusan tersimpan tetapi status pengajuan gagal diupdate), controller dibungkus dalam blok transaksi:
+   ```php
+   $db->beginTransaction();
+   // ... kueri update 1
+   // ... kueri insert 2
+   $db->commit();
+   ```
+   Jika salah satu kueri gagal, perintah `rollBack()` akan otomatis mengembalikan database ke status semula secara aman.
+3. **Pengecekan MIME Type Secara Riil:**
+   Untuk mengantisipasi unggahan file berbahaya (seperti script php terselubung dengan ekstensi `.jpg`), sistem memeriksa konten fisik file menggunakan fallback dinamis yang tangguh (`finfo_open` ➔ `mime_content_type` ➔ `$_FILES['type']`).

@@ -163,9 +163,20 @@ $router->get('/kasir/riwayat',   'KasirController@riwayat');
 // ============================================================
 $router->post('/webhook-approval', 'WebhookApprovalController@process');
 $router->post('/verifikasi-dp',    'VerifikasiDpController@process');
-$router->post('/upload-kontrak',   'UploadKontrakController@process');
-$router->post('/reset-sprint9',    'ResetSprint9Controller@process');
-$router->get('/test-sprint9',      'TestSprint9Controller@index');
+
+// Rute Upload (Dukungan untuk path lama & generik)
+$router->post('/upload-kontrak',   'UploadDokumenController@process');
+$router->post('/upload-dokumen',   'UploadDokumenController@process');
+
+// Rute Reset / Pembersih Data Uji Coba (Hanya untuk Debugging)
+$router->post('/reset-sprint9',    'DebugResetController@process');
+$router->post('/reset-test-data',  'DebugResetController@process');
+$router->post('/debug-reset',      'DebugResetController@process');
+
+// Rute Test/Debug Panel (Hanya untuk Uji Coba Internal Developer)
+$router->get('/test-sprint9',      'DebugController@index');
+$router->get('/test-panel',        'DebugController@index');
+$router->get('/debug-panel',       'DebugController@index');
 
 // API - Sparepart
 $router->get('/api/sparepart/test', 'SparepartController@testView');
