@@ -21,7 +21,7 @@ $router->get('/admin/users/create',         'UserManagementController@create');
 $router->post('/admin/users',               'UserManagementController@store');
 $router->get('/admin/users/:id/edit',       'UserManagementController@edit');
 $router->post('/admin/users/:id',           'UserManagementController@update');
-$router->post('/admin/users/:id/deactivate','UserManagementController@deactivate');
+$router->post('/admin/users/:id/deactivate', 'UserManagementController@deactivate');
 
 // Profile
 $router->get('/change-password',  'ProfileController@editPassword');
@@ -114,4 +114,5 @@ $router->get('/service-billing/detail/history/:plateNumber',  'ServiceBillingCon
 
 $router->get('/kasir/dashboard', 'KasirController@dashboard');
 $router->get('/kasir/nota',      'KasirController@nota');
+$router->get('/kasir/nota/cetak/:id', 'KasirController@cetakNota');
 $router->get('/kasir/riwayat',   'KasirController@riwayat');
