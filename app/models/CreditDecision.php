@@ -1,7 +1,5 @@
 <?php
 
-require_once ROOT_PATH . '/core/Model.php';
-
 // Model untuk tabel credit_decisions (simpan keputusan approved/rejected dari leasing)
 class CreditDecision extends Model
 {

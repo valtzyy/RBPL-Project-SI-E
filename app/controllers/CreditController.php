@@ -396,7 +396,7 @@ class CreditController extends Controller
 
         // 6+7. Upload ke Cloudinary & simpan public_id ke tabel credit_documents
         try {
-            $publicId = $this->cloudinary->uploadCreditDocument($tmpPath, $fileType);
+            $publicId = $this->cloudinary->uploadPrivateImage($tmpPath, "credit/{$fileType}");
             $this->documentModel->create([
                 'credit_application_id' => $applicationId,
                 'file_type'             => $fileType,
@@ -415,5 +415,53 @@ class CreditController extends Controller
         // 9. Redirect ke halaman status pengajuan
         header('Location: /credit/status?app=' . $applicationId);
         exit;
+    }
+
+    public function uploadForm()
+    {
+        // 1. Cek login
+        if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);
+            exit('Login dulu');
+        }
+
+        // 2. Ambil application_id dari query string
+        $applicationId = (int) ($_GET['app'] ?? 0);
+        if ($applicationId <= 0) {
+            http_response_code(400);
+            exit('Application ID tidak valid');
+        }
+
+        // 3. Ambil data pengajuan
+        $application = $this->applicationModel->find($applicationId);
+        if (!$application) {
+            http_response_code(404);
+            exit('Pengajuan tidak ditemukan');
+        }
+
+        // 4. Ambil data customer & vehicle dari tabel terkait
+        $customerName = '';
+        $vehiclename = '';
+        $transaction = $this->transactionModel->findWithPaymentType($application['transaction_id']);
+        if ($transaction) {
+            $db = \Database::getInstance();
+
+            $stmt = $db->prepare("SELECT name FROM customers WHERE id = ?");
+            $stmt->execute([$transaction['customer_id']]);
+            $customerName = $stmt->fetchColumn();
+
+            $stmt = $db->prepare("SELECT name FROM vehicles WHERE id = ?");
+            $stmt->execute([$transaction['vehicle_id']]);
+            $vehiclename = $stmt->fetchColumn();
+        }
+
+        // 5. Render view dengan data
+        $this->view('credit/upload-document', [
+            'applicationId'  => $application['id'],
+            'applicationNo'  => 'CRD-' . $application['id'],
+            'customerName' => $customerName,
+            'vehicle'  => $vehiclename,
+            'leasing' => $application['leasing_name'] ?? '',
+        ]);
     }
 }

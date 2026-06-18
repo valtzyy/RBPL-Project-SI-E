@@ -1,7 +1,5 @@
 <?php
 
-require_once ROOT_PATH . '/core/Model.php';
-
 class CreditDocument extends Model
 {
     protected string $table = 'credit_documents';
