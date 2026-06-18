@@ -1,14 +1,20 @@
 <?php
 // app/controllers/KasirController.php
 //
-// PERBAIKAN PBI-12.4 (fokus saja, bagian dashboard & riwayat tidak diubah):
-//   - nota() sebelumnya placeholder, sekarang memanggil NotaServis::allDone()
-//   - Ditambahkan method cetakNota() yang sebelumnya tidak ada sama sekali,
-//     sehingga app/views/kasir/nota_cetak.php bisa diakses dari browser
+// PERBAIKAN PBI-12.4 (sebelumnya):
+//   - nota() disambungkan ke NotaServis::allDone()
+//   - cetakNota() ditambahkan (sebelumnya tidak ada)
+//
+// PERBAIKAN PBI-12.6 (fokus saat ini):
+//   - riwayat() sebelumnya placeholder, sekarang menerima query string ?q=
+//     dan memanggil RiwayatServis::cariRiwayat()
+//   - Ditambahkan method historicalLogs() yang sebelumnya tidak ada sama sekali,
+//     dipanggil oleh modal "Lihat Log" di halaman riwayat.php (endpoint JSON)
 
 require_once ROOT_PATH . '/core/Controller.php';
 require_once ROOT_PATH . '/app/models/KasirDashboard.php';
 require_once ROOT_PATH . '/app/models/NotaServis.php';
+require_once ROOT_PATH . '/app/models/RiwayatServis.php';
 
 class KasirController extends Controller
 {
@@ -18,10 +24,14 @@ class KasirController extends Controller
     /** @var NotaServis */
     private $notaModel;
 
+    /** @var RiwayatServis */
+    private $riwayatModel;
+
     public function __construct()
     {
-        $this->model     = new KasirDashboard();
-        $this->notaModel = new NotaServis();
+        $this->model        = new KasirDashboard();
+        $this->notaModel    = new NotaServis();
+        $this->riwayatModel = new RiwayatServis();
     }
 
     /**
@@ -88,13 +98,48 @@ class KasirController extends Controller
 
     /**
      * GET /kasir/riwayat
-     * (Tidak diubah — di luar fokus PBI-12.4, masih placeholder seperti sebelumnya)
+     * GET /kasir/riwayat?q=keyword
+     * PBI-12.6 — Halaman pencarian riwayat servis by chassis/mesin/nama pelanggan.
+     *
+     * Sebelumnya method ini placeholder kosong, tidak memanggil model apapun
+     * dan tidak membaca query string ?q=. Sekarang disambungkan ke
+     * RiwayatServis::cariRiwayat().
      */
     public function riwayat(): void
     {
+        $keyword = trim($_GET['q'] ?? '');
+        $hasil   = $keyword !== '' ? $this->riwayatModel->cariRiwayat($keyword) : [];
+
         $this->view('kasir/riwayat', [
-            'title'      => 'Riwayat Servis',
-            'activePage' => 'riwayat',
+            'title'        => 'Riwayat Servis',
+            'activePage'   => 'riwayat',
+            'pendingCount' => $this->model->getRingkasanHarian()['pending'],
+            'keyword'      => $keyword,
+            'hasil'        => $hasil,
         ]);
+    }
+
+    /**
+     * GET /kasir/riwayat/logs/:id
+     * PBI-12.7 — Endpoint JSON historical logs, dipanggil fetch() dari
+     * modal "Lihat Log" di kasir/riwayat.php.
+     *
+     * Method ini SEBELUMNYA TIDAK ADA SAMA SEKALI.
+     * Tanpa method dan route ini, tombol "Lihat Log" di halaman riwayat
+     * akan selalu gagal walau view dan model sudah lengkap.
+     */
+    public function historicalLogs(string $id): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $data = $this->riwayatModel->getHistoricalLogs((int) $id);
+
+        if (!$data) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Work order tidak ditemukan.']);
+            return;
+        }
+
+        echo json_encode($data);
     }
 }

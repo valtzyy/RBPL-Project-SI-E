@@ -1,6 +1,11 @@
 <?php
 // app/models/RiwayatServis.php
-// PBI-12.6 & PBI-12.7 — Pencarian riwayat service + historical logs per kendaraan
+// PBI-12.6 — Pencarian riwayat service by chassis/engine/nama pelanggan
+// PBI-12.7 — Endpoint historical logs per kendaraan (dipakai modal di halaman PBI-12.6)
+//
+// PERBAIKAN (sesuai hasil DESCRIBE database real):
+//   - service_bookings.customer_id  -> TIDAK ADA, nama kolom aslinya service_customer_id
+//     (muncul di 2 query: cariRiwayat() dan getHistoricalLogs())
 
 require_once ROOT_PATH . '/core/Model.php';
 
@@ -10,15 +15,11 @@ class RiwayatServis extends Model
 
     /**
      * PBI-12.6
-     * Cari riwayat servis berdasarkan nomor chassis atau nama pelanggan.
+     * Cari riwayat servis berdasarkan nomor chassis, nomor mesin, atau nama pelanggan.
      *
      * Catatan schema: tabel vehicles tidak punya plate_number.
-     * Pencarian by "plat" dari PBI-12.6 dialihkan ke chassis_number
-     * karena itu satu-satunya identifier unik kendaraan di schema saat ini.
-     * Jika sprint lain menambah kolom plate_number, tambahkan ke kondisi OR di bawah.
-     *
-     * @param string $keyword  Nomor chassis, atau nama pelanggan
-     * @return array
+     * Pencarian by "plat" dialihkan ke chassis_number — satu-satunya
+     * identifier unik kendaraan yang tersedia di schema saat ini.
      */
     public function cariRiwayat(string $keyword): array
     {
@@ -26,33 +27,33 @@ class RiwayatServis extends Model
 
         $stmt = $this->db->prepare("
             SELECT
-                wo.id               AS work_order_id,
-                wo.status           AS wo_status,
-                wo.description      AS wo_description,
-                wo.created_at       AS wo_created_at,
+                wo.id                AS work_order_id,
+                wo.status            AS wo_status,
+                wo.description       AS wo_description,
+                wo.created_at        AS wo_created_at,
 
                 sb.booking_date,
 
-                c.name              AS customer_name,
-                c.phone             AS customer_phone,
+                c.name               AS customer_name,
+                c.phone              AS customer_phone,
 
                 v.brand,
-                v.type              AS vehicle_type,
+                v.type               AS vehicle_type,
                 v.color,
                 v.chassis_number,
                 v.engine_number,
 
-                u.name              AS mechanic_name,
+                u.name               AS mechanic_name,
 
                 COALESCE(SUM(sp.price * su.quantity), 0)    AS total_komponen,
                 COALESCE(COUNT(DISTINCT wol.id), 0)         AS jumlah_log,
                 COALESCE(COUNT(DISTINCT su.id), 0)          AS jumlah_sparepart
 
             FROM work_orders wo
-            JOIN service_bookings sb  ON wo.booking_id        = sb.id
-            JOIN customers c          ON sb.customer_id       = c.id
-            JOIN vehicles  v          ON sb.vehicle_id        = v.id
-            LEFT JOIN users u         ON wo.assigned_mechanic = u.id
+            JOIN service_bookings sb  ON wo.booking_id          = sb.id
+            JOIN customers c          ON sb.service_customer_id = c.id
+            JOIN vehicles  v          ON sb.vehicle_id          = v.id
+            LEFT JOIN users u         ON wo.assigned_mechanic   = u.id
             LEFT JOIN sparepart_usages su  ON su.work_order_id = wo.id
             LEFT JOIN spareparts sp        ON sp.id = su.sparepart_id
             LEFT JOIN work_order_logs wol  ON wol.work_order_id = wo.id
@@ -87,40 +88,36 @@ class RiwayatServis extends Model
 
     /**
      * PBI-12.7
-     * Query historical logs per work order — semua catatan mekanik beserta timestampnya.
-     * Dipanggil via endpoint GET /kasir/riwayat/logs/:work_order_id → return JSON.
-     *
-     * @param int $workOrderId
-     * @return array  [ 'header' => [...], 'logs' => [...], 'spareparts' => [...] ]
+     * Query historical logs per work order — dipakai oleh modal "Lihat Log"
+     * di halaman riwayat (PBI-12.6).
      */
     public function getHistoricalLogs(int $workOrderId): array|false
     {
-        // Header kendaraan
         $stmtHeader = $this->db->prepare("
             SELECT
-                wo.id               AS work_order_id,
-                wo.status           AS wo_status,
-                wo.description      AS wo_description,
-                wo.created_at       AS wo_created_at,
+                wo.id                AS work_order_id,
+                wo.status            AS wo_status,
+                wo.description       AS wo_description,
+                wo.created_at        AS wo_created_at,
 
                 sb.booking_date,
 
-                c.name              AS customer_name,
-                c.phone             AS customer_phone,
+                c.name               AS customer_name,
+                c.phone              AS customer_phone,
 
                 v.brand,
-                v.type              AS vehicle_type,
+                v.type               AS vehicle_type,
                 v.color,
                 v.chassis_number,
                 v.engine_number,
 
-                u.name              AS mechanic_name
+                u.name               AS mechanic_name
 
             FROM work_orders wo
-            JOIN service_bookings sb  ON wo.booking_id        = sb.id
-            JOIN customers c          ON sb.customer_id       = c.id
-            JOIN vehicles  v          ON sb.vehicle_id        = v.id
-            LEFT JOIN users u         ON wo.assigned_mechanic = u.id
+            JOIN service_bookings sb  ON wo.booking_id          = sb.id
+            JOIN customers c          ON sb.service_customer_id = c.id
+            JOIN vehicles  v          ON sb.vehicle_id          = v.id
+            LEFT JOIN users u         ON wo.assigned_mechanic   = u.id
 
             WHERE wo.id = ?
             LIMIT 1
@@ -132,7 +129,8 @@ class RiwayatServis extends Model
             return false;
         }
 
-        // Timeline log mekanik (PBI-12.7 inti)
+        // Timeline log mekanik
+        // Status real: started, paused, checked, rework, closed
         $stmtLogs = $this->db->prepare("
             SELECT
                 id,

@@ -116,3 +116,4 @@ $router->get('/kasir/dashboard', 'KasirController@dashboard');
 $router->get('/kasir/nota',      'KasirController@nota');
 $router->get('/kasir/nota/cetak/:id', 'KasirController@cetakNota');
 $router->get('/kasir/riwayat',   'KasirController@riwayat');
+$router->get('/kasir/riwayat/logs/:id', 'KasirController@historicalLogs');
