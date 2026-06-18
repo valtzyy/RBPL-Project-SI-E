@@ -1,6 +1,12 @@
 <?php
 // app/models/NotaServis.php
 // PBI-12.4 — Pembentuk nota servis resmi untuk pelanggan
+//
+// PERBAIKAN (sesuai hasil DESCRIBE database real):
+//   - service_bookings.customer_id  -> TIDAK ADA, nama kolom aslinya service_customer_id
+//   - customers.address             -> TIDAK ADA, dihapus dari query
+//   - work_order_logs.status        -> enum('started','paused','checked','rework','closed')
+//                                       tidak ada value 'done' di enum ini
 
 require_once ROOT_PATH . '/core/Model.php';
 
@@ -15,31 +21,30 @@ class NotaServis extends Model
     {
         $stmt = $this->db->query("
             SELECT
-                wo.id               AS work_order_id,
-                wo.created_at       AS wo_created_at,
+                wo.id                AS work_order_id,
+                wo.created_at        AS wo_created_at,
 
                 sb.booking_date,
 
-                c.name              AS customer_name,
-                c.phone             AS customer_phone,
-                c.address           AS customer_address,
+                c.name               AS customer_name,
+                c.phone              AS customer_phone,
 
                 v.brand,
-                v.type              AS vehicle_type,
+                v.type               AS vehicle_type,
                 v.color,
                 v.chassis_number,
                 v.engine_number,
 
-                u.name              AS mechanic_name,
+                u.name               AS mechanic_name,
 
-                COALESCE(SUM(sp.price * su.quantity), 0)    AS total_komponen,
-                COALESCE(COUNT(DISTINCT wol.id), 0)         AS jumlah_log
+                COALESCE(SUM(sp.price * su.quantity), 0)  AS total_komponen,
+                COALESCE(COUNT(DISTINCT wol.id), 0)       AS jumlah_log
 
             FROM work_orders wo
-            JOIN service_bookings sb  ON wo.booking_id        = sb.id
-            JOIN customers c          ON sb.customer_id       = c.id
-            JOIN vehicles  v          ON sb.vehicle_id        = v.id
-            LEFT JOIN users u         ON wo.assigned_mechanic = u.id
+            JOIN service_bookings sb  ON wo.booking_id          = sb.id
+            JOIN customers c          ON sb.service_customer_id = c.id
+            JOIN vehicles  v          ON sb.vehicle_id          = v.id
+            LEFT JOIN users u         ON wo.assigned_mechanic   = u.id
             LEFT JOIN sparepart_usages su  ON su.work_order_id = wo.id
             LEFT JOIN spareparts sp        ON sp.id = su.sparepart_id
             LEFT JOIN work_order_logs wol  ON wol.work_order_id = wo.id
@@ -49,7 +54,7 @@ class NotaServis extends Model
             GROUP BY
                 wo.id, wo.created_at,
                 sb.booking_date,
-                c.name, c.phone, c.address,
+                c.name, c.phone,
                 v.brand, v.type, v.color, v.chassis_number, v.engine_number,
                 u.name
 
@@ -74,29 +79,28 @@ class NotaServis extends Model
     {
         $stmt = $this->db->prepare("
             SELECT
-                wo.id               AS work_order_id,
-                wo.description      AS wo_description,
-                wo.created_at       AS wo_created_at,
+                wo.id                AS work_order_id,
+                wo.description       AS wo_description,
+                wo.created_at        AS wo_created_at,
 
                 sb.booking_date,
 
-                c.name              AS customer_name,
-                c.phone             AS customer_phone,
-                c.address           AS customer_address,
+                c.name               AS customer_name,
+                c.phone              AS customer_phone,
 
                 v.brand,
-                v.type              AS vehicle_type,
+                v.type               AS vehicle_type,
                 v.color,
                 v.chassis_number,
                 v.engine_number,
 
-                u.name              AS mechanic_name
+                u.name               AS mechanic_name
 
             FROM work_orders wo
-            JOIN service_bookings sb  ON wo.booking_id        = sb.id
-            JOIN customers c          ON sb.customer_id       = c.id
-            JOIN vehicles  v          ON sb.vehicle_id        = v.id
-            LEFT JOIN users u         ON wo.assigned_mechanic = u.id
+            JOIN service_bookings sb  ON wo.booking_id          = sb.id
+            JOIN customers c          ON sb.service_customer_id = c.id
+            JOIN vehicles  v          ON sb.vehicle_id          = v.id
+            LEFT JOIN users u         ON wo.assigned_mechanic   = u.id
 
             WHERE wo.id = ? AND wo.status = 'done'
             LIMIT 1
@@ -138,7 +142,7 @@ class NotaServis extends Model
         // Nomor nota: format NS-YYYYMM-{id}
         $data['nomor_nota'] = 'NS-'
             . date('Ym', strtotime($data['wo_created_at']))
-            . '-' . str_pad($workOrderId, 4, '0', STR_PAD_LEFT);
+            . '-' . str_pad((string)$workOrderId, 4, '0', STR_PAD_LEFT);
 
         return $data;
     }
