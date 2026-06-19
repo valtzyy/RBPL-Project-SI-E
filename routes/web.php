@@ -98,3 +98,4 @@ $router->get('/delivery/:id',                  'DeliveryScheduleController@show'
 $router->get('/delivery/:id/document',         'DeliveryScheduleController@document');
 $router->post('/delivery',                     'DeliveryScheduleController@store');
 $router->post('/delivery/:id/confirm',         'DeliveryScheduleController@confirm');
+$router->post('/delivery/:id/fail', 'DeliveryScheduleController@fail');

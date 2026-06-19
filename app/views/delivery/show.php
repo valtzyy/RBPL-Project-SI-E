@@ -15,7 +15,8 @@
             <tr><td style="padding:8px; font-weight:bold;">Catatan</td><td style="padding:8px;"><?= htmlspecialchars($schedule['notes'] ?? '-') ?></td></tr>
         </table>
     </div>
-    <?php if ($schedule['status'] !== 'completed'): ?>
+
+    <?php if ($schedule['status'] === 'scheduled'): ?>
     <div style="border:1px solid #ccc; border-radius:8px; padding:20px; margin-bottom:20px;">
         <h2 style="margin-top:0; font-size:16px; color:#555;">Tanda Tangan Customer</h2>
         <canvas id="signatureCanvas" width="600" height="200" style="border:2px dashed #aaa; border-radius:8px; cursor:crosshair; display:block;"></canvas>
@@ -24,6 +25,9 @@
             <input type="hidden" name="signature_data" id="signatureData">
             <a href="/delivery" style="padding:8px 16px; background:#6c757d; color:white; text-decoration:none; border-radius:4px;">Kembali</a>
             <button type="button" onclick="submitConfirm()" style="padding:8px 16px; background:#28a745; color:white; border:none; border-radius:4px; cursor:pointer; margin-left:8px;">Konfirmasi Serah Terima</button>
+        </form>
+        <form method="POST" action="/delivery/<?= $schedule['id'] ?>/fail" style="margin-top:10px;">
+            <button type="submit" onclick="return confirm('Tandai jadwal ini sebagai gagal?')" style="padding:8px 16px; background:#dc3545; color:white; border:none; border-radius:4px; cursor:pointer;">Tandai Gagal</button>
         </form>
     </div>
     <script>
@@ -40,15 +44,24 @@
             document.getElementById('confirmForm').submit();
         }
     </script>
-    <?php else: ?>
+
+    <?php elseif ($schedule['status'] === 'confirmed'): ?>
     <div style="border:1px solid #ccc; border-radius:8px; padding:20px;">
         <h2 style="margin-top:0; font-size:16px; color:#555;">Serah Terima Sudah Selesai</h2>
         <?php if (!empty($signatureUrl)): ?>
             <p>Tanda tangan customer:</p>
-           <img src="<?= htmlspecialchars($signatureUrl) ?>" style="max-width:400px; border:1px solid #ccc; border-radius:4px;">
+            <img src="<?= htmlspecialchars($signatureUrl) ?>" style="max-width:400px; border:1px solid #ccc; border-radius:4px;">
         <?php endif; ?>
         <p>Dikonfirmasi pada: <?= htmlspecialchars($schedule['confirmed_at'] ?? '-') ?></p>
     </div>
+
+    <?php elseif ($schedule['status'] === 'failed'): ?>
+    <div style="border:1px solid #f5c6cb; border-radius:8px; padding:20px; background:#fff5f5;">
+        <h2 style="margin-top:0; font-size:16px; color:#dc3545;">Serah Terima Gagal</h2>
+        <p style="color:#555;">Jadwal ini ditandai gagal. Silakan buat jadwal baru untuk customer ini.</p>
+        <a href="/delivery/create" style="padding:8px 16px; background:#0f172a; color:white; text-decoration:none; border-radius:4px;">Buat Jadwal Baru</a>
+    </div>
     <?php endif; ?>
+
     <a href="/delivery" style="display:inline-block; margin-top:20px; padding:8px 16px; background:#6c757d; color:white; text-decoration:none; border-radius:4px;">← Kembali ke Daftar</a>
 </div>

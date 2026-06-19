@@ -56,13 +56,24 @@ class DeliverySchedule extends Model
     {
         $stmt = $this->db->prepare("
             UPDATE delivery_schedules
-            SET status         = 'completed',
+            SET status         = 'confirmed',
                 signature_path = ?,
                 confirmed_at   = NOW(),
                 updated_at     = NOW()
             WHERE id = ?
         ");
         return $stmt->execute([$signaturePath, $id]);
+    }
+
+    public function markFailed(int $id): bool
+    {
+        $stmt = $this->db->prepare("
+            UPDATE delivery_schedules
+            SET status     = 'failed',
+                updated_at = NOW()
+            WHERE id = ? AND status = 'scheduled'
+        ");
+        return $stmt->execute([$id]);
     }
 
     public function markVehicleSold(int $vehicleId): bool
@@ -97,8 +108,9 @@ class DeliverySchedule extends Model
             JOIN vehicles v ON st.vehicle_id = v.id
             LEFT JOIN payment_types pt ON st.payment_type = pt.id
             LEFT JOIN delivery_schedules ds ON ds.transaction_id = st.id
-            WHERE st.status = 'lunas'
-            AND ds.id IS NULL
+    AND ds.status != 'failed'
+WHERE st.status = 'lunas'
+AND ds.id IS NULL
         ");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

@@ -14,7 +14,6 @@ class DeliveryScheduleController extends Controller
         $this->cloudinary    = new CloudinaryService();
     }
 
-    // GET /delivery
     public function index(): void
     {
         $schedules = $this->deliveryModel->allWithTransaction();
@@ -24,7 +23,6 @@ class DeliveryScheduleController extends Controller
         ]);
     }
 
-    // GET /delivery/create
     public function create(): void
     {
         $transactions = $this->deliveryModel->getReadyTransactions();
@@ -34,7 +32,6 @@ class DeliveryScheduleController extends Controller
         ]);
     }
 
-    // GET /delivery/:id
     public function show(string $id): void
     {
         $schedule = $this->deliveryModel->findWithDetail((int) $id);
@@ -54,7 +51,6 @@ class DeliveryScheduleController extends Controller
         ]);
     }
 
-    // POST /delivery
     public function store(): void
     {
         $transactionId = (int) $this->input('transaction_id');
@@ -73,7 +69,6 @@ class DeliveryScheduleController extends Controller
         $this->redirect('/delivery');
     }
 
-    // POST /delivery/:id/confirm
     public function confirm(string $id): void
     {
         $schedule = $this->deliveryModel->findWithDetail((int) $id);
@@ -110,7 +105,17 @@ class DeliveryScheduleController extends Controller
         $this->redirect('/delivery');
     }
 
-    // GET /delivery/:id/document
+    public function fail(string $id): void
+    {
+        $schedule = $this->deliveryModel->findWithDetail((int) $id);
+        if (!$schedule) {
+            die("Jadwal tidak ditemukan.");
+        }
+
+        $this->deliveryModel->markFailed((int) $id);
+        $this->redirect('/delivery');
+    }
+
     public function document(string $id): void
     {
         $schedule = $this->deliveryModel->findWithDetail((int) $id);

@@ -34,8 +34,10 @@
                             <td style="padding:18px 24px; border-bottom:1px solid #f1f4f8; color:#334155; font-size:14px;"><?= htmlspecialchars($s['brand'] . ' ' . $s['type'] . ' - ' . $s['color']) ?></td>
                             <td style="padding:18px 24px; border-bottom:1px solid #f1f4f8; color:#334155; font-size:14px;"><?= htmlspecialchars($s['scheduled_date']) ?></td>
                             <td style="padding:18px 24px; border-bottom:1px solid #f1f4f8;">
-                                <?php if ($s['status'] === 'completed'): ?>
+                                <?php if ($s['status'] === 'confirmed'): ?>
                                     <span style="background:#1c5e3a; color:#fff; padding:5px 14px; border-radius:6px; font-size:13px; font-weight:600; display:inline-block;">Selesai</span>
+                                <?php elseif ($s['status'] === 'failed'): ?>
+                                    <span style="background:#dc3545; color:#fff; padding:5px 14px; border-radius:6px; font-size:13px; font-weight:600; display:inline-block;">Gagal</span>
                                 <?php else: ?>
                                     <span style="background:#f5b942; color:#1e293b; padding:5px 14px; border-radius:6px; font-size:13px; font-weight:600; display:inline-block;">Terjadwal</span>
                                 <?php endif; ?>
