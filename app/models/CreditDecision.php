@@ -1,11 +1,4 @@
 <?php
-<<<<<<< HEAD
-// app/models/CreditDecision.php
-
-class CreditDecision extends Model
-{
-    protected string $table = 'credit_decisions';
-=======
 
 require_once ROOT_PATH . '/core/Model.php';
 
@@ -26,5 +19,4 @@ class CreditDecision extends Model
         $stmt->execute([$applicationId]);
         return $stmt->fetch();
     }
->>>>>>> sprint-8
 }
