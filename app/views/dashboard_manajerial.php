@@ -52,7 +52,7 @@
         /* KPI Grid Card */
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
@@ -207,7 +207,10 @@
         <!-- Header -->
         <header>
             <h1>📊 Executive Managerial Dashboard</h1>
-            <a href="/sparepart" class="nav-btn">📦 Masuk ke Logistik & Gudang Suku Cadang</a>
+            <div style="display: flex; gap: 10px;">
+                <a href="/dashboard/export" class="nav-btn" style="background-color: #28a745;">📥 Ekspor Laporan (CSV)</a>
+                <a href="/sparepart" class="nav-btn">📦 Masuk ke Logistik & Gudang Suku Cadang</a>
+            </div>
         </header>
 
         <!-- Low Stock Alerts -->
@@ -218,6 +221,31 @@
             </ul>
         </div>
 
+        <!-- Today's Performance Summary Row -->
+        <div style="margin-bottom: 30px;">
+            <h2 style="font-size: 18px; color: #2d3748; margin-top: 0; margin-bottom: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                📅 Ringkasan Performa Diler Hari Ini (<?= date('d M Y') ?>)
+            </h2>
+            <div class="today-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+                <div class="card" style="border-left: 4px solid #2b6cb0;">
+                    <div style="font-size: 12px; text-transform: uppercase; color: #718096; font-weight: bold; margin-bottom: 5px;">Unit Terjual Hari Ini</div>
+                    <div class="big-val" id="todayUnitsSold" style="margin-bottom: 0; color: #2b6cb0;">0 Unit</div>
+                </div>
+                <div class="card" style="border-left: 4px solid #38a169;">
+                    <div style="font-size: 12px; text-transform: uppercase; color: #718096; font-weight: bold; margin-bottom: 5px;">Pendapatan Servis Hari Ini</div>
+                    <div class="big-val" id="todayServiceRevenue" style="margin-bottom: 0; color: #38a169;">Rp 0</div>
+                </div>
+                <div class="card" style="border-left: 4px solid #805ad5;">
+                    <div style="font-size: 12px; text-transform: uppercase; color: #718096; font-weight: bold; margin-bottom: 5px;">Servis Selesai Hari Ini</div>
+                    <div class="big-val" id="todayServicesCompleted" style="margin-bottom: 0; color: #805ad5;">0 Selesai</div>
+                </div>
+                <div class="card" style="border-left: 4px solid #dd6b20;">
+                    <div style="font-size: 12px; text-transform: uppercase; color: #718096; font-weight: bold; margin-bottom: 5px;">Booking Aktif Hari Ini</div>
+                    <div class="big-val" id="todayBookings" style="margin-bottom: 0; color: #dd6b20;">0 Booking</div>
+                </div>
+            </div>
+        </div>
+
         <!-- KPI Grid -->
         <div class="kpi-grid">
             <!-- Card 1: Penjualan & Finansial -->
@@ -225,7 +253,15 @@
                 <h3 class="card-title">💵 Rapor Finansial & Penjualan Mobil</h3>
                 <div class="big-val" id="kpiTotalRevenue">Rp 0</div>
                 <div class="kpi-metric">
-                    <span class="label">Volume Penjualan Armada</span>
+                    <span class="label">Total Unit Terjual (Lunas)</span>
+                    <span class="val" id="kpiTotalVolumeSold" style="font-weight: 600; color: #2d3748;">0 Unit</span>
+                </div>
+                <div class="kpi-metric">
+                    <span class="label">Total Pendapatan Servis</span>
+                    <span class="val" id="kpiTotalServiceRevenue" style="font-weight: 600; color: #2f855a;">Rp 0</span>
+                </div>
+                <div class="kpi-metric">
+                    <span class="label">Volume Penjualan Armada (Semua)</span>
                     <span class="val" id="kpiTotalVolume">0 Unit</span>
                 </div>
                 <div class="kpi-metric">
@@ -273,6 +309,24 @@
                     <span class="val" id="kpiSparepartStatus" style="color: #2b6cb0;">Optimal</span>
                 </div>
             </div>
+
+            <!-- Card 4: Prospek & Status Stok -->
+            <div class="card">
+                <h3 class="card-title">🔍 Prospek Aktif & Stok Kritis</h3>
+                <div class="big-val" id="kpiActiveProspectsTotal" style="color: #805ad5;">0 Prospek</div>
+                <div class="kpi-metric">
+                    <span class="label">Prospek Penjualan Unit</span>
+                    <span class="val" id="kpiActiveSalesProspects" style="color: #2b6cb0; font-weight: 600;">0 Transaksi</span>
+                </div>
+                <div class="kpi-metric">
+                    <span class="label">Booking Servis Aktif</span>
+                    <span class="val" id="kpiActiveServiceProspects" style="color: #3182ce; font-weight: 600;">0 Booking</span>
+                </div>
+                <div class="kpi-metric">
+                    <span class="label">Suku Cadang Stok Menipis</span>
+                    <span class="val" id="kpiLowStockCount" style="color: #e53e3e; font-weight: bold;">0 Item</span>
+                </div>
+            </div>
         </div>
 
         <!-- Charts Row 1 -->
@@ -294,21 +348,40 @@
             </div>
         </div>
 
-        <!-- Charts Row 2 -->
+        <!-- Charts Row 2: Separated Sales Volume & Revenue -->
         <div class="chart-row">
-            <!-- Chart 3: Tren Penjualan Bulanan (Unit & Nominal) -->
+            <!-- Chart 3: Volume Penjualan Bulanan (Unit) -->
             <div class="chart-card">
-                <h3>🚗 Tren Grafik Volume & Nominal Penjualan Mobil Bulanan</h3>
+                <h3>🚗 Tren Volume Penjualan Mobil Bulanan (Unit)</h3>
                 <div class="chart-container">
-                    <canvas id="chartSalesTrends"></canvas>
+                    <canvas id="chartSalesVolume"></canvas>
                 </div>
             </div>
 
-            <!-- Chart 4: Komposisi Stok Kendaraan -->
+            <!-- Chart 4: Pendapatan Penjualan Bulanan (Revenue) -->
+            <div class="chart-card">
+                <h3>💰 Tren Nominal Pendapatan Penjualan Mobil Bulanan</h3>
+                <div class="chart-container">
+                    <canvas id="chartSalesRevenue"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 3: Stock Status & Stock Allocation -->
+        <div class="chart-row">
+            <!-- Chart 5: Komposisi Status Stok -->
             <div class="chart-card">
                 <h3>📊 Komposisi Status & Nilai Stok Unit Mobil</h3>
                 <div class="chart-container">
                     <canvas id="chartStockStatus"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 6: Alokasi Stok Berdasarkan Merek -->
+            <div class="chart-card">
+                <h3>🏭 Alokasi Distribusi Stok Unit Mobil Berdasarkan Merek</h3>
+                <div class="chart-container">
+                    <canvas id="chartStockAllocation"></canvas>
                 </div>
             </div>
         </div>
@@ -404,6 +477,67 @@
                 });
             });
 
+        // Fetch Today's Performance Summary
+        fetch('/api/dashboard/today')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('todayUnitsSold').innerText = data.units_sold_today + " Unit";
+                document.getElementById('todayServiceRevenue').innerText = formatRupiah(data.service_revenue_today);
+                document.getElementById('todayServicesCompleted').innerText = data.services_completed_today + " Selesai";
+                document.getElementById('todayBookings').innerText = data.bookings_today + " Booking";
+            });
+
+        // Fetch Accumulated Metrics
+        fetch('/api/dashboard/accumulated')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('kpiTotalVolumeSold').innerText = data.total_units_sold + " Unit";
+                document.getElementById('kpiTotalServiceRevenue').innerText = formatRupiah(data.total_service_revenue);
+                
+                const totalActive = data.active_sales_prospects + data.active_service_prospects;
+                document.getElementById('kpiActiveProspectsTotal').innerText = totalActive + " Prospek";
+                document.getElementById('kpiActiveSalesProspects').innerText = data.active_sales_prospects + " Transaksi";
+                document.getElementById('kpiActiveServiceProspects').innerText = data.active_service_prospects + " Booking";
+                document.getElementById('kpiLowStockCount').innerText = data.low_stock_count + " Item";
+            });
+
+        // Fetch Stock Allocation by Brand
+        fetch('/api/dashboard/stock-allocation')
+            .then(res => res.json())
+            .then(data => {
+                const labelsBrand = data.map(item => item.brand);
+                const valuesBrand = data.map(item => item.total);
+                
+                new Chart(document.getElementById('chartStockAllocation'), {
+                    type: 'bar',
+                    data: {
+                        labels: labelsBrand,
+                        datasets: [{
+                            label: 'Jumlah Unit Mobil',
+                            data: valuesBrand,
+                            backgroundColor: '#319795',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y', // Horizontal bar
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: { precision: 0 }
+                            }
+                        }
+                    }
+                });
+            });
+
         // 2. Fetch & Render Tren Kunjungan Servis Bulanan (Line Chart)
         fetch('/api/dashboard/trends')
             .then(res => res.json())
@@ -440,7 +574,7 @@
                 });
             });
 
-        // 3. Fetch & Render Tren Penjualan Mobil Bulanan (Double Axis Combo Chart)
+        // 3. Fetch & Render Tren Penjualan Mobil Bulanan (Separated Charts)
         fetch('/api/dashboard/sales-trends')
             .then(res => res.json())
             .then(data => {
@@ -452,53 +586,51 @@
                 const totalRev = valNominal.reduce((acc, curr) => acc + parseFloat(curr || 0), 0);
                 document.getElementById('kpiTotalRevenue').innerText = formatRupiah(totalRev);
 
-                new Chart(document.getElementById('chartSalesTrends'), {
+                // Render Chart Volume Penjualan Bulanan (Bar)
+                new Chart(document.getElementById('chartSalesVolume'), {
                     type: 'bar',
                     data: {
                         labels: labelBulan,
-                        datasets: [
-                            {
-                                type: 'bar',
-                                label: 'Volume Terjual (Unit)',
-                                data: valJumlah,
-                                backgroundColor: '#4c51bf',
-                                yAxisID: 'yVolume'
-                            },
-                            {
-                                type: 'line',
-                                label: 'Nominal Penjualan (Rupiah)',
-                                data: valNominal,
-                                borderColor: '#e53e3e',
-                                backgroundColor: 'transparent',
-                                borderWidth: 3,
-                                tension: 0.2,
-                                yAxisID: 'yRevenue'
-                            }
-                        ]
+                        datasets: [{
+                            label: 'Volume Terjual (Unit)',
+                            data: valJumlah,
+                            backgroundColor: '#4c51bf',
+                            borderWidth: 1
+                        }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         scales: {
-                            yVolume: {
-                                type: 'linear',
-                                position: 'left',
-                                title: {
-                                    display: true,
-                                    text: 'Volume (Unit)'
-                                },
+                            y: {
+                                beginAtZero: true,
                                 ticks: { precision: 0 }
-                            },
-                            yRevenue: {
-                                type: 'linear',
-                                position: 'right',
-                                title: {
-                                    display: true,
-                                    text: 'Nominal Rupiah'
-                                },
-                                grid: {
-                                    drawOnChartArea: false // prevent lines overlay
-                                },
+                            }
+                        }
+                    }
+                });
+
+                // Render Chart Pendapatan Penjualan Bulanan (Line)
+                new Chart(document.getElementById('chartSalesRevenue'), {
+                    type: 'line',
+                    data: {
+                        labels: labelBulan,
+                        datasets: [{
+                            label: 'Nominal Penjualan (Rupiah)',
+                            data: valNominal,
+                            borderColor: '#e53e3e',
+                            backgroundColor: 'rgba(229, 62, 62, 0.1)',
+                            fill: true,
+                            tension: 0.2,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
                                 ticks: {
                                     callback: function(value) {
                                         return formatRupiah(value);
@@ -551,7 +683,7 @@
                         const dateStr = new Date(tx.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
                         txBody.innerHTML += `
                             <tr>
-                                <td>${dateStr}</td>
+                                  <td>${dateStr}</td>
                                 <td><strong>${tx.transaction_code}</strong></td>
                                 <td>${tx.customer_name}</td>
                                 <td>${tx.brand} ${tx.type}</td>

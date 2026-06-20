@@ -32,3 +32,7 @@ $router->get('/api/dashboard/trends',         'DashboardController@apiTrenServis
 $router->get('/api/dashboard/sales-trends',   'DashboardController@apiSalesTrends');
 $router->get('/api/dashboard/inventory-kpi',  'DashboardController@apiInventoryKpi');
 $router->get('/api/dashboard/details',        'DashboardController@apiDetails');
+$router->get('/api/dashboard/today',           'DashboardController@apiToday');
+$router->get('/api/dashboard/accumulated',     'DashboardController@apiAccumulated');
+$router->get('/api/dashboard/stock-allocation','DashboardController@apiStockAllocation');
+$router->get('/dashboard/export',              'DashboardController@exportCsv');

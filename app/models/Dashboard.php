@@ -158,4 +158,93 @@ class Dashboard extends Model {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // Ambil data ringkasan performa hari ini
+    public function getTodayPerformance() {
+        // Units sold today
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM sales_transactions WHERE status = 'lunas' AND DATE(created_at) = CURDATE()");
+        $stmt->execute();
+        $units_sold = (int)$stmt->fetchColumn();
+
+        // Service revenue today
+        $stmt = $this->db->prepare("
+            SELECT COALESCE(SUM(su.quantity * sp.price), 0)
+            FROM sparepart_usages su
+            JOIN spareparts sp ON su.sparepart_id = sp.id
+            JOIN work_orders wo ON su.work_order_id = wo.id
+            WHERE DATE(wo.created_at) = CURDATE()
+        ");
+        $stmt->execute();
+        $service_revenue = (float)$stmt->fetchColumn();
+
+        // Completed services today
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM work_orders WHERE status = 'done' AND DATE(created_at) = CURDATE()");
+        $stmt->execute();
+        $services_completed = (int)$stmt->fetchColumn();
+
+        // Active service prospects/bookings today
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM service_bookings WHERE status IN ('queued', 'confirmed') AND booking_date = CURDATE()");
+        $stmt->execute();
+        $bookings_today = (int)$stmt->fetchColumn();
+
+        return [
+            'units_sold_today' => $units_sold,
+            'service_revenue_today' => $service_revenue,
+            'services_completed_today' => $services_completed,
+            'bookings_today' => $bookings_today
+        ];
+    }
+
+    // Ambil data metrik akumulatif keseluruhan
+    public function getAccumulatedMetrics() {
+        // Total units sold (status = 'lunas')
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM sales_transactions WHERE status = 'lunas'");
+        $stmt->execute();
+        $total_units_sold = (int)$stmt->fetchColumn();
+
+        // Total service revenue (dari semua sparepart yang terpakai)
+        $stmt = $this->db->prepare("
+            SELECT COALESCE(SUM(su.quantity * sp.price), 0)
+            FROM sparepart_usages su
+            JOIN spareparts sp ON su.sparepart_id = sp.id
+        ");
+        $stmt->execute();
+        $total_service_revenue = (float)$stmt->fetchColumn();
+
+        // Active sales prospects (status = 'process')
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM sales_transactions WHERE status = 'process'");
+        $stmt->execute();
+        $active_sales_prospects = (int)$stmt->fetchColumn();
+
+        // Active service prospects (status = 'queued' or 'confirmed')
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM service_bookings WHERE status IN ('queued', 'confirmed')");
+        $stmt->execute();
+        $active_service_prospects = (int)$stmt->fetchColumn();
+
+        // Low stock spareparts count
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM spareparts WHERE stock <= min_stock");
+        $stmt->execute();
+        $low_stock_count = (int)$stmt->fetchColumn();
+
+        return [
+            'total_units_sold' => $total_units_sold,
+            'total_service_revenue' => $total_service_revenue,
+            'active_sales_prospects' => $active_sales_prospects,
+            'active_service_prospects' => $active_service_prospects,
+            'low_stock_count' => $low_stock_count
+        ];
+    }
+
+    // Ambil alokasi stok unit mobil berdasarkan merek
+    public function getVehicleStockAllocation() {
+        $stmt = $this->db->prepare("
+            SELECT brand, COUNT(*) AS total, SUM(price) AS total_value
+            FROM vehicles
+            WHERE status IN ('available', 'held')
+            GROUP BY brand
+            ORDER BY total DESC
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
