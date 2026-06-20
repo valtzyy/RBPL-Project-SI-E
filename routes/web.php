@@ -107,10 +107,9 @@ $router->post('/mechanic/work-order/log/store', 'WorkOrderController@storeLog');
 // ============================================================
 
 // sprint-12 pembayaran services
-$router->get('/service-billing',      'ServiceBillingController@index');
-$router->get('/service-billing/:plateNumber', 'ServiceBillingController@findByPlateNumber');
-$router->get('/service-billing/detail/:plateNumber',  'ServiceBillingController@detail');
-$router->get('/service-billing/detail/history/:plateNumber',  'ServiceBillingController@detailLog');
+$router->get('/service-billing',             'ServiceBillingController@index');
+$router->get('/service-billing/:id',         'ServiceBillingController@detail');
+$router->get('/service-billing/:id/history', 'ServiceBillingController@detailLog');
 
 $router->get('/kasir/dashboard', 'KasirController@dashboard');
 $router->get('/kasir/nota',      'KasirController@nota');
