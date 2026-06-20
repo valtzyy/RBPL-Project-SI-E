@@ -1,0 +1,9 @@
+=== Table: service_bookings ===
+Field: id | Type: int unsigned | Null: NO | Default: 
+Field: booking_date | Type: date | Null: NO | Default: 
+Field: status | Type: enum('queued','confirmed','rejected') | Null: NO | Default: queued
+Field: service_customer_id | Type: int unsigned | Null: YES | Default: 
+Field: vehicle_name | Type: varchar(100) | Null: YES | Default: 
+Field: vehicle_color | Type: varchar(50) | Null: YES | Default: 
+Field: vehicle_id | Type: int unsigned | Null: YES | Default: 
+
