@@ -100,16 +100,6 @@ $router->get('/transactions/create',    'SalesTransactionController@create');
 $router->get('/transactions/:id',       'SalesTransactionController@show');
 $router->post('/transactions',          'SalesTransactionController@store');
 
-// Sprint 5 - Pembayaran Tunai (Admin & Finance)
-$router->get('/admin/transactions',             'AdminTransactionController@index');
-$router->get('/admin/transactions/:id',         'AdminTransactionController@show');
-$router->get('/admin/transactions/:id/receipt', 'AdminTransactionController@downloadReceipt');
-
-// Sprint 5 - Finance: Verifikasi Pembayaran
-$router->get('/finance/payments',                'FinanceController@index');
-$router->get('/finance/payments/:id',            'FinanceController@show');
-$router->post('/finance/payments/:id/verify',    'FinanceController@verifyPayment');
-
 // Vehicles - Sprint 4
 $router->get('/vehicles/available',     'VehicleController@available');
 
@@ -206,3 +196,13 @@ $router->get('/api/dashboard/trends',         'DashboardController@apiTrenServis
 $router->get('/api/dashboard/sales-trends',   'DashboardController@apiSalesTrends');
 $router->get('/api/dashboard/inventory-kpi',  'DashboardController@apiInventoryKpi');
 $router->get('/api/dashboard/details',        'DashboardController@apiDetails');
+// ===========================
+// Sprint 6 - Serah Terima
+// ===========================
+$router->get('/delivery',                      'DeliveryScheduleController@index');
+$router->get('/delivery/create',               'DeliveryScheduleController@create');
+$router->get('/delivery/:id',                  'DeliveryScheduleController@show');
+$router->get('/delivery/:id/document',         'DeliveryScheduleController@document');
+$router->post('/delivery',                     'DeliveryScheduleController@store');
+$router->post('/delivery/:id/confirm',         'DeliveryScheduleController@confirm');
+$router->post('/delivery/:id/fail', 'DeliveryScheduleController@fail');
