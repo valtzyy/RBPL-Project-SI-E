@@ -6,7 +6,8 @@
 
 // Halaman Utama / Dashboard
 $router->get('/',               'HomeController@index');
-$router->get('/sprint15',   'ReportController@testingPage');
+$router->get('/reports',   'ReportController@testingPage');
+$router->get('/reports/audit-log', 'ReportController@auditLogPage');
 
 // 1. Ini rute untuk MEMBUKA FORM (Halaman sebelum post)
 $router->get('/document',       'DocumentController@tampilkanForm');
