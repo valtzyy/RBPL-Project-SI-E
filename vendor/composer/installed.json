@@ -170,7 +170,7 @@
             },
             "time": "2026-03-03T13:54:37+00:00",
             "type": "library",
-            "installation-source": "source",
+            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Dompdf\\": "src/"
@@ -221,7 +221,7 @@
             },
             "time": "2026-01-20T14:10:26+00:00",
             "type": "library",
-            "installation-source": "source",
+            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "FontLib\\": "src/FontLib"
@@ -270,7 +270,7 @@
             },
             "time": "2026-01-02T16:01:13+00:00",
             "type": "library",
-            "installation-source": "source",
+            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Svg\\": "src/Svg"
@@ -663,7 +663,7 @@
                     "dev-master": "2.7-dev"
                 }
             },
-            "installation-source": "source",
+            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Masterminds\\": "src"
@@ -1122,7 +1122,7 @@
                     "dev-main": "9.4.x-dev"
                 }
             },
-            "installation-source": "source",
+            "installation-source": "dist",
             "autoload": {
                 "files": [
                     "src/Rule/Rule.php",
@@ -1349,7 +1349,7 @@
             },
             "time": "2026-02-04T18:08:13+00:00",
             "type": "library",
-            "installation-source": "source",
+            "installation-source": "dist",
             "autoload": {
                 "files": [
                     "lib/special_cases.php",

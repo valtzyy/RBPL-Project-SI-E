@@ -1,16 +1,11 @@
 <?php
-<<<<<<< HEAD
 // app/models/CreditDocument.php
-=======
 
 require_once ROOT_PATH . '/core/Model.php';
->>>>>>> sprint-8
 
 class CreditDocument extends Model
 {
     protected string $table = 'credit_documents';
-<<<<<<< HEAD
-=======
 
     public function findByApplication(int $applicationId): array
     {
@@ -20,5 +15,4 @@ class CreditDocument extends Model
         $stmt->execute([$applicationId]);
         return $stmt->fetchAll();
     }
->>>>>>> sprint-8
 }

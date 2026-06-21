@@ -36,10 +36,10 @@ class CreditController extends Controller
     public function create()
     {
         // 1. Login check
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             exit('Login dulu');
-        }
+        }*/
 
         // 2. Ambil input
         $transactionId = (int) ($_POST['transaction_id'] ?? 0);
@@ -95,10 +95,10 @@ class CreditController extends Controller
     public function cancel()
     {
         // 1. Login check
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             exit('Login dulu');
-        }
+        }*/
 
         // 2. Ambil input
         $applicationId = (int) ($_POST['application_id'] ?? 0);
@@ -138,10 +138,10 @@ class CreditController extends Controller
     public function switchToCash()
     {
         // 1. Login check
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             exit('Login dulu');
-        }
+        }*/
 
         // 2. Ambil input
         $applicationId = (int) ($_POST['application_id'] ?? 0);
@@ -189,10 +189,10 @@ class CreditController extends Controller
     public function reapply()
     {
         // 1. Login check
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             exit('Login dulu');
-        }
+        }*/
 
         // 2. Ambil input
         $applicationId  = (int) ($_POST['application_id'] ?? 0);
@@ -239,10 +239,10 @@ class CreditController extends Controller
     public function status()
     {
         // 1. Login check
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             exit('Login dulu');
-        }
+        }*/
 
         // 2. Ambil param: ?app=ID untuk detail, tanpa param untuk list
         $applicationId = (int) ($_GET['app'] ?? 0);
@@ -283,10 +283,10 @@ class CreditController extends Controller
     public function decision()
     {
         // 1. Login check
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             exit('Login dulu');
-        }
+        }*/
 
         // 2. Ambil input
         $applicationId = (int) ($_POST['application_id'] ?? 0);
@@ -343,10 +343,10 @@ class CreditController extends Controller
     public function uploadDocument()
     {
         // 1. Cek login — $_SESSION['user_id'] di-set oleh tim login (bukan job kita)
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             exit('Login dulu');
-        }
+        }*/
 
         // 2. Ambil input dari POST
         $base64Data    = $_POST['file_base64']   ?? null;
@@ -396,7 +396,7 @@ class CreditController extends Controller
 
         // 6+7. Upload ke Cloudinary & simpan public_id ke tabel credit_documents
         try {
-            $publicId = $this->cloudinary->uploadCreditDocument($tmpPath, $fileType);
+            $publicId = $this->cloudinary->uploadPrivateImage($tmpPath, $fileType);
             $this->documentModel->create([
                 'credit_application_id' => $applicationId,
                 'file_type'             => $fileType,
@@ -420,10 +420,10 @@ class CreditController extends Controller
     public function uploadForm()
     {
         // 1. Cek login
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             exit('Login dulu');
-        }
+        }*/
 
         // 2. Ambil application_id dari query string
         $applicationId = (int) ($_GET['app'] ?? 0);
