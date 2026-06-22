@@ -101,6 +101,7 @@ class SalesTransaction extends Model
 
 
     // JOIN dengan payment_types untuk validasi payment_type di PBI-8.4
+// JOIN dengan payment_types untuk validasi payment_type di PBI-8.4
     public function findWithPaymentType(int $id): array|false
     {
         $stmt = $this->db->prepare(
@@ -113,4 +114,8 @@ class SalesTransaction extends Model
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
+
 }
+
+
+    

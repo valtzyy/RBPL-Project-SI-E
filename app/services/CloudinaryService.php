@@ -92,16 +92,4 @@ class CloudinaryService
             throw new Exception("Gagal membuat link aman: " . $e->getMessage());
         }
     }
-
-    // public function uploadCreditDocument($fileTmpPath, $docType)
-    // {
-    //     // Whitelist tipe dokumen yang diizinkan
-    //     $allowed = ['KTP', 'KK', 'SlipGaji'];
-    //     if (!in_array($docType, $allowed, true)) {
-    //         throw new InvalidArgumentException("Tipe dokumen tidak valid: {$docType}");
-    //     }
-
-    //     // Delegasikan ke method generic; folder auto-build: credit/{docType}
-    //     return $this->uploadPrivateImage($fileTmpPath, "credit/{$docType}");
-    // }
 }
