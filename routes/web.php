@@ -206,3 +206,7 @@ $router->get('/delivery/:id/document',         'DeliveryScheduleController@docum
 $router->post('/delivery',                     'DeliveryScheduleController@store');
 $router->post('/delivery/:id/confirm',         'DeliveryScheduleController@confirm');
 $router->post('/delivery/:id/fail', 'DeliveryScheduleController@fail');
+
+// SPRINT 7 - Riwayat Transaksi & Laporan Penjualan
+$router->get('/history', 'TransaksiController@history');
+
