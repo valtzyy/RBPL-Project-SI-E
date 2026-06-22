@@ -53,7 +53,7 @@
         <img src="<?= htmlspecialchars($signatureUrl) ?>" style="max-width:400px; border:1px solid #ccc; border-radius:4px;">
     <?php endif; ?>
     <p>Dikonfirmasi pada: <?= htmlspecialchars($schedule['confirmed_at'] ?? '-') ?></p>
-    <a href="/delivery/<?= $schedule['id'] ?>/document" style="display:inline-block; margin-top:10px; padding:8px 16px; background:#1198ab; color:white; text-decoration:none; border-radius:4px;">Cetak Dokumen</a>
+    <a href="/delivery/<?= $schedule['id'] ?>/document" style="display:inline-block; margin-top:10px; padding:8px 16px; background:#1198ab; color:white; text-decoration:none; border-radius:4px;">Dokumen</a>
 </div>
 
 

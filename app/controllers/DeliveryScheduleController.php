@@ -3,7 +3,7 @@
 require_once ROOT_PATH . '/core/Controller.php';
 require_once ROOT_PATH . '/app/models/DeliverySchedule.php';
 require_once ROOT_PATH . '/app/services/CloudinaryService.php';
-require_once ROOT_PATH . '/vendor/autoload.php';
+
 
 class DeliveryScheduleController extends Controller
 {
@@ -118,7 +118,7 @@ class DeliveryScheduleController extends Controller
         $this->redirect('/delivery');
     }
 
-   public function document(string $id): void
+public function document(string $id): void
 {
     $schedule = $this->deliveryModel->findWithDetail((int) $id);
     if (!$schedule) {
@@ -130,17 +130,10 @@ class DeliveryScheduleController extends Controller
         $signatureUrl = $this->cloudinary->getPrivateImageUrl($schedule['signature_path']);
     }
 
-    ob_start();
-    require ROOT_PATH . '/app/views/delivery/document.php';
-    $html = ob_get_clean();
-
-    $dompdf = new \Dompdf\Dompdf();
-    $dompdf->loadHtml($html);
-    $dompdf->setPaper('A4', 'portrait');
-    $dompdf->render();
-
-    $filename = 'Serah-Terima-' . ($schedule['transaction_code'] ?? $id) . '.pdf';
-    $dompdf->stream($filename, ['Attachment' => false]);
-    exit;
+    $this->view('delivery/document', [
+        'title'        => 'Dokumen Serah Terima',
+        'schedule'     => $schedule,
+        'signatureUrl' => $signatureUrl,
+    ]);
 }
 }
