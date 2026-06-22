@@ -30,7 +30,6 @@ if (!empty($procurements)) {
     <!-- Google Font Modern -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -39,8 +38,8 @@ if (!empty($procurements)) {
             --text-main: #0f172a;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
-            --primary: #0f172a;
-            --primary-hover: #1e293b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
             
             /* Warna Badge Status Sesuai Aturan Wajib */
             --color-sent-bg: #eff6ff;     /* Biru bg */
@@ -61,11 +60,11 @@ if (!empty($procurements)) {
         }
 
         * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
         body {
             background-color: var(--bg-primary);
@@ -202,24 +201,26 @@ if (!empty($procurements)) {
             margin-bottom: 32px;
         }
 
-        .summary-card {
-            background-color: var(--bg-card);
-            border-radius: 16px;
-            padding: 20px 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.02);
-            border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            transition: all 0.2s ease;
-            cursor: default;
-            .summary-card:hover{
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        }
-        }
+.summary-card {
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.02);
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: all 0.2s ease;
+    cursor: default;
+}
+
+.summary-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+        
 
         .summary-card::before {
             content: '';
@@ -311,7 +312,7 @@ if (!empty($procurements)) {
             padding: 10px 14px 10px 42px;
             font-size: 14px;
             border: 1px solid var(--border-color);
-            border-radius: 10px;
+            border-radius: 6px;
             outline: none;
             background-color: #f8fafc;
             color: var(--text-main);
@@ -404,7 +405,7 @@ if (!empty($procurements)) {
         .procurement-table th {
             background-color: #f8fafc;
             color: var(--text-muted);
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
             font-size: 12px;
             letter-spacing: 0.5px;
@@ -636,6 +637,48 @@ if (!empty($procurements)) {
             <div class="user-profile-btn">DL</div>
         </div>
     </nav>
+        <aside class="sidebar">
+        <div class="logo-container">
+            <div class="logo-text">DealerLink</div>
+        </div>
+        
+        <div class="profile-card">
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces" alt="Admin Profile" class="profile-img">
+            <div class="profile-info">
+                <span class="profile-name">Admin Dealer</span>
+                <span class="profile-role">Manager Operasional</span>
+            </div>
+        </div>
+
+        <nav class="nav-container">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="#dashboard"><span class="nav-icon">📊</span> Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#inventaris"><span class="nav-icon">🚘</span> Inventaris</a>
+                </li>
+                <li class="nav-item active">
+                    <a href="#procurement"><span class="nav-icon">🛒</span> Procurement</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#sales"><span class="nav-icon">📄</span> Sales SPK</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#servis"><span class="nav-icon">🛠️</span> Layanan Servis</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#laporan"><span class="nav-icon">📈</span> Laporan</a>
+                </li>
+            </ul>
+        </nav>
+        
+        <div style="margin-top: auto; padding: 12px;">
+            <button id="btn-reset-db" class="btn btn-secondary" style="width: 100%; font-size: 11px; padding: 8px;">
+                🔄 Reset Mock Data
+            </button>
+        </div>
+    </aside>
 
     <!-- Main Container -->
     <main class="container">
@@ -831,11 +874,6 @@ if (!empty($procurements)) {
             </div>
         </section>
     </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; <?= date('Y') ?> DealerLink. Hak Cipta Dilindungi.</p>
-    </footer>
 
     <!-- Client-side Interactive Filter & Search Script -->
     <script>
