@@ -26,7 +26,6 @@ class VehicleController extends Controller
         $filters = $this->getFilters();
         $page = max(1, (int) ($_GET['page'] ?? 1));
         $inventory = $this->inventoryService->list($filters, $page, 10);
-
         $this->view('inventory_index', [
             'title' => 'Inventaris Kendaraan',
             'inventory' => $inventory,
@@ -59,7 +58,7 @@ class VehicleController extends Controller
             $id = $this->inventoryService->create($this->requestData());
 
             if ($this->wantsJson()) {
-                $this->json(['message' => 'Kendaraan berhasil dibuat.', 'id' => $id], 201);
+                $this->respondJson(['message' => 'Kendaraan berhasil dibuat.', 'id' => $id], 201);
                 return;
             }
 
@@ -96,7 +95,7 @@ class VehicleController extends Controller
             $this->inventoryService->update((int) $id, $this->requestData());
 
             if ($this->wantsJson()) {
-                $this->json(['message' => 'Kendaraan berhasil diperbarui.']);
+                $this->respondJson(['message' => 'Kendaraan berhasil diperbarui.']);
                 return;
             }
 
@@ -113,14 +112,14 @@ class VehicleController extends Controller
             $this->inventoryService->delete((int) $id);
 
             if ($this->wantsJson()) {
-                $this->json(['message' => 'Kendaraan berhasil dihapus.']);
+                $this->respondJson(['message' => 'Kendaraan berhasil dihapus.']);
                 return;
             }
 
             $_SESSION['success'] = 'Kendaraan berhasil dihapus.';
         } catch (Throwable $e) {
             if ($this->wantsJson()) {
-                $this->json(['message' => $e->getMessage()], 422);
+                $this->respondJson(['message' => $e->getMessage()], 422);
                 return;
             }
 
@@ -134,15 +133,15 @@ class VehicleController extends Controller
     {
         $page = max(1, (int) ($_GET['page'] ?? 1));
         $perPage = max(1, (int) ($_GET['per_page'] ?? 10));
-        $this->json($this->inventoryService->list($this->getFilters(), $page, $perPage));
+        $this->respondJson($this->inventoryService->list($this->getFilters(), $page, $perPage));
     }
 
     public function apiShow(string $id): void
     {
         try {
-            $this->json($this->inventoryService->find((int) $id));
+            $this->respondJson($this->inventoryService->find((int) $id));
         } catch (Throwable $e) {
-            $this->json(['message' => $e->getMessage()], 404);
+            $this->respondJson(['message' => $e->getMessage()], 404);
         }
     }
 
@@ -175,7 +174,7 @@ class VehicleController extends Controller
     private function handleError(Throwable $e, string $fallbackUrl): void
     {
         if ($this->wantsJson()) {
-            $this->json(['message' => $e->getMessage()], 422);
+            $this->respondJson(['message' => $e->getMessage()], 422);
             return;
         }
 
@@ -209,7 +208,7 @@ class VehicleController extends Controller
         return $_POST;
     }
 
-    private function json(array $payload, int $status = 200): void
+    private function respondJson(array $payload, int $status = 200): void
     {
         http_response_code($status);
         header('Content-Type: application/json');

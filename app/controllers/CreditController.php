@@ -420,10 +420,10 @@ class CreditController extends Controller
     public function uploadForm()
     {
         // 1. Cek login
-        /*if (!isset($_SESSION['user_id'])) {
-            http_response_code(401);
-            exit('Login dulu');
-        }*/
+        // if (!isset($_SESSION['user_id'])) {
+        //     http_response_code(401);
+        //     exit('Login dulu');
+        // }
 
         // 2. Ambil application_id dari query string
         $applicationId = (int) ($_GET['app'] ?? 0);
@@ -438,7 +438,6 @@ class CreditController extends Controller
             http_response_code(404);
             exit('Pengajuan tidak ditemukan');
         }
-
         // 4. Ambil data customer & vehicle dari tabel terkait
         $customerName = '';
         $vehiclename = '';
@@ -450,7 +449,7 @@ class CreditController extends Controller
             $stmt->execute([$transaction['customer_id']]);
             $customerName = $stmt->fetchColumn();
 
-            $stmt = $db->prepare("SELECT name FROM vehicles WHERE id = ?");
+            $stmt = $db->prepare("SELECT type FROM vehicles WHERE id = ?");
             $stmt->execute([$transaction['vehicle_id']]);
             $vehiclename = $stmt->fetchColumn();
         }

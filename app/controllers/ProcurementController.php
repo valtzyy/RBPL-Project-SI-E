@@ -1,6 +1,6 @@
 <?php
 
-require_once ROOT_PATH . '/app/models/Vehicles.php';
+require_once ROOT_PATH . '/app/models/Vehicle.php';
 require_once ROOT_PATH . '/app/models/procurement.php';
 require_once ROOT_PATH . '/app/models/procurementdetail.php';
 require_once ROOT_PATH . '/app/models/procurementreceipt.php';

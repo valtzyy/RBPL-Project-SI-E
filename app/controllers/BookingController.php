@@ -50,7 +50,6 @@ class BookingController extends Controller {
         }
 
         $remaining = $this->bookingModel->getRemainingSlot($date);
-
         $this->jsonResponse([
             'date'      => $date,
             'available' => true,
