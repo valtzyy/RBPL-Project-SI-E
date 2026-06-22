@@ -299,19 +299,63 @@
           <p class="page-sub">Historical record seluruh transaksi penjualan (SPK) dan servis (Work Order) secara terpadu.</p>
         </div>
         <div class="btn-row">
-          <button class="btn">🖨️ Cetak PDF</button>
-          <button class="btn btn-dark">📊 Ekspor Excel</button>
+          <button class="btn">Cetak PDF</button>
+          <button class="btn btn-dark">Ekspor Excel</button>
         </div>
       </div>
 
       <!-- ═══ FILTER CARD ═══ -->
+      <div class="filter-card">
+        <div class="filter-grid">
+
+          <div class="field">
+            <label class="field-label">Status Transaksi</label>
+            <select class="field-select">
+              <option>Semua Status</option>
+              <option>Terkirim</option>
+              <option>Proses</option>
+              <option>Lunas</option>
+              <option>Batal</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Dari Tanggal</label>
+            <input class="field-input" type="date" value="2023-10-01">
+          </div>
+
+          <div class="field">
+            <label class="field-label">Sampai Tanggal</label>
+            <input class="field-input" type="date" value="2023-10-31">
+          </div>
+
+          <div class="field">
+            <label class="field-label">Tipe Pembayaran</label>
+            <select class="field-select">
+              <option>Semua Tipe</option>
+              <option>Tunai</option>
+              <option>Kredit</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <button class="btn-filter">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                <path d="M2 4h12M4 8h8M6 12h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+              Filter
+            </button>
+          </div>
+
+        </div>
+      </div>
 
       <!-- ═══ TABLE CARD ═══ -->
       <div class="table-card">
 
         <div class="table-head">
           <div class="table-title">
-            📊 Data Tabular Riwayat Transaksi
+            Data Tabular Riwayat Transaksi
           </div>
           <div class="search-wrap">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
