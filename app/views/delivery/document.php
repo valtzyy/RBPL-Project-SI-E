@@ -1,8 +1,5 @@
 <div style="padding:40px; max-width:800px; font-family:Arial,sans-serif; color:#000;">
-    <div class="no-print" style="margin-bottom:20px;">
-        <button onclick="window.print()" style="padding:8px 20px; background:#007bff; color:white; border:none; border-radius:4px; cursor:pointer;">Cetak Dokumen</button>
-        <a href="/delivery/<?= $schedule['id'] ?>" style="margin-left:10px; text-decoration:none; color:#333;">← Kembali</a>
-    </div>
+    
     <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:16px; margin-bottom:24px;">
         <h2 style="margin:0;">BERITA ACARA SERAH TERIMA KENDARAAN</h2>
         <h3 style="margin:4px 0 0; font-weight:normal;">Dealer Mobil — Sistem Informasi Manajemen</h3>
