@@ -13,3 +13,4 @@ $router->get('/users/:id',     'UserController@show');
 $router->post('/users',        'UserController@store');
 $router->post('/users/:id',    'UserController@update');
 $router->post('/users/delete', 'UserController@destroy');
+$router->get('/history', 'TransaksiController@history');
