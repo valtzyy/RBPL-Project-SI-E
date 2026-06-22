@@ -1,3 +1,18 @@
+<style>
+    @media print {
+        @page {
+            margin: 0;
+            size: A4;
+        }
+        body {
+            margin: 0;
+        }
+        .no-print {
+            display: none;
+        }
+    }
+</style>
+
 <div style="padding:40px; max-width:800px; font-family:Arial,sans-serif; color:#000;">
     <div class="no-print" style="margin-bottom:20px;">
         <button onclick="window.print()" style="padding:8px 20px; background:#007bff; color:white; border:none; border-radius:4px; cursor:pointer;">Cetak Dokumen</button>
@@ -34,12 +49,12 @@
     <p style="font-weight:bold; border-bottom:1px solid #ccc; padding-bottom:4px;">Tanda Tangan Customer</p>
     <img src="<?= htmlspecialchars($signatureUrl) ?>" style="max-width:300px; border:1px solid #ccc; border-radius:4px; margin-bottom:20px;">
     <?php endif; ?>
-    <div style="display:flex; justify-content:space-between; margin-top:60px;">
+    <div style="display:flex; justify-content:space-between; margin-top:30px;">
         <div style="text-align:center; width:200px;">
-            <div style="border-top:1px solid #000; margin-top:60px; padding-top:6px; font-size:13px;">Admin Dealer</div>
+            <div style="border-top:1px solid #000; margin-top:30px; padding-top:6px; font-size:13px;">Admin Dealer</div>
         </div>
         <div style="text-align:center; width:200px;">
-            <div style="border-top:1px solid #000; margin-top:60px; padding-top:6px; font-size:13px;">Customer<br><?= htmlspecialchars($schedule['customer_name']) ?></div>
+            <div style="border-top:1px solid #000; margin-top:30px; padding-top:6px; font-size:13px;">Customer<br><?= htmlspecialchars($schedule['customer_name']) ?></div>
         </div>
     </div>
 </div>

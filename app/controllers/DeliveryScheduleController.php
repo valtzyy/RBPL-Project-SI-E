@@ -1,7 +1,9 @@
 <?php
+
 require_once ROOT_PATH . '/core/Controller.php';
 require_once ROOT_PATH . '/app/models/DeliverySchedule.php';
 require_once ROOT_PATH . '/app/services/CloudinaryService.php';
+
 
 class DeliveryScheduleController extends Controller
 {
@@ -116,22 +118,22 @@ class DeliveryScheduleController extends Controller
         $this->redirect('/delivery');
     }
 
-    public function document(string $id): void
-    {
-        $schedule = $this->deliveryModel->findWithDetail((int) $id);
-        if (!$schedule) {
-            die("Jadwal tidak ditemukan.");
-        }
-
-        $signatureUrl = '';
-        if (!empty($schedule['signature_path'])) {
-            $signatureUrl = $this->cloudinary->getPrivateImageUrl($schedule['signature_path']);
-        }
-
-        $this->view('delivery/document', [
-            'title'        => 'Dokumen Serah Terima',
-            'schedule'     => $schedule,
-            'signatureUrl' => $signatureUrl,
-        ]);
+public function document(string $id): void
+{
+    $schedule = $this->deliveryModel->findWithDetail((int) $id);
+    if (!$schedule) {
+        die("Jadwal tidak ditemukan.");
     }
+
+    $signatureUrl = '';
+    if (!empty($schedule['signature_path'])) {
+        $signatureUrl = $this->cloudinary->getPrivateImageUrl($schedule['signature_path']);
+    }
+
+    $this->view('delivery/document', [
+        'title'        => 'Dokumen Serah Terima',
+        'schedule'     => $schedule,
+        'signatureUrl' => $signatureUrl,
+    ]);
+}
 }

@@ -46,14 +46,16 @@
     </script>
 
     <?php elseif ($schedule['status'] === 'confirmed'): ?>
-    <div style="border:1px solid #ccc; border-radius:8px; padding:20px;">
-        <h2 style="margin-top:0; font-size:16px; color:#555;">Serah Terima Sudah Selesai</h2>
-        <?php if (!empty($signatureUrl)): ?>
-            <p>Tanda tangan customer:</p>
-            <img src="<?= htmlspecialchars($signatureUrl) ?>" style="max-width:400px; border:1px solid #ccc; border-radius:4px;">
-        <?php endif; ?>
-        <p>Dikonfirmasi pada: <?= htmlspecialchars($schedule['confirmed_at'] ?? '-') ?></p>
-    </div>
+<div style="border:1px solid #ccc; border-radius:8px; padding:20px;">
+    <h2 style="margin-top:0; font-size:16px; color:#555;">Serah Terima Sudah Selesai</h2>
+    <?php if (!empty($signatureUrl)): ?>
+        <p>Tanda tangan customer:</p>
+        <img src="<?= htmlspecialchars($signatureUrl) ?>" style="max-width:400px; border:1px solid #ccc; border-radius:4px;">
+    <?php endif; ?>
+    <p>Dikonfirmasi pada: <?= htmlspecialchars($schedule['confirmed_at'] ?? '-') ?></p>
+    <a href="/delivery/<?= $schedule['id'] ?>/document" style="display:inline-block; margin-top:10px; padding:8px 16px; background:#1198ab; color:white; text-decoration:none; border-radius:4px;">Dokumen</a>
+</div>
+
 
     <?php elseif ($schedule['status'] === 'failed'): ?>
     <div style="border:1px solid #f5c6cb; border-radius:8px; padding:20px; background:#fff5f5;">
