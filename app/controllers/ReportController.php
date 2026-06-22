@@ -20,9 +20,23 @@ class ReportController extends Controller
 
     public function testingPage(): void
     {
-        $this->view('sprint15', [
-            'title' => 'Sprint 15 Internal Testing',
+        $this->view('reports', [
+            'title' => 'Reports',
             'reportTypes' => $this->reportModel->supportedTypes(),
+        ]);
+    }
+
+    public function auditLogPage(): void
+    {
+        $filters = [
+            'limit' => (int) $this->input('limit', 100),
+            'module' => trim((string) $this->input('module', '')),
+        ];
+
+        $this->view('audit-log', [
+            'title' => 'Audit Log',
+            'auditLogs' => $this->auditLogModel->latest($filters),
+            'filters' => $filters,
         ]);
     }
 
