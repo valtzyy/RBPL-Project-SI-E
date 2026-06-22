@@ -23,7 +23,7 @@ class TransaksiController extends Controller {
         $totalPages = ceil($dataRiwayat['total'] / $limit);
 
         // VIEW
-        return $this->view('transaksi/history', [
+        return $this->view('transactions/history', [
             'transactions' => $dataRiwayat['data'], 
             'currentPage'  => $page,
             'totalPages'   => $totalPages,
