@@ -36,10 +36,13 @@ class CreditController extends Controller
     public function create()
     {
         // 1. Login check
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
-            exit('Login dulu');
-        }
+            header('Content-Type: application/json'); 
+            http_response_code(401); 
+            echo json_encode(['status'=>'error','message'=>'Login dulu']); 
+            exit;
+        }*/
 
         // 2. Ambil input
         $transactionId = (int) ($_POST['transaction_id'] ?? 0);
@@ -48,29 +51,39 @@ class CreditController extends Controller
         // 3. Validasi kelengkapan input
         if ($transactionId <= 0 || $leasingName === '') {
             http_response_code(400);
-            exit('Data tidak lengkap');
+            header('Content-Type: application/json');
+            http_response_code(400); echo json_encode(['status'=>'error','message'=>'Data tidak lengkap']);
+            exit;
         }
 
         // 4. Validasi transaction: ada, payment_type=kredit, status=process
         $transaction = $this->transactionModel->findWithPaymentType($transactionId);
         if (!$transaction) {
             http_response_code(404);
-            exit('Transaksi tidak ditemukan');
+            header('Content-Type: application/json'); http_response_code(404);
+            echo json_encode(['status'=>'error','message'=>'Transaksi tidak ditemukan']);
+            exit;
         }
         if (strtolower($transaction['payment_name']) !== 'kredit') {
             http_response_code(400);
-            exit('Transaksi bukan tipe kredit');
+            header('Content-Type: application/json'); http_response_code(400);
+            echo json_encode(['status'=>'error','message'=>'Transaksi bukan tipe kredit']);
+            exit;
         }
         if ($transaction['status'] !== 'process') {
             http_response_code(400);
-            exit('Transaksi tidak dalam status process');
+            header('Content-Type: application/json'); http_response_code(400);
+            echo json_encode(['status'=>'error','message'=>'Transaksi tidak dalam status process']);
+            exit;
         }
 
         // 5. Cek duplikat pengajuan
         $existing = $this->applicationModel->findByTransactionId($transactionId);
         if ($existing) {
             http_response_code(400);
-            exit('Pengajuan kredit untuk transaksi ini sudah ada');
+            header('Content-Type: application/json'); http_response_code(400);
+            echo json_encode(['status'=>'error','message'=>'Pengajuan kredit untuk transaksi ini sudah ada']);
+            exit;
         }
 
         // 6. Insert credit_application
@@ -95,10 +108,10 @@ class CreditController extends Controller
     public function cancel()
     {
         // 1. Login check
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             exit('Login dulu');
-        }
+        }*/
 
         // 2. Ambil input
         $applicationId = (int) ($_POST['application_id'] ?? 0);
@@ -106,7 +119,9 @@ class CreditController extends Controller
         // 3. Validasi kelengkapan
         if ($applicationId <= 0) {
             http_response_code(400);
-            exit('Data tidak lengkap');
+            header('Content-Type: application/json');
+            http_response_code(400); echo json_encode(['status'=>'error','message'=>'Data tidak lengkap']);
+            exit;
         }
 
         // 4. Validasi: application ada & status = 'rejected'
@@ -138,10 +153,10 @@ class CreditController extends Controller
     public function switchToCash()
     {
         // 1. Login check
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             exit('Login dulu');
-        }
+        }*/
 
         // 2. Ambil input
         $applicationId = (int) ($_POST['application_id'] ?? 0);
@@ -149,7 +164,9 @@ class CreditController extends Controller
         // 3. Validasi kelengkapan
         if ($applicationId <= 0) {
             http_response_code(400);
-            exit('Data tidak lengkap');
+            header('Content-Type: application/json');
+            http_response_code(400); echo json_encode(['status'=>'error','message'=>'Data tidak lengkap']);
+            exit;
         }
 
         // 4. Validasi: application ada & status = 'rejected'
@@ -189,10 +206,10 @@ class CreditController extends Controller
     public function reapply()
     {
         // 1. Login check
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             exit('Login dulu');
-        }
+        }*/
 
         // 2. Ambil input
         $applicationId  = (int) ($_POST['application_id'] ?? 0);
@@ -201,7 +218,9 @@ class CreditController extends Controller
         // 3. Validasi kelengkapan
         if ($applicationId <= 0 || $newLeasingName === '') {
             http_response_code(400);
-            exit('Data tidak lengkap');
+            header('Content-Type: application/json');
+            http_response_code(400); echo json_encode(['status'=>'error','message'=>'Data tidak lengkap']);
+            exit;
         }
 
         // 4. Validasi: application lama ada & status = 'rejected'
@@ -239,10 +258,10 @@ class CreditController extends Controller
     public function status()
     {
         // 1. Login check
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             exit('Login dulu');
-        }
+        }*/
 
         // 2. Ambil param: ?app=ID untuk detail, tanpa param untuk list
         $applicationId = (int) ($_GET['app'] ?? 0);
@@ -283,10 +302,10 @@ class CreditController extends Controller
     public function decision()
     {
         // 1. Login check
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             exit('Login dulu');
-        }
+        }*/
 
         // 2. Ambil input
         $applicationId = (int) ($_POST['application_id'] ?? 0);
@@ -343,10 +362,10 @@ class CreditController extends Controller
     public function uploadDocument()
     {
         // 1. Cek login — $_SESSION['user_id'] di-set oleh tim login (bukan job kita)
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             exit('Login dulu');
-        }
+        }*/
 
         // 2. Ambil input dari POST
         $base64Data    = $_POST['file_base64']   ?? null;
@@ -356,7 +375,9 @@ class CreditController extends Controller
         // 3a. Validasi kelengkapan input
         if (empty($base64Data) || empty($fileType) || $applicationId <= 0) {
             http_response_code(400);
-            exit('Data tidak lengkap');
+            header('Content-Type: application/json');
+            http_response_code(400); echo json_encode(['status'=>'error','message'=>'Data tidak lengkap']);
+            exit;
         }
 
         // 3b. Validasi tipe dokumen (whitelist, defense in depth)
@@ -420,10 +441,10 @@ class CreditController extends Controller
     public function uploadForm()
     {
         // 1. Cek login
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             exit('Login dulu');
-        }
+        }*/
 
         // 2. Ambil application_id dari query string
         $applicationId = (int) ($_GET['app'] ?? 0);
@@ -446,11 +467,16 @@ class CreditController extends Controller
         if ($transaction) {
             $db = \Database::getInstance();
 
-            $stmt = $db->prepare("SELECT name FROM customers WHERE id = ?");
+            $stmt = $db->prepare('
+                SELECT c.name 
+                FROM customers c 
+                JOIN buyer_customers bc ON bc.customer_id = c.id 
+                WHERE bc.id = ?
+            ');
             $stmt->execute([$transaction['customer_id']]);
-            $customerName = $stmt->fetchColumn();
+            $customerName = $stmt->fetchColumn() ?: '';
 
-            $stmt = $db->prepare("SELECT name FROM vehicles WHERE id = ?");
+            $stmt = $db->prepare("SELECT type FROM vehicles WHERE id = ?");
             $stmt->execute([$transaction['vehicle_id']]);
             $vehiclename = $stmt->fetchColumn();
         }
@@ -462,6 +488,40 @@ class CreditController extends Controller
             'customerName' => $customerName,
             'vehicle'  => $vehiclename,
             'leasing' => $application['leasing_name'] ?? '',
+        ]);
+    }
+
+        public function createForm()
+    {
+        // 1. Login check
+        /*if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);
+            exit('Login dulu');
+        }*/
+
+        // 2. Ambil transaksi yang eligible: payment_type=kredit, status=process
+        $db = \Database::getInstance();
+        $stmt = $db->prepare("
+            SELECT st.id, st.transaction_code, c.name AS customer_name,
+                   v.brand, v.type
+            FROM sales_transactions st
+            JOIN payment_types pt    ON pt.id = st.payment_type
+            JOIN buyer_customers bc   ON bc.id = st.customer_id
+            JOIN customers c          ON c.id  = bc.customer_id
+            JOIN vehicles v           ON v.id  = st.vehicle_id
+            WHERE pt.name = 'kredit' AND st.status = 'process'
+            AND NOT EXISTS (
+                  SELECT 1 FROM credit_applications ca 
+                  WHERE ca.transaction_id = st.id
+            )
+            ORDER BY st.created_at DESC
+        ");
+        $stmt->execute();
+        $transactions = $stmt->fetchAll();
+
+        // 3. Render view
+        $this->view('credit/create', [
+            'transactions' => $transactions,
         ]);
     }
 }

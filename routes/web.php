@@ -48,16 +48,19 @@ $router->post('/credit/upload', 'CreditController@uploadDocument');
 // 3. Ini rute untuk MENAMPILKAN FORM UPLOAD DOKUMEN (PBI-8.2)
 $router->get('/credit/upload', 'CreditController@uploadForm');
 
-// 4. Ini rute untuk MELIHAT STATUS PENGAJUAN KREDIT
+// 4. Ini rute untuk MENAMPILKAN FORM CREATE PENGAJUAN KREDIT (PBI-8.4 UI)
+$router->get('/credit/create-form', 'CreditController@createForm');
+
+// 5. Ini rute untuk MELIHAT STATUS PENGAJUAN KREDIT
 // Digunakan untuk menampilkan status submitted/approved/rejected
 $router->get('/credit/status', 'CreditController@status');
 
-// 5. Ini rute untuk MENYIMPAN KEPUTUSAN KREDIT
+// 6. Ini rute untuk MENYIMPAN KEPUTUSAN KREDIT
 // Digunakan untuk approve atau reject pengajuan kredit
 // Data akan disimpan ke tabel credit_decisions dan memperbarui status pada credit_applications
 $router->post('/credit/decision', 'CreditController@decision');
 
-// 6. SPRINT 8 - PBI-8.7: Follow-up setelah kredit ditolak
+// 7. SPRINT 8 - PBI-8.7: Follow-up setelah kredit ditolak
 // Customer pilih: batal / ganti tunai / re-apply ke leasing lain
 $router->post('/credit/cancel',      'CreditController@cancel');
 $router->post('/credit/switch-cash', 'CreditController@switchToCash');
