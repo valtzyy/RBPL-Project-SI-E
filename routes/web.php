@@ -12,3 +12,31 @@ $router->post('/document',      'DocumentController@simpanDokumen');
 
 // 3. Ini rute untuk MELIHAT HASIL (Menggunakan query parameter ?id=)
 $router->get('/document/view',  'DocumentController@bukaDokumen');
+
+$router->get(
+    '/test-notification',
+    'NotificationController@test'
+);//untuk mengetes notifikasi
+$router->get(
+
+'/down-payment',
+
+'DownPaymentController@index'
+
+);
+
+$router->post(
+
+'/down-payment',
+
+'DownPaymentController@store'
+
+); //untuk menyimpan data down payment
+
+$router->post(
+
+'/down-payment/contract',
+
+'DownPaymentController@uploadContract'
+
+); //untuk upload kontrak kredit yang sudah ditandatangani
