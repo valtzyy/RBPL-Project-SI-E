@@ -32,7 +32,7 @@ class Auth
             'username' => $user['username'],
             'email' => $user['email'],
             'role_id' => (int) $user['role_id'],
-            'role_name' => $user['role_name'],
+            'role_name' => $user['role_name'] ?? '',
         ];
     }
 

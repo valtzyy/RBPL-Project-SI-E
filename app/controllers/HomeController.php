@@ -4,6 +4,11 @@ require_once ROOT_PATH . '/core/Controller.php';
 
 class HomeController extends Controller
 {
+    public function __construct()
+    {
+        Auth::requireLogin();
+    }
+
     public function index(): void
     {
         $this->view('home', [

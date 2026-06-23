@@ -13,6 +13,7 @@ class ReportController extends Controller
 
     public function __construct()
     {
+        Auth::requireRole(['Manager']);
         $this->reportModel = new Report();
         $this->auditLogModel = new AuditLog();
         $this->exporter = new ReportExporter();

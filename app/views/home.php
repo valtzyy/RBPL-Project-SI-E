@@ -201,7 +201,7 @@ $role = Auth::role();
             <span class="shortcut-title">Riwayat Transaksi</span>
             <span class="shortcut-desc">Tinjau seluruh riwayat SPK dan Work Order yang masuk.</span>
           </a>
-        <?php elseif ($role === 'Admin Sistem'): ?>
+        <?php elseif ($role === 'Admin'): ?>
           <a href="/dashboard" class="shortcut-card">
             <span class="shortcut-icon">📊</span>
             <span class="shortcut-title">Dashboard Admin</span>

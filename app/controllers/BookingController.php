@@ -11,6 +11,7 @@ class BookingController extends Controller {
     private ServiceCustomer $serviceCustomerModel;
 
     public function __construct() {
+        Auth::requireRole(['Service Advisor']);
         $this->bookingModel         = new ServiceBooking();
         $this->workOrderModel       = new WorkOrders();
         $this->serviceCustomerModel = new ServiceCustomer();
@@ -32,21 +33,22 @@ class BookingController extends Controller {
     // GET /booking/check-slot?date=YYYY-MM-DD
     public function checkSlot(): void {
         $date = $_GET['date'] ?? date('Y-m-d');
-
-        if (!$this->isValidDate($date)) {
+        $pekerja = $this->workOrderModel->countActiveWorkOrders();
+        
+        if ($pekerja >= 5) {
             $this->jsonResponse([
+                'date'      => $date,
                 'available' => false,
-                'message'   => 'Format tanggal tidak valid.'
+                'message'   => 'Slot tidak tersedia (Bengkel Penuh)',
+                'totalAntrean' => $pekerja,
             ], 400);
-            return;
-        }
-
-        if ($date < date('Y-m-d')) {
+        } else {
             $this->jsonResponse([
-                'available' => false,
-                'message'   => 'Tidak bisa booking tanggal yang sudah lewat.'
-            ], 400);
-            return;
+                'date'      => $date,
+                'available' => true,
+                'message'   => 'Slot tersedia',
+                'totalAntrean' => $pekerja,
+            ]);
         }
 
         $remaining = $this->bookingModel->getRemainingSlot($date);
@@ -181,14 +183,20 @@ class BookingController extends Controller {
 
     // GET /booking/queue?date=YYYY-MM-DD — dashboard SA
     public function queue(): void {
-        $date     = $_GET['date'] ?? date('Y-m-d');
+        $date = $_GET['date'] ?? date('Y-m-d');
         $bookings = $this->bookingModel->getQueueForSA($date);
+        
+        $pekerja = $this->workOrderModel->countActiveWorkOrders();
+        $totalAntrean = 5 - $pekerja;
+        if ($totalAntrean < 0) {
+            $totalAntrean = 0;
+        }
 
         $this->view('booking/queue', [
-            'title'     => 'Antrean Servis',
-            'bookings'  => $bookings,
-            'date'      => $date,
-            'remaining' => $this->bookingModel->getRemainingSlot($date),
+            'title'        => 'Dashboard Antrean Booking',
+            'date'         => $date,
+            'bookings'     => $bookings,
+            'totalAntrean' => $totalAntrean
         ]);
     }
 
@@ -212,7 +220,7 @@ class BookingController extends Controller {
         }
 
         // Cek kapasitas bengkel (max 5 mobil in progress)
-        if ($this->bookingModel->countActiveWorkOrders() >= 5) {
+        if ($this->workOrderModel->countActiveWorkOrders() >= 5) {
             $this->jsonResponse([
                 'success' => false,
                 'message' => 'Bengkel sedang penuh (maksimal 5 mobil dalam pengerjaan). Selesaikan salah satu pekerjaan terlebih dahulu.'
@@ -338,7 +346,7 @@ class BookingController extends Controller {
         }
 
         // Cek limit 5 mobil aktif
-        if ($this->bookingModel->countActiveWorkOrders() >= 5) {
+        if ($this->workOrderModel->countActiveWorkOrders() >= 5) {
             $this->jsonResponse([
                 'success' => false,
                 'message' => 'Bengkel penuh (maksimal 5 mobil dalam pengerjaan). Harap selesaikan pekerjaan lain terlebih dahulu.'

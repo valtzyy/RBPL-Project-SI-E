@@ -3,6 +3,11 @@ require_once ROOT_PATH . '/core/Controller.php';
 require_once ROOT_PATH . '/app/models/Transaksi.php';
 
 class TransaksiController extends Controller {
+    public function __construct()
+    {
+        Auth::requireRole(['Manager', 'Sales']);
+    }
+
     public function history() {
         // [PBI-7.3] MATEMATIKA PAGINATION (10 BARIS DATA PER HALAMAN)
         $limit = 10; 

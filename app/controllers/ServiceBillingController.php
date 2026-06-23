@@ -9,6 +9,7 @@ class ServiceBillingController extends Controller
 
     public function __construct()
     {
+        Auth::requireRole(['Finance']);
         $this->model = new ServiceBilling();
     }
 
