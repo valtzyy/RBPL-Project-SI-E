@@ -23,12 +23,12 @@ class CustomerController extends Controller
         $phone = $this->input('phone');
 
         try {
-            (new Customer())->create([
+            $customerId = (new Customer())->create([
                 'name'  => $name,
                 'phone' => $phone,
             ]);
 
-            $this->redirect('/customers');
+            $this->redirect('/transactions/create?customer_id=' . $customerId);
         } catch (Exception $e) {
             echo '<pre>ERROR: ' . $e->getMessage() . '</pre>';
         }

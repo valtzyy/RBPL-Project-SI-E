@@ -17,11 +17,14 @@ class SalesTransactionController extends Controller
     // GET /transactions/create — form buat transaksi baru
     public function create(): void
     {
-        $vehicles  = (new Vehicle())->getAvailable();
-        $customers = (new Customer())->all();
+        $vehicles   = (new Vehicle())->getAvailable();
+        $customerId = (int) ($_GET['customer_id'] ?? 0);
+        $customer   = (new Customer())->find($customerId);
+
         $this->view('transactions/create', [
-            'vehicles'  => $vehicles,
-            'customers' => $customers,
+            'vehicles'    => $vehicles,
+            'customer_id' => $customerId,
+            'customer'    => $customer,
         ]);
     }
 

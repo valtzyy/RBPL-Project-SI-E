@@ -1,6 +1,6 @@
 <h1>Daftar Transaksi Penjualan</h1>
 
-<a href="/transactions/create">+ Buat Transaksi Baru</a>
+<a href="/customers/create">+ Buat Transaksi Baru</a>
 
 <hr>
 

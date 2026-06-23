@@ -12,7 +12,6 @@
         <tr>
             <th>ID</th>
             <th>Nama</th>
-            <th>No. KTP</th>
             <th>No. Telepon</th>
             <th>Aksi</th>
         </tr>
@@ -22,7 +21,6 @@
         <tr>
             <td><?= $customer['id'] ?></td>
             <td><?= htmlspecialchars($customer['name']) ?></td>
-            <td><?= htmlspecialchars($customer['ktp_number'] ?? '-') ?></td>
             <td><?= htmlspecialchars($customer['phone'] ?? '-') ?></td>
             <td><a href="/customers/<?= $customer['id'] ?>">Detail</a></td>
         </tr>

@@ -96,7 +96,7 @@ class SalesTransaction extends Model
                 p.payment_date,
                 p.status AS payment_status
             FROM {$this->table} st
-            LEFT JOIN buyer_customers bc ON st.customer_id = bc.id
+            LEFT JOIN buyer_customers bc ON st.customer_id = bc.customer_id
             LEFT JOIN customers c ON bc.customer_id = c.id
             LEFT JOIN vehicles  v ON st.vehicle_id  = v.id
             LEFT JOIN payments  p ON st.id = p.transaction_id
