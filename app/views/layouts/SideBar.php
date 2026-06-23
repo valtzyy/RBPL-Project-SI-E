@@ -17,9 +17,10 @@ if ($user && !empty($user['name'])) {
 
 $menus = [
     'admin sistem' => [
-        ['label' => 'Manajemen Akun', 'url' => '/admin/users', 'icon' => 'Users'],
-        ['label' => 'Stok Kendaraan', 'url' => '/inventory', 'icon' => 'Stock'],
-        ['label' => 'Pengadaan', 'url' => '/procurement', 'icon' => 'PO'],
+        ['label' => 'Manajemen Akun', 'url' => '/admin/users', 'icon' => '👥'],
+        ['label' => 'Stok Kendaraan', 'url' => '/inventory', 'icon' => '🚗'],
+        ['label' => 'Pengadaan', 'url' => '/procurement', 'icon' => '📥'],
+        // ['label' => 'Pengadaan', 'url' => '/procurement/receipt', 'icon' => '📥'],
     ],
     'sales' => [
         ['label' => 'Manajemen Pelanggan', 'url' => '/customers', 'icon' => '👥'],
@@ -33,37 +34,38 @@ $menus = [
         ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => '🗂️'],
     ],
     'finance' => [
-        ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => 'Dash'],
-        ['label' => 'Nota Penjualan', 'url' => '/service-billing', 'icon' => 'Bill'],
-        ['label' => 'Status Kredit', 'url' => '/credit/status', 'icon' => 'Credit'],
-        ['label' => 'Kasir Nota', 'url' => '/kasir/nota', 'icon' => 'Cash'],
+        ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],
+        ['label' => 'Verifikasi Pembayaran', 'url' => '/finance/payments', 'icon' => '✅'],
+        ['label' => 'Nota Penjualan', 'url' => '/service-billing', 'icon' => '💵'],
+        ['label' => 'Status Kredit', 'url' => '/credit/status', 'icon' => '💳'],
+        ['label' => 'Kasir Nota', 'url' => '/kasir/nota', 'icon' => '🧾'],
     ],
     'service advisor' => [
-        ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => 'Dash'],
-        ['label' => 'Booking Servis', 'url' => '/booking', 'icon' => 'Book'],
-        ['label' => 'Antrean Booking', 'url' => '/booking/queue', 'icon' => 'Queue'],
+        ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],
+        ['label' => 'Booking Servis', 'url' => '/booking', 'icon' => '📅'],
+        ['label' => 'Antrean Booking', 'url' => '/booking/queue', 'icon' => '⏳'],
     ],
     'mekanik' => [
-        ['label' => 'Panel Mekanik', 'url' => '/mechanic/panel', 'icon' => 'Panel'],
-        ['label' => 'Log Kerja Mekanik', 'url' => '/mechanic/work-order/log', 'icon' => 'Log'],
+        ['label' => 'Panel Mekanik', 'url' => '/mechanic/panel', 'icon' => '🔧'],
+        ['label' => 'Log Kerja Mekanik', 'url' => '/mechanic/work-order/log', 'icon' => '📋'],
     ],
     'manager' => [
-        ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => 'Dash'],
-        ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => 'Txn'],
-        ['label' => 'Reports', 'icon' => 'Rpt', 'submenu' => [
+        ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],
+        ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => '🗂️'],
+        ['label' => 'Reports', 'icon' => '📈', 'submenu' => [
             ['label' => 'Sales Report', 'url' => '/reports#sales-report'],
             ['label' => 'Stock Report', 'url' => '/reports#stock-report'],
             ['label' => 'Credit Report', 'url' => '/reports#credit-report'],
             ['label' => 'Service Report', 'url' => '/reports#service-report'],
             ['label' => 'Sparepart Report', 'url' => '/reports#sparepart-report'],
         ]],
-        ['label' => 'Audit Log', 'url' => '/reports/audit-log', 'icon' => 'Audit'],
+        ['label' => 'Audit Log', 'url' => '/reports/audit-log', 'icon' => '📝'],
     ],
 ];
 
 $activeMenu = $menus[$roleKey] ?? [
-    ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => 'Dash'],
-    ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => 'Txn'],
+    ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],
+    ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => '🗂️'],
 ];
 
 $currentUri = $_SERVER['REQUEST_URI'] ?? '/';

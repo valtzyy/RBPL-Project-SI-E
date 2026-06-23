@@ -9,13 +9,18 @@ class ProcurementController extends Controller
 {
 public function index()
 {
-    $vehicle = new Vehicle();
+     $procurementModel = new Procurement();
+        $procurements = $procurementModel->all();
+         $vehicle = new Vehicle();
 
     $vehicles = $vehicle->all();
 
-    $this->view('Procurement/form', [
-        'vehicles' => $vehicles
-    ]);
+
+        $this->view('Procurement/index', [
+            'procurements' => $procurements,
+            'vehicles' => $vehicles
+        ]);
+  
 }
 
     public function store()
@@ -163,16 +168,8 @@ public function index()
             ]);
 
             $db->commit();
-
-            // Tampilkan hasil pencocokan ke user
-            $statusMsg = $isMatch 
-                ? "Penerimaan berhasil dicatat! Semua unit SESUAI dengan pesanan." 
-                : "Penerimaan berhasil dicatat DENGAN KETIDAKSESUAIAN (Silakan periksa log inspection_result).";
-                
-            echo "<h3>Hasil Validasi Penerimaan:</h3>";
-            echo "<p>{$statusMsg}</p>";
-            echo "<p><a href='/'>Kembali ke Beranda</a></p>";
-
+header("Location: /procurement");
+            exit();
         } catch (Exception $e) {
             if ($db->inTransaction()) {
                 $db->rollBack();
@@ -182,13 +179,5 @@ public function index()
         }
     }
 
-    public function receiptList()
-    {
-        $procurementModel = new Procurement();
-        $procurements = $procurementModel->all();
-
-        $this->view('Procurement/receipt_list', [
-            'procurements' => $procurements
-        ]);
-    }
+    
 }

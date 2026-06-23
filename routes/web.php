@@ -99,7 +99,7 @@ $router->post('/credit/reapply',     'CreditController@reapply');
 $router->get('/procurement',               'ProcurementController@index');
 $router->post('/procurement/store',        'ProcurementController@store');
 //PBI 2.4 & 2.5
-$router->get('/procurement/receipt',       'ProcurementController@receiptList');
+// $router->get('/procurement/receipt',       'ProcurementController@receiptList');
 $router->get('/procurement/receipt/:id',   'ProcurementController@receipt');
 $router->post('/procurement/receipt/store', 'ProcurementController@storeReceipt');
 
