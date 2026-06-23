@@ -1,10 +1,12 @@
 <?php
 
 require_once ROOT_PATH . '/core/Controller.php';
+require_once ROOT_PATH . '/app/models/SparepartModel.php';
 require_once ROOT_PATH . '/app/models/Sparepart.php';
 
 class SparepartController extends Controller
 {
+    private SparepartModel $sparepartModel;
     private Sparepart $sparepart;
 
     public function __construct()
@@ -20,6 +22,7 @@ class SparepartController extends Controller
             Auth::requireRole(['Mekanik']);
         }
 
+        $this->sparepartModel = new SparepartModel();
         $this->sparepart = new Sparepart();
     }
 
@@ -47,7 +50,7 @@ class SparepartController extends Controller
         }
 
         try {
-            $insertId = $this->sparepart->create([
+            $insertId = $this->sparepartModel->create([
                 'sku' => $sku,
                 'name' => $name,
                 'stock' => (int) $stock,
@@ -91,7 +94,7 @@ class SparepartController extends Controller
             return;
         }
 
-        $result = $this->sparepart->requestParts((int) $sparepart_id, (int) $work_order_id, (int) $quantity);
+        $result = $this->sparepartModel->requestParts((int) $sparepart_id, (int) $work_order_id, (int) $quantity);
 
         if ($result['success']) {
             http_response_code(200);
@@ -117,7 +120,7 @@ class SparepartController extends Controller
         header('Content-Type: application/json');
         $query = $this->input('q', '');
 
-        $results = $this->sparepart->searchParts($query);
+        $results = $this->sparepartModel->searchParts($query);
         echo json_encode($results);
     }
 
@@ -132,7 +135,7 @@ class SparepartController extends Controller
             return;
         }
 
-        $result = $this->sparepart->getInvoiceDraft((int) $work_order_id);
+        $result = $this->sparepartModel->getInvoiceDraft((int) $work_order_id);
 
         if ($result['success']) {
             http_response_code(200);
