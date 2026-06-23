@@ -11,7 +11,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 mb-1"><?= htmlspecialchars($title ?? 'Form Kendaraan') ?></h1>
-            <p class="text-muted mb-0">Lengkapi master data kendaraan dan stok awal.</p>
+            <p class="text-muted mb-0">Lengkapi master data kendaraan dan batas minimum stok.</p>
         </div>
         <a class="btn btn-outline-secondary" href="/inventory">Kembali</a>
     </div>
@@ -45,10 +45,6 @@
             <div class="col-md-4">
                 <label class="form-label" for="price">Harga</label>
                 <input class="form-control" id="price" name="price" type="number" min="0" step="0.01" value="<?= htmlspecialchars((string) ($vehicle['price'] ?? '')) ?>" required>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label" for="quantity">Quantity Stok</label>
-                <input class="form-control" id="quantity" name="quantity" type="number" min="0" value="<?= (int) ($vehicle['stock_quantity'] ?? 0) ?>">
             </div>
             <div class="col-md-4">
                 <label class="form-label" for="min_stock">Minimum Stok</label>

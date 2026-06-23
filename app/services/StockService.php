@@ -61,15 +61,14 @@ class StockService
         return $newQuantity;
     }
 
-    public function updateStockSettings(int $vehicleId, int $quantity, int $minStock): void
+    public function updateMinimumStock(int $vehicleId, int $minStock): void
     {
-        if ($quantity < 0 || $minStock < 0) {
-            throw new InvalidArgumentException('Quantity dan minimum stok tidak boleh negatif.');
+        if ($minStock < 0) {
+            throw new InvalidArgumentException('Minimum stok tidak boleh negatif.');
         }
 
-        $this->ensureStockRow($vehicleId, $quantity, $minStock);
+        $this->ensureStockRow($vehicleId, 0, $minStock);
         $this->stockModel->updateByVehicleId($vehicleId, [
-            'quantity' => $quantity,
             'min_stock' => $minStock,
         ]);
     }

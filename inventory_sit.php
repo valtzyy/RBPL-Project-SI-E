@@ -52,7 +52,6 @@ try {
         'engine_number' => 'SIT-EN-' . $suffix,
         'price' => 250000000,
         'status' => 'available',
-        'quantity' => 0,
         'min_stock' => 0,
     ]);
 
