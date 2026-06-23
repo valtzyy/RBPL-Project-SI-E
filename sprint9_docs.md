@@ -17,26 +17,20 @@ RBPL-Project-SI-E/
 │   ├── controllers/
 │   │   ├── WebhookApprovalController.php   # Menangani API persetujuan leasing (pihak ketiga)
 │   │   ├── VerifikasiDpController.php      # Menangani pencatatan pelunasan DP oleh Finance
-│   │   ├── UploadDokumenController.php     # Menangani pengunggahan berkas secara aman (KTP, KK, SlipGaji)
 │   │   ├── DebugController.php             # [TEST ONLY] Merender halaman pengujian (Testing Panel)
 │   │   └── DebugResetController.php        # [TEST ONLY] Mereset status data uji coba di database
 │   │
 │   ├── models/
 │   │   ├── CreditApplication.php           # Model untuk tabel credit_applications
 │   │   ├── CreditDecision.php              # Model untuk tabel credit_decisions
-│   │   ├── CreditDocument.php              # Model untuk tabel credit_documents
 │   │   ├── DownPayment.php                 # Model untuk tabel down_payments
 │   │   └── SalesTransaction.php            # Model untuk tabel sales_transactions
 │   │
 │   └── views/
 │       └── debug_panel.php                 # View uji coba plain HTML untuk tim FE & QA
 │
-├── routes/
-│   └── web.php                             # Registrasi rute URL aplikasi
-│
-└── storage/
-    └── uploads/
-        └── contracts/                      # Direktori penyimpanan fisik file unggahan
+└── routes/
+    └── web.php                             # Registrasi rute URL aplikasi
 ```
 
 ---
@@ -49,7 +43,6 @@ Rute-rute berikut telah didaftarkan pada file `routes/web.php` dan terhubung oto
 | :--- | :---: | :--- | :--- |
 | `/webhook-approval` | `POST` | `WebhookApprovalController@process` | Memproses respon persetujuan kredit dari leasing luar |
 | `/verifikasi-dp` | `POST` | `VerifikasiDpController@process` | Memverifikasi pembayaran uang muka oleh Finance |
-| `/upload-dokumen` | `POST` | `UploadDokumenController@process` | Mengunggah dokumen pendukung (KTP/KK/SlipGaji) |
 | `/debug-panel` | `GET` | `DebugController@index` | [Dev Only] Membuka panel UI testing |
 | `/debug-reset` | `POST` | `DebugResetController@process` | [Dev Only] Mereset data pengujian di database |
 
@@ -67,10 +60,6 @@ Rute-rute berikut telah didaftarkan pada file `routes/web.php` dan terhubung oto
    * Menerima input data `id_kredit`, `nominal_dibayar`, dan `verified_by` (ID staf Finance).
    * Mencatat tanggal dan nominal pelunasan ke tabel `down_payments`.
    * Memanggil logika **PBI-9.6** (jika DP dilunasi, periksa apakah status kredit sudah disetujui. Jika ya, ubah status transaksi utama menjadi `'lunas'`).
-3. **`UploadDokumenController.php`**
-   * Mengamankan proses upload berkas dari user.
-   * Mendukung upload file dokumen gambar (JPG, JPEG, PNG) dan dokumen dokumen (PDF) berukuran maksimal 2MB.
-   * Menyimpan path berkas ke database `credit_documents` dengan type sesuai pilihan user (`KTP`, `KK`, atau `SlipGaji`).
 
 ### B. Models (Manipulasi Database)
 * Seluruh model mewarisi kelas dasar `Model.php` yang mengemas kueri standar PDO (`find`, `create`, `update`, `delete`).
@@ -78,7 +67,7 @@ Rute-rute berikut telah didaftarkan pada file `routes/web.php` dan terhubung oto
 
 ### C. View Uji Coba (`debug_panel.php`)
 * Didesain dengan **Plain HTML** tanpa gaya CSS berlebihan agar tim Frontend (FE) dapat mendesain ulang secara modular.
-* Menyediakan form interaktif berbasis Javascript `Fetch API` untuk menguji `/webhook-approval`, `/verifikasi-dp`, `/upload-dokumen`, serta tombol reset database `/debug-reset`.
+* Menyediakan form interaktif berbasis Javascript `Fetch API` untuk menguji `/webhook-approval` dan `/verifikasi-dp`, serta tombol reset database `/debug-reset`.
 
 ---
 
@@ -119,5 +108,3 @@ Aliran logikanya digambarkan pada diagram berikut:
    $db->commit();
    ```
    Jika salah satu kueri gagal, perintah `rollBack()` akan otomatis mengembalikan database ke status semula secara aman.
-3. **Pengecekan MIME Type Secara Riil:**
-   Untuk mengantisipasi unggahan file berbahaya (seperti script php terselubung dengan ekstensi `.jpg`), sistem memeriksa konten fisik file menggunakan fallback dinamis yang tangguh (`finfo_open` ➔ `mime_content_type` ➔ `$_FILES['type']`).

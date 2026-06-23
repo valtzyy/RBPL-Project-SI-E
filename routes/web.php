@@ -133,10 +133,6 @@ $router->get('/kasir/riwayat',   'KasirController@riwayat');
 $router->post('/webhook-approval', 'WebhookApprovalController@process');
 $router->post('/verifikasi-dp',    'VerifikasiDpController@process');
 
-// Rute Upload (Dukungan untuk path lama & generik)
-$router->post('/upload-kontrak',   'UploadDokumenController@process');
-$router->post('/upload-dokumen',   'UploadDokumenController@process');
-
 // Rute Reset / Pembersih Data Uji Coba (Hanya untuk Debugging)
 $router->post('/reset-sprint9',    'DebugResetController@process');
 $router->post('/reset-test-data',  'DebugResetController@process');

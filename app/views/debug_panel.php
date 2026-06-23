@@ -138,39 +138,7 @@
         </div>
     </div>
 
-    <!-- FORM 3: UPLOAD DOKUMEN -->
-    <div class="form-section">
-        <h2>📄 Unggah Dokumen Kredit</h2>
-        <p>Simulasi pengunggahan dokumen kelengkapan kredit (PDF/Gambar max 2MB).</p>
 
-        <form id="formUpload" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="u_id_kredit">ID Kredit (credit_applications.id)</label>
-                <input type="number" id="u_id_kredit" name="id_kredit" value="1" required min="1">
-            </div>
-
-            <div class="form-group">
-                <label for="file_type">Simpan Sebagai Tipe Dokumen</label>
-                <select id="file_type" name="file_type" required>
-                    <option value="SlipGaji">SlipGaji (Slip Gaji)</option>
-                    <option value="KTP">KTP (Kartu Tanda Penduduk)</option>
-                    <option value="KK">KK (Kartu Keluarga)</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="file_kontrak">File Dokumen (PDF/Image max 2MB)</label>
-                <input type="file" id="file_kontrak" name="file_kontrak" accept=".pdf,.jpg,.jpeg,.png" required>
-            </div>
-            
-            <button type="submit" class="btn">Unggah & Simpan Dokumen</button>
-        </form>
-
-        <div class="response-box" id="resUpload">
-            <strong>Response JSON (<span id="badgeUpload"></span>):</strong>
-            <pre><code id="codeUpload"></code></pre>
-        </div>
-    </div>
 
     <script>
         // Helper function untuk mencetak respon JSON ke kotak hasil
@@ -231,24 +199,7 @@
             }
         });
 
-        // C. Handle Form Upload Dokumen (Menggunakan FormData)
-        document.getElementById('formUpload').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const form = e.target;
-            const formData = new FormData(form);
-            
-            try {
-                const response = await fetch('/upload-dokumen', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const data = await response.json();
-                showResponse('resUpload', 'badgeUpload', 'codeUpload', `${response.status} ${response.statusText}`, data);
-            } catch (err) {
-                showResponse('resUpload', 'badgeUpload', 'codeUpload', "Fetch Error", { status: "error", message: err.message });
-            }
-        });
+
 
         // D. Handle Reset Data Uji Coba
         document.getElementById('btnResetData').addEventListener('click', async function() {
