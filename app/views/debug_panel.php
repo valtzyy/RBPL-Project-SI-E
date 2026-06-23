@@ -439,18 +439,11 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="w_status_approval">Status Keputusan</label>
-                        <select id="w_status_approval" class="form-control" required>
-                            <option value="disetujui">disetujui (approved)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
                         <label for="w_catatan">Catatan</label>
                         <input type="text" id="w_catatan" class="form-control" value="Kriteria kredit terpenuhi." required>
                     </div>
                     
-                    <button type="submit" class="btn-submit">Kirim Status Approval</button>
+                    <button type="submit" class="btn-submit">Setujui Kredit Leasing (Approve)</button>
                 </form>
 
                 <div class="console-container hidden" id="consoleWebhook">
@@ -561,7 +554,7 @@
         document.getElementById('formWebhook').addEventListener('submit', async function(e) {
             e.preventDefault();
             const id_kredit = parseInt(document.getElementById('w_id_kredit').value);
-            const status_approval = document.getElementById('w_status_approval').value;
+            const status_approval = "disetujui";
             const catatan = document.getElementById('w_catatan').value;
             
             const consoleBox = document.getElementById('consoleWebhook');
