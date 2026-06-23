@@ -38,4 +38,74 @@ class CreditApplication extends Model
         );
         return $stmt->fetchAll();
     }
+
+    public function findForUploadSearch(string $keyword = ''): array
+    {
+        $sql = "
+            SELECT
+                ca.id AS application_id,
+                ca.leasing_name,
+                ca.created_at,
+
+                c.name AS customer_name,
+
+                v.brand,
+                v.type AS vehicle_type,
+
+                (
+                    SELECT COUNT(*)
+                    FROM credit_documents cd
+                    WHERE cd.credit_application_id = ca.id
+                ) AS doc_count
+
+            FROM credit_applications ca
+
+            JOIN sales_transactions st
+                ON st.id = ca.transaction_id
+
+            JOIN buyer_customers bc
+                ON bc.id = st.customer_id
+
+            JOIN customers c
+                ON c.id = bc.customer_id
+
+            JOIN vehicles v
+                ON v.id = st.vehicle_id
+
+            WHERE ca.status = 'submitted'
+        ";
+
+        $params = [];
+
+        if ($keyword !== '') {
+            $sql .= "
+                AND (
+                    CONCAT('CRD-', LPAD(ca.id,4,'0')) LIKE ?
+                    OR c.name LIKE ?
+                    OR CONCAT(v.brand,' ',v.type) LIKE ?
+                    OR v.brand LIKE ?
+                    OR v.type LIKE ?
+                    OR ca.leasing_name LIKE ?
+                )
+            ";
+
+            $search = "%{$keyword}%";
+
+            $params = [
+                $search, // No Pengajuan
+                $search, // Customer
+                $search, // Kendaraan lengkap
+                $search, // Brand
+                $search, // Type
+                $search  // Leasing
+            ];
+        }
+
+        $sql .= " ORDER BY ca.created_at DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll();
+    }
 }

@@ -492,7 +492,7 @@ class CreditController extends Controller
         ]);
     }
 
-        public function createForm()
+    public function createForm()
     {
         // 1. Login check
         /*if (!isset($_SESSION['user_id'])) {
@@ -523,6 +523,25 @@ class CreditController extends Controller
         // 3. Render view
         $this->view('credit/create', [
             'transactions' => $transactions,
+        ]);
+    }
+
+    public function uploadSearch()
+    {
+        // 1. Login check
+        /*if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);s
+            exit('Login dulu');
+        }*/
+
+        // 2. Ambil transaksi yang eligible: payment_type=kredit, status=process
+        $keyword = trim($_GET['q'] ?? '');
+
+        $applications = $this->applicationModel->findForUploadSearch($keyword);
+
+        $this->view('credit/upload-search', [
+            'keyword' => $keyword,
+            'applications' => $applications
         ]);
     }
 }
