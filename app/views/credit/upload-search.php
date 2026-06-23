@@ -25,7 +25,7 @@
     </div>
 
     <!-- Search Bar -->
-    <form class="search-bar" method="GET" action="/credit/uploadForm" id="searchForm">
+    <form class="search-bar" method="GET" action="/credit/upload-search" id="searchForm">
         <div class="search-wrap">
             <svg class="search-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
                 <circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.8"/>
@@ -37,7 +37,7 @@
                 name="q"
                 id="searchInput"
                 class="search-input"
-                placeholder="Cari ID pengajuan, nama customer, atau leasing..."
+                placeholder="Cari ID pengajuan, nama customer, nama kendaraan atau leasing..."
                 value="<?= htmlspecialchars($keyword) ?>"
                 autocomplete="off"
             >
@@ -50,9 +50,9 @@
             </button>
             <?php endif; ?>
         </div>
-        <button type="submit" class="btn btn-primary">Cari</button>
+        <button type="submit" class="btn btn-prima  ry">Cari</button>
         <?php if ($keyword !== ''): ?>
-            <a href="/credit/uploadForm" class="btn btn-outline">Reset</a>
+            <a href="/credit/upload-search" class="btn btn-outline">Reset</a>
         <?php endif; ?>
     </form>
 
@@ -63,7 +63,7 @@
                 <strong><?= count($applications) ?></strong> hasil
                 untuk "<em><?= htmlspecialchars($keyword) ?></em>"
             </span>
-            <a href="/credit/uploadForm" class="reset-link">Tampilkan semua</a>
+            <a href="/credit/upload-search" class="reset-link">Tampilkan semua</a>
         <?php else: ?>
             <span class="result-info">
                 Menampilkan <strong><?= count($applications) ?></strong> pengajuan
@@ -90,7 +90,7 @@
                 <?php if ($keyword !== ''): ?>
                     Tidak ada yang cocok dengan
                     "<strong><?= htmlspecialchars($keyword) ?></strong>".
-                    <br>Coba kata kunci lain atau <a href="/credit/uploadForm">tampilkan semua</a>.
+                    <br>Coba kata kunci lain atau <a href="/credit/upload">tampilkan semua</a>.
                 <?php else: ?>
                     Belum ada pengajuan kredit dengan status <em>submitted</em>.
                 <?php endif; ?>
