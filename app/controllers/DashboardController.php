@@ -48,13 +48,13 @@ class DashboardController extends Controller {
         header('Content-Type: application/json');
         $limit = (int)$this->input('limit', 10);
         require_once ROOT_PATH . '/app/models/Sparepart.php';
-        $sparepartModel = new Sparepart();
+        $sparepart = new Sparepart();
         
         $response = [
             'recent_transactions' => $this->dashboardModel->getRecentTransactions($limit),
             'stock_stats' => $this->dashboardModel->getVehicleStockStats(),
             'top_brands' => $this->dashboardModel->getTopSellingBrands(),
-            'low_stock_spareparts' => $sparepartModel->getLowLevelStock()
+            'low_stock_spareparts' => $sparepart->getLowLevelStock()
         ];
         echo json_encode($response);
         exit();
