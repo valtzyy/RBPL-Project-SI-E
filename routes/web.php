@@ -63,8 +63,6 @@ $router->get('/document/view',  'DocumentController@bukaDokumen');
 // Data akan disimpan ke tabel credit_applications
 $router->post('/credit/create', 'CreditController@create');
 
-$router->get('/credit/upload-search', 'CreditController@uploadSearch');
-
 // 2. Ini rute untuk UPLOAD DOKUMEN SYARAT KREDIT (PBI-8.3)
 // File dikirim sebagai base64, disimpan di Cloudinary, public_id di tabel credit_documents
 $router->post('/credit/upload', 'CreditController@uploadDocument');

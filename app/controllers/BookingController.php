@@ -11,7 +11,6 @@ class BookingController extends Controller {
     private ServiceCustomer $serviceCustomerModel;
 
     public function __construct() {
-        Auth::requireRole(['Service Advisor']);
         $this->bookingModel         = new ServiceBooking();
         $this->workOrderModel       = new WorkOrders();
         $this->serviceCustomerModel = new ServiceCustomer();

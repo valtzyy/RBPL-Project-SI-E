@@ -16,7 +16,7 @@ if ($user && !empty($user['name'])) {
 }
 
 $menus = [
-    'admin' => [
+    'admin sistem' => [
         ['label' => 'Manajemen Akun', 'url' => '/admin/users', 'icon' => '👥'],
         ['label' => 'Stok Kendaraan', 'url' => '/inventory', 'icon' => '🚗'],
         ['label' => 'Pengadaan', 'url' => '/procurement', 'icon' => '📥'],

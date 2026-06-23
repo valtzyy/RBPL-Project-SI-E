@@ -4,17 +4,10 @@ require_once ROOT_PATH . '/app/models/SalesTransaction.php';
 
 class FinanceController extends Controller
 {
-    private SalesTransaction $transactionModel;
-
     /**
      * GET /finance/payments
      * Halaman antrean verifikasi pembayaran (khusus role Finance)
      */
-    public function __construct() {
-        Auth::requireRole(['Finance']);
-        $this->transactionModel = new SalesTransaction();
-    }
-
     public function index(): void
     {
         $transactions = (new SalesTransaction())->getAllWithPaymentDetails();

@@ -6,11 +6,6 @@ require_once ROOT_PATH . '/app/models/CreditDocument.php';
 
 class UploadDokumenController extends Controller
 {
-    public function __construct()
-    {
-        Auth::requireRole(['Sales']);
-    }
-
     public function process()
     {
         header("Content-Type: application/json; charset=UTF-8");

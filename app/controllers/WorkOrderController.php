@@ -11,7 +11,6 @@ class WorkOrderController extends Controller
 
     public function __construct() 
     {
-        Auth::requireRole(['Mekanik']);
         $this->workOrderModel = new WorkOrder();
         $this->workOrderLogModel = new WorkOrderLog();
     }

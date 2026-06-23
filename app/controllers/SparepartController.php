@@ -11,17 +11,6 @@ class SparepartController extends Controller
 
     public function __construct()
     {
-        $uri = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
-        if (str_contains($uri, '/sparepart/create') || str_contains($uri, '/sparepart/store')) {
-            Auth::requireRole(['Admin']);
-        } elseif (str_contains($uri, '/sparepart')) {
-            Auth::requireRole(['Admin', 'Mekanik']);
-        } elseif (str_contains($uri, '/kasir/invoice') || str_contains($uri, '/api/invoice/draft')) {
-            Auth::requireRole(['Finance', 'Mekanik']);
-        } else {
-            Auth::requireRole(['Mekanik']);
-        }
-
         $this->sparepartModel = new SparepartModel();
         $this->sparepart = new Sparepart();
     }

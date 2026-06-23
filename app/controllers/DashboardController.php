@@ -6,7 +6,6 @@ class DashboardController extends Controller {
     private $dashboardModel;
 
     public function __construct() {
-        Auth::requireRole(['Admin', 'Sales', 'Finance', 'Service Advisor', 'Manager']);
         $this->dashboardModel = new Dashboard();
     }
 

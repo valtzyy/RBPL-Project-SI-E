@@ -18,13 +18,6 @@ class VehicleController extends Controller
 
     public function __construct()
     {
-        $uri = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
-        if (str_contains($uri, '/vehicles/available')) {
-            Auth::requireRole(['Admin', 'Sales']);
-        } else {
-            Auth::requireRole(['Admin']);
-        }
-
         $this->inventoryService = new VehicleInventoryService();
     }
 

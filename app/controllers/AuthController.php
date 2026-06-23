@@ -34,7 +34,7 @@ class AuthController extends Controller
         if ($mockRole !== null && $mockRole !== '') {
             $roleNames = [
                 'manager' => 'Manager',
-                'admin' => 'Admin',
+                'admin sistem' => 'Admin Sistem',
                 'sales' => 'Sales',
                 'finance' => 'Finance',
                 'service advisor' => 'Service Advisor',

@@ -29,7 +29,6 @@ class DocumentController
 
     public function __construct()
     {
-        Auth::requireRole(['Sales']);
         $this->cloudinary = new CloudinaryService();
     }
 

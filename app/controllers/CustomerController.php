@@ -3,11 +3,6 @@ require_once ROOT_PATH . '/app/models/Customer.php';
 
 class CustomerController extends Controller
 {
-    public function __construct()
-    {
-        Auth::requireRole(['Sales']);
-    }
-
     // GET /customers — tampilkan semua customer
     public function index(): void
     {

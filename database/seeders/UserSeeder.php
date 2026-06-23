@@ -12,8 +12,7 @@ class UserSeeder
     public function run(): void
     {
         $roles = [
-            'Admin',
-            'Sales',
+            'Admin Dealer',
             'Finance',
             'Service Advisor',
             'Mekanik',
@@ -27,18 +26,11 @@ class UserSeeder
 
         $usersToSeed = [
             [
-                'name' => 'Admin User',
+                'name' => 'Admin Dealer',
                 'username' => 'admin',
                 'email' => 'admin@dealer.test',
                 'password' => 'password123',
-                'role_name' => 'Admin',
-            ],
-            [
-                'name' => 'Sales User',
-                'username' => 'sales',
-                'email' => 'sales@dealer.test',
-                'password' => 'password123',
-                'role_name' => 'Sales',
+                'role_name' => 'Admin Dealer',
             ],
             [
                 'name' => 'Finance User',
