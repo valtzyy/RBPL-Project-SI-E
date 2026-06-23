@@ -12,7 +12,7 @@ class UserManagementController extends Controller
 
     public function __construct()
     {
-        Auth::requireRole(['Admin Sistem']);
+        Auth::requireRole(['Admin']);
 
         $this->userModel = new User();
         $this->roleModel = new Role();

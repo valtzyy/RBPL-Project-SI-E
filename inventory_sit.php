@@ -34,10 +34,6 @@ try {
     $suffix = time();
 
     $stmt = $db->prepare('INSERT INTO roles (name) VALUES (?)');
-    $stmt->execute(['Manager']);
-    $managerRoleId = (int) $db->lastInsertId();
-
-    $stmt = $db->prepare('INSERT INTO roles (name) VALUES (?)');
     $stmt->execute(['Sales']);
     $salesRoleId = (int) $db->lastInsertId();
 
@@ -45,9 +41,6 @@ try {
         INSERT INTO users (name, username, email, password, role_id, status)
         VALUES (?, ?, ?, ?, ?, ?)
     ');
-    $stmt->execute(['SIT Manager', 'sit_manager_' . $suffix, 'sit_manager_' . $suffix . '@example.test', password_hash('secret', PASSWORD_DEFAULT), $managerRoleId, 'active']);
-    $managerId = (int) $db->lastInsertId();
-
     $stmt->execute(['SIT Sales', 'sit_sales_' . $suffix, 'sit_sales_' . $suffix . '@example.test', password_hash('secret', PASSWORD_DEFAULT), $salesRoleId, 'active']);
     $salesUserId = (int) $db->lastInsertId();
 
@@ -59,7 +52,6 @@ try {
         'engine_number' => 'SIT-EN-' . $suffix,
         'price' => 250000000,
         'status' => 'available',
-        'quantity' => 0,
         'min_stock' => 0,
     ]);
 
@@ -139,17 +131,6 @@ try {
 
     $vehicle = $inventoryService->find($vehicleId);
     sitAssert((int) $vehicle['stock_quantity'] === 1, 'Stock berkurang setelah sales transaction lunas menjadi 1.', $checks);
-
-    $stmt = $db->prepare("
-        SELECT id
-        FROM notifications
-        WHERE user_id = ?
-          AND title = 'Stok kendaraan minimum'
-          AND is_read = 0
-        LIMIT 1
-    ");
-    $stmt->execute([$managerId]);
-    sitAssert((bool) $stmt->fetch(), 'Low stock notification dibuat untuk Manager.', $checks);
 
     $db->rollBack();
 

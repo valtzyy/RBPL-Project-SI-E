@@ -12,6 +12,7 @@ class DeliveryScheduleController extends Controller
 
     public function __construct()
     {
+        Auth::requireRole(['Sales']);
         $this->deliveryModel = new DeliverySchedule();
         $this->cloudinary    = new CloudinaryService();
     }

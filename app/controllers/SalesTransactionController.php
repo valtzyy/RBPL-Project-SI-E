@@ -94,6 +94,7 @@ class SalesTransactionController extends Controller
 
     public function __construct()
     {
+        Auth::requireRole(['Sales']);
         $this->salesTransactionService = new SalesTransactionService();
     }
 

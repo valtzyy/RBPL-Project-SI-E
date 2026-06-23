@@ -7,6 +7,11 @@ require_once ROOT_PATH . '/app/models/SalesTransaction.php';
 
 class VerifikasiDpController extends Controller
 {
+    public function __construct()
+    {
+        Auth::requireRole(['Finance']);
+    }
+
     public function process()
     {
         header("Content-Type: application/json; charset=UTF-8");
