@@ -38,4 +38,68 @@ class CreditApplication extends Model
         );
         return $stmt->fetchAll();
     }
+
+    public function findForUploadSearch(string $keyword = ''): array
+    {
+        $sql = "
+            SELECT
+                ca.id AS application_id,
+                ca.leasing_name,
+                ca.created_at,
+
+                c.name AS customer_name,
+
+                v.brand,
+                v.type AS vehicle_type,
+
+                (
+                    SELECT COUNT(*)
+                    FROM credit_documents cd
+                    WHERE cd.credit_application_id = ca.id
+                ) AS doc_count
+
+            FROM credit_applications ca
+
+            JOIN sales_transactions st
+                ON st.id = ca.transaction_id
+
+            JOIN buyer_customers bc
+                ON bc.id = st.customer_id
+
+            JOIN customers c
+                ON c.id = bc.customer_id
+
+            JOIN vehicles v
+                ON v.id = st.vehicle_id
+
+            WHERE ca.status = 'submitted'
+        ";
+
+        $params = [];
+
+        if ($keyword !== '') {
+            $sql .= "
+                AND (
+                    c.name LIKE ?
+                    OR ca.leasing_name LIKE ?
+                    OR ca.id LIKE ?
+                )
+            ";
+
+            $search = "%{$keyword}%";
+
+            $params = [
+                $search,
+                $search,
+                $search
+            ];
+        }
+
+        $sql .= " ORDER BY ca.created_at DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll();
+    }
 }
