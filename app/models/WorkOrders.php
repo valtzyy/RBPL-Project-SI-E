@@ -25,4 +25,14 @@ class WorkOrders extends Model {
         ");
         return $stmt->execute([$bookingId, $mechanicId]);
     }
+
+    public function countActiveWorkOrders(): int {
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*) as total
+            FROM {$this->table}
+            WHERE status = 'in_progress'
+        ");
+        $stmt->execute();
+        return (int) ($stmt->fetch()['total'] ?? 0);
+    }
 }
