@@ -118,7 +118,6 @@ class VerifikasiDpController extends Controller
                     "nominal_dibayar" => $nominal_dibayar,
                     "tanggal_lunas" => $tanggal_sekarang,
                     "verified_by" => $user_finance,
-                    "kredit_disetujui" => $kredit_disetujui,
                     "status_transaksi" => $status_transaksi_baru ?? $current_tx_status
                 ];
 
