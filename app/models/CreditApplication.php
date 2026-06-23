@@ -80,18 +80,24 @@ class CreditApplication extends Model
         if ($keyword !== '') {
             $sql .= "
                 AND (
-                    c.name LIKE ?
+                    CONCAT('CRD-', LPAD(ca.id,4,'0')) LIKE ?
+                    OR c.name LIKE ?
+                    OR CONCAT(v.brand,' ',v.type) LIKE ?
+                    OR v.brand LIKE ?
+                    OR v.type LIKE ?
                     OR ca.leasing_name LIKE ?
-                    OR ca.id LIKE ?
                 )
             ";
 
             $search = "%{$keyword}%";
 
             $params = [
-                $search,
-                $search,
-                $search
+                $search, // No Pengajuan
+                $search, // Customer
+                $search, // Kendaraan lengkap
+                $search, // Brand
+                $search, // Type
+                $search  // Leasing
             ];
         }
 
