@@ -26,6 +26,30 @@ class CreditApplication extends Model
         return $stmt->fetchAll();
     }
 
+    // Ambil pengajuan kredit beserta nama customer dan kendaraan berdasarkan status
+    // Digunakan untuk mengisi dropdown di form Approval Leasing & Verifikasi DP
+    public function findWithDetailByStatus(string $status): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT
+                ca.id,
+                ca.leasing_name,
+                ca.status,
+                ca.created_at,
+                c.name AS customer_name,
+                CONCAT(v.brand, ' ', v.type) AS kendaraan
+            FROM credit_applications ca
+            JOIN sales_transactions st ON st.id = ca.transaction_id
+            JOIN buyer_customers bc    ON bc.id = st.customer_id
+            JOIN customers c          ON c.id  = bc.customer_id
+            JOIN vehicles v           ON v.id  = st.vehicle_id
+            WHERE ca.status = ?
+            ORDER BY ca.created_at DESC
+        ");
+        $stmt->execute([$status]);
+        return $stmt->fetchAll();
+    }
+
     // List semua pengajuan + count dokumen uploaded (untuk Kanban PBI-8.5)
     public function findAllWithDocCount(): array
     {

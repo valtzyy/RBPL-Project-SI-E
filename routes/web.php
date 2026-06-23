@@ -127,15 +127,8 @@ $router->post('/booking/inspect/:id/convert', 'BookingController@convertToWorkOr
 // ============================================================
 // RUTE SPRINT 9 (Kredit & Leasing - Approval & Uang Muka)
 // ============================================================
+$router->get('/form-approval',     'WebhookApprovalController@showForm');
 $router->post('/webhook-approval', 'WebhookApprovalController@process');
+
+$router->get('/verifikasi-dp',     'VerifikasiDpController@showForm');
 $router->post('/verifikasi-dp',    'VerifikasiDpController@process');
-
-// Rute Reset / Pembersih Data Uji Coba (Hanya untuk Debugging)
-$router->post('/reset-sprint9',    'DebugResetController@process');
-$router->post('/reset-test-data',  'DebugResetController@process');
-$router->post('/debug-reset',      'DebugResetController@process');
-
-// Rute Test/Debug Panel (Hanya untuk Uji Coba Internal Developer)
-$router->get('/test-sprint9',      'DebugController@index');
-$router->get('/test-panel',        'DebugController@index');
-$router->get('/debug-panel',       'DebugController@index');
