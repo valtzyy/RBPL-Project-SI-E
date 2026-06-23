@@ -138,15 +138,17 @@ class BookingController extends Controller {
         try {
             $db->beginTransaction();
 
-            // Cari atau buat service_customer
-            $serviceCustomer = $this->serviceCustomerModel
-                ->findByCustomerAndPlate($customerId, $plateNumber);
+            // Cari atau buat service_customer berdasarkan plat nomor
+            $serviceCustomer = $this->serviceCustomerModel->findByPlate($plateNumber);
 
             if ($serviceCustomer) {
                 $serviceCustomerId = $serviceCustomer['id'];
+                // Jika customer_id berbeda, update agar sesuai dengan customer baru
+                if ((int)$serviceCustomer['customer_id'] !== $customerId) {
+                    $this->serviceCustomerModel->updateCustomer($serviceCustomerId, $customerId);
+                }
             } else {
-                $serviceCustomerId = $this->serviceCustomerModel
-                    ->registerCustomer($customerId, $plateNumber);
+                $serviceCustomerId = $this->serviceCustomerModel->registerCustomer($customerId, $plateNumber);
             }
 
             // Simpan booking
