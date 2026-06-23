@@ -175,6 +175,10 @@ $router->get('/mechanic/work-order/log', 'WorkOrderController@addLogForm');
 
 // 4. API/Action untuk Menyimpan Log Baru
 $router->post('/mechanic/work-order/log/store', 'WorkOrderController@storeLog');
+
+// 5. Halaman Work Orders khusus untuk Service Advisor (Read-only)
+$router->get('/service-advisor/work-orders', 'WorkOrderController@serviceAdvisorIndex');
+$router->get('/service-advisor/work-orders/:id', 'WorkOrderController@serviceAdvisorDetail');
 // ============================================================
 
 // sprint-12 pembayaran services
