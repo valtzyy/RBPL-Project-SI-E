@@ -102,5 +102,55 @@ class WorkOrderController extends Controller
 
             $this->redirect('/mechanic/work-order/log?id=' . $woId . '&status=failed');
         }
+     }
+
+    /**
+     * Menampilkan dashboard utama panel Service Advisor
+     */
+    public function serviceAdvisorIndex(): void
+    {
+        $orders = $this->workOrderModel->getAllWorkOrders();
+        
+        $totalHandled = 0;
+        $totalCompleted = 0;
+        
+        foreach ($orders as $order) {
+            if ($order['status'] === 'in_progress') {
+                $totalHandled++;
+            } elseif ($order['status'] === 'done' || $order['status'] === 'ready') {
+                $totalCompleted++;
+            }
+        }
+        
+        $this->view('bengkel/service_advisor_panel', [
+            'orders' => $orders,
+            'totalHandled' => $totalHandled,
+            'totalCompleted' => $totalCompleted
+        ]);
+    }
+
+    /**
+     * Menampilkan halaman detail work order untuk Service Advisor (Read-only)
+     */
+    public function serviceAdvisorDetail(string $id): void
+    {
+        $woId = (int) $id;
+        if ($woId <= 0) {
+            $this->redirect('/service-advisor/work-orders');
+            return;
+        }
+
+        $order = $this->workOrderModel->getWorkOrderDetail($woId);
+        if (!$order) {
+            $this->redirect('/service-advisor/work-orders');
+            return;
+        }
+
+        $logs = $this->workOrderLogModel->getLogsByWorkOrderId($woId);
+
+        $this->view('bengkel/service_advisor_detail', [
+            'order' => $order,
+            'logs'  => $logs
+        ]);
     }
 }

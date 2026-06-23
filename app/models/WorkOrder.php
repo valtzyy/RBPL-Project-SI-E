@@ -48,12 +48,14 @@ class WorkOrder extends Model
                     COALESCE(CONCAT(v.brand, ' ', v.type), sb.vehicle_name, 'Tidak Diketahui') AS vehicle_model, 
                     COALESCE(v.color, '-') AS vehicle_color,
                     sc.plate_number AS license_plate,
-                    sb.booking_date 
+                    sb.booking_date,
+                    u.name AS mechanic_name
                   FROM {$this->table} wo
                   LEFT JOIN service_bookings sb ON wo.booking_id = sb.id
                   LEFT JOIN service_customers sc ON sb.service_customer_id = sc.id
                   LEFT JOIN customers c ON sc.customer_id = c.id
                   LEFT JOIN vehicles v ON sb.vehicle_id = v.id
+                  LEFT JOIN users u ON wo.assigned_mechanic = u.id
                   WHERE wo.id = ?
                   LIMIT 1";
 
@@ -79,5 +81,32 @@ class WorkOrder extends Model
         return $this->update($woId, [
             'status' => $status
         ]);
+    }
+
+    /**
+     * Mengambil seluruh data work order tanpa memfilter mekanik tertentu (untuk Service Advisor)
+     */
+    public function getAllWorkOrders(): array
+    {
+        $query = "SELECT 
+                    wo.*, 
+                    (SELECT status FROM work_order_logs WHERE work_order_id = wo.id ORDER BY created_at DESC LIMIT 1) AS latest_log_status,
+                    c.name AS customer_name, 
+                    COALESCE(CONCAT(v.brand, ' ', v.type), sb.vehicle_name, 'Tidak Diketahui') AS vehicle_model, 
+                    COALESCE(v.color, '-') AS vehicle_color,
+                    sc.plate_number AS license_plate,
+                    sb.booking_date,
+                    u.name AS mechanic_name
+                  FROM {$this->table} wo
+                  LEFT JOIN service_bookings sb ON wo.booking_id = sb.id
+                  LEFT JOIN service_customers sc ON sb.service_customer_id = sc.id
+                  LEFT JOIN customers c ON sc.customer_id = c.id
+                  LEFT JOIN vehicles v ON sb.vehicle_id = v.id
+                  LEFT JOIN users u ON wo.assigned_mechanic = u.id
+                  ORDER BY wo.created_at DESC";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
