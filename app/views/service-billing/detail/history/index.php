@@ -1,21 +1,15 @@
-<!-- <?php
-
-echo "<pre>";
-var_dump($detailLog ?? null);
-echo "</pre>"; -->
-
 <?php
+
 $title = 'Riwayat Servis';
 
-if (empty($detailLog)) :
-?>
-    <div class="dl-card">
-        <h2>Data Riwayat Tidak Ditemukan</h2>
-        <p>Work Order tidak ditemukan atau belum memiliki riwayat servis.</p>
-    </div>
-<?php
+if (empty($detailLog)) {
+    echo '<div class="dl-card">';
+    echo '<h2>Data Riwayat Tidak Ditemukan</h2>';
+    echo '<p>Work Order tidak ditemukan atau belum memiliki riwayat servis.</p>';
+    echo '</div>';
     return;
-endif;
+}
+
 ?>
 
 <div class="dl-page">
