@@ -71,27 +71,23 @@ Rute-rute berikut telah didaftarkan pada file `routes/web.php` dan terhubung oto
 
 ---
 
-## 🔄 4. Logika Otomatis PBI-9.6 (Gerbang Serah Terima)
+## 🔄 4. Logika Alur Sekuensial PBI-9.6 (Gerbang Serah Terima)
 
-Modul delivery/serah terima hanya mendeteksi unit mobil yang siap dikirim apabila status transaksi penjualan di tabel `sales_transactions` telah bernilai `'lunas'`. 
+Modul delivery/serah terima hanya mendeteksi unit mobil yang siap dikirim apabila status transaksi penjualan di tabel `sales_transactions` telah bernilai `'lunas'`.
 
-Sebuah transaksi penjualan kredit dinyatakan `'lunas'` secara otomatis apabila kedua kondisi berikut terpenuhi:
-1. **Kredit disetujui oleh leasing** (`credit_applications.status = 'approved'`).
-2. **Down Payment sudah dibayar** (`down_payments.paid_at` terisi).
+Alur proses modul ini dibuat secara berurutan (sekuensial) dengan tahapan berikut:
 
-Aliran logikanya digambarkan pada diagram berikut:
+### Langkah 1: Persetujuan Kredit oleh Pihak Leasing (`/webhook-approval`)
+1. Pihak leasing mengirimkan keputusan persetujuan kredit.
+2. Status kredit pada tabel `credit_applications` diupdate menjadi `'approved'` (atau `'rejected'`).
+3. Pada tahap ini, status transaksi utama (`sales_transactions.status`) tetap `'process'` karena pembayaran uang muka (DP) belum diverifikasi.
 
-### Skenario A: Persetujuan Kredit Terlebih Dahulu (Leasing Approval First)
-1. **Penerimaan Keputusan Leasing:** Status kredit diupdate menjadi `'approved'` di tabel `credit_applications`.
-2. **Pengecekan Otomatis:** Sistem memeriksa tabel `down_payments` untuk transaksi terkait:
-   * **Jika DP Sudah Lunas:** Status transaksi (`sales_transactions.status`) otomatis diupdate menjadi **`'lunas'`** (siap masuk antrean serah terima).
-   * **Jika DP Belum Lunas:** Status transaksi tetap **`'process'`** (menunggu pembayaran DP dari pelanggan).
-
-### Skenario B: Pelunasan Uang Muka Terlebih Dahulu (DP Payment First)
-1. **Pencatatan DP oleh Finance:** Tanggal pelunasan dicatat di kolom `paid_at` pada tabel `down_payments`.
-2. **Pengecekan Otomatis:** Sistem memeriksa status pengajuan kredit terkait di tabel `credit_applications`:
-   * **Jika Kredit Sudah Approved:** Status transaksi (`sales_transactions.status`) otomatis diupdate menjadi **`'lunas'`** (siap masuk antrean serah terima).
-   * **Jika Kredit Belum Approved:** Status transaksi tetap **`'process'`** (menunggu keputusan persetujuan dari pihak leasing).
+### Langkah 2: Verifikasi Pelunasan Uang Muka oleh Finance (`/verifikasi-dp`)
+1. Staf Finance mengunggah bukti/nominal pembayaran uang muka (DP).
+2. **Validasi Alur**: Sistem secara otomatis memeriksa status pengajuan kredit terkait:
+   - **Jika kredit belum disetujui** (status bukan `'approved'`), permintaan verifikasi DP ditolak dengan pesan error (mencegah pembayaran DP untuk kredit yang ditolak/tertunda).
+   - **Jika kredit sudah disetujui** (status `'approved'`), data pelunasan DP dicatat di tabel `down_payments`.
+3. Setelah DP diverifikasi dan kredit telah disetujui, sistem otomatis mengupdate status transaksi utama (`sales_transactions`) menjadi **`'lunas'`** sehingga unit mobil siap masuk ke antrean serah terima.
 
 ---
 

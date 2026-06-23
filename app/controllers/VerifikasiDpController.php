@@ -71,6 +71,12 @@ class VerifikasiDpController extends Controller
             $status_kredit = $creditApp['status'];
             $current_tx_status = $creditApp['current_tx_status'];
 
+            // 2. Validasi alur: Uang muka (DP) hanya dapat diverifikasi setelah pengajuan kredit disetujui (status = 'approved') oleh leasing
+            if ($status_kredit !== 'approved') {
+                http_response_code(400);
+                throw new Exception("Uang muka tidak dapat diverifikasi sebelum pengajuan kredit disetujui oleh pihak leasing.");
+            }
+
             // Begin database transaction using the models' PDO connection
             $db = Database::getInstance();
             $db->beginTransaction();
@@ -98,14 +104,9 @@ class VerifikasiDpController extends Controller
                 }
 
                 // 3. LOGIKA OTOMATIS GATEWAY KE ANTREAN SERAH TERIMA (PBI-9.6)
-                $status_transaksi_baru = null;
-                $kredit_disetujui = ($status_kredit === 'approved');
-
-                if ($kredit_disetujui) {
-                    // Kredit disetujui + DP lunas (just paid) = lunas
-                    $salesTxModel->update($transaction_id, ['status' => 'lunas']);
-                    $status_transaksi_baru = 'lunas';
-                }
+                // Karena status kredit sudah divalidasi 'approved' di atas, maka transaksi otomatis menjadi 'lunas' setelah DP diverifikasi
+                $salesTxModel->update($transaction_id, ['status' => 'lunas']);
+                $status_transaksi_baru = 'lunas';
 
                 $db->commit();
 

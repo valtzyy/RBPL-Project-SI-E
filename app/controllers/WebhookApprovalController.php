@@ -87,24 +87,13 @@ class WebhookApprovalController extends Controller
                     'decided_at' => date('Y-m-d H:i:s')
                 ]);
 
-                // 4. LOGIKA OTOMATIS GATEWAY KE ANTREAN SERAH TERIMA (PBI-9.6)
+                // 4. LOGIKA SEKUENSIAL (PBI-9.6)
+                // Karena alur sekarang berurutan (leasing approval dulu, baru verifikasi DP), 
+                // status transaksi utama tidak akan berubah menjadi 'lunas' pada tahap ini karena DP belum diverifikasi.
                 $status_transaksi_baru = null;
-                $dp_lunas = false;
 
-                if ($db_status === 'approved') {
-                    // Cek pembayaran DP
-                    $dpRecord = $downPaymentModel->findByCreditApplicationId($id_kredit);
-
-                    if ($dpRecord && !empty($dpRecord['paid_at'])) {
-                        $dp_lunas = true;
-                    }
-
-                    if ($dp_lunas) {
-                        // Update status transaksi utama menjadi 'lunas'
-                        $salesTxModel->update($transaction_id, ['status' => 'lunas']);
-                        $status_transaksi_baru = 'lunas';
-                    }
-                }
+                $dpRecord = $downPaymentModel->findByCreditApplicationId($id_kredit);
+                $dp_lunas = ($dpRecord && !empty($dpRecord['paid_at'])) ? true : false;
 
                 $db->commit();
 
