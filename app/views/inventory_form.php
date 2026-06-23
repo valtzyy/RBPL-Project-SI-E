@@ -44,10 +44,6 @@
                 <input class="form-control" id="price" name="price" type="number" min="0" step="0.01" value="<?= htmlspecialchars((string) ($vehicle['price'] ?? '')) ?>" placeholder="Masukkan nominal harga..." required>
             </div>
             <div class="col-md-4">
-                <label class="form-label" for="quantity">Kuantitas Stok Awal</label>
-                <input class="form-control" id="quantity" name="quantity" type="number" min="0" value="<?= (int) ($vehicle['stock_quantity'] ?? 0) ?>">
-            </div>
-            <div class="col-md-4">
                 <label class="form-label" for="min_stock">Minimum Stok Alert</label>
                 <input class="form-control" id="min_stock" name="min_stock" type="number" min="0" value="<?= (int) ($vehicle['min_stock'] ?? 0) ?>">
             </div>
