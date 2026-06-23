@@ -5,10 +5,10 @@
     <!-- Header Row -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
-            <h1 class="h3 mb-1">🚗 Inventaris Kendaraan</h1>
+            <h1 class="h3 mb-1">Inventaris Kendaraan</h1>
             <p class="text-muted mb-0">Master data kendaraan, stok, dan status ketersediaan di dealer.</p>
         </div>
-        <a class="btn btn-primary" href="/inventory/create">➕ Tambah Kendaraan Baru</a>
+        <a class="btn btn-primary" href="/inventory/create"> Tambah Kendaraan Baru</a>
     </div>
 
     <!-- Alert Notifications -->
