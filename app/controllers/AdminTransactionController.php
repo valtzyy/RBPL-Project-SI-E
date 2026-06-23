@@ -6,6 +6,11 @@ use Dompdf\Dompdf;
 
 class AdminTransactionController extends Controller
 {
+    public function __construct()
+    {
+        Auth::requireRole(['Admin']);
+    }
+
     public function index(): void
     {
         $transactions = (new SalesTransaction())->getAllWithPaymentDetails();

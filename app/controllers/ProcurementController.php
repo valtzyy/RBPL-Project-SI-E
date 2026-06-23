@@ -7,8 +7,13 @@ require_once ROOT_PATH . '/app/models/procurementreceipt.php';
 
 class ProcurementController extends Controller
 {
-public function index()
-{
+    public function __construct()
+    {
+        Auth::requireRole(['Admin']);
+    }
+
+    public function index()
+    {
      $procurementModel = new Procurement();
         $procurements = $procurementModel->all();
          $vehicle = new Vehicle();

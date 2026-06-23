@@ -23,6 +23,15 @@ class CreditController extends Controller
 
     public function __construct()
     {
+        $uri = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
+        if (str_contains($uri, '/credit/decision')) {
+            Auth::requireRole(['Finance']);
+        } elseif (str_contains($uri, '/credit/status')) {
+            Auth::requireRole(['Sales', 'Finance']);
+        } else {
+            Auth::requireRole(['Sales']);
+        }
+
         // Inisialisasi 1x per request — hemat memory vs bikin ulang tiap method
         $this->cloudinary       = new CloudinaryService();
         $this->leasing          = new LeasingService();
