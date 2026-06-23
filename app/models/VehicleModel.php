@@ -34,7 +34,6 @@ class VehicleModel extends Model
                 v.chassis_number,
                 v.engine_number,
                 v.price,
-                v.status,
                 v.created_at,
                 COALESCE(vs.quantity, 0) AS stock_quantity,
                 COALESCE(vs.min_stock, 0) AS min_stock

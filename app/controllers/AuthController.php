@@ -29,6 +29,33 @@ class AuthController extends Controller
 
     public function login(): void
     {
+        $mockRole = $this->input('mock_role');
+
+        if ($mockRole !== null && $mockRole !== '') {
+            $roleNames = [
+                'manager' => 'Manager',
+                'admin sistem' => 'Admin Sistem',
+                'sales' => 'Sales',
+                'finance' => 'Finance',
+                'service advisor' => 'Service Advisor',
+                'mekanik' => 'Mekanik'
+            ];
+
+            if (array_key_exists($mockRole, $roleNames)) {
+                $roleName = $roleNames[$mockRole];
+                $mockUser = [
+                    'id' => 999,
+                    'name' => 'Mock ' . $roleName,
+                    'username' => strtolower(str_replace(' ', '_', $roleName)),
+                    'email' => strtolower(str_replace(' ', '_', $roleName)) . '@dealerlink.com',
+                    'role_id' => 99,
+                    'role_name' => $roleName
+                ];
+                Auth::login($mockUser);
+                $this->redirect('/');
+            }
+        }
+
         $identity = trim((string) $this->input('identity', ''));
         $password = (string) $this->input('password', '');
 
@@ -45,7 +72,7 @@ class AuthController extends Controller
         }
 
         if ($user['status'] !== 'active') {
-            $_SESSION['flash_error'] = 'Akun tidak aktif. Hubungi Admin Dealer.';
+            $_SESSION['flash_error'] = 'Akun tidak aktif. Hubungi Sales.';
             $this->redirect('/login');
         }
 

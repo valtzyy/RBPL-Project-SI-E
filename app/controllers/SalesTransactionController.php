@@ -109,13 +109,6 @@ class SalesTransactionController extends Controller
         }
     }
 
-    private function json(array $payload, int $status = 200): void
-    {
-        http_response_code($status);
-        header('Content-Type: application/json');
-        echo json_encode($payload, JSON_THROW_ON_ERROR);
-    }
-
     private function requestData(): array
     {
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';

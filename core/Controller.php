@@ -18,14 +18,14 @@ class Controller
             exit("View tidak ditemukan: {$name}.php");
         }
 
-        $layoutPath = ROOT_PATH . '/app/views/layout/main.php';
+        $layoutPath = ROOT_PATH . '/app/views/layouts/main.php';
 
         if (!file_exists($layoutPath)) {
-            $layoutPath = ROOT_PATH . '/app/views/layout/main.php';
+            $layoutPath = ROOT_PATH . '/app/views/layouts/main.php';
         }
 
         if (!file_exists($layoutPath)) {
-            $layoutPath = ROOT_PATH . '/app/views/layout/main.php';
+            $layoutPath = ROOT_PATH . '/app/views/layouts/main.php';
         }
 
         if (file_exists($layoutPath)) {

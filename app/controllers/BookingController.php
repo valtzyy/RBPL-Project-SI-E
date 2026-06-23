@@ -49,6 +49,14 @@ class BookingController extends Controller {
                 'totalAntrean' => $pekerja,
             ]);
         }
+
+        $remaining = $this->bookingModel->getRemainingSlot($date);
+        $this->jsonResponse([
+            'date'      => $date,
+            'available' => true,
+            'remaining' => $remaining,
+            'message'   => 'Slot tersedia'
+        ]);
     }
 
     // POST /booking/create-customer — daftarkan customer baru dan kembalikan ID-nya
