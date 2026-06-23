@@ -51,7 +51,7 @@
     <?php endif; ?>
     <div style="display:flex; justify-content:space-between; margin-top:30px;">
         <div style="text-align:center; width:200px;">
-            <div style="border-top:1px solid #000; margin-top:30px; padding-top:6px; font-size:13px;">Admin Dealer</div>
+            <div style="border-top:1px solid #000; margin-top:30px; padding-top:6px; font-size:13px;">Sales</div>
         </div>
         <div style="text-align:center; width:200px;">
             <div style="border-top:1px solid #000; margin-top:30px; padding-top:6px; font-size:13px;">Customer<br><?= htmlspecialchars($schedule['customer_name']) ?></div>

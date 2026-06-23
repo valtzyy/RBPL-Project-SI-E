@@ -222,7 +222,7 @@ $role = Auth::role();
             <span class="shortcut-title">Pengadaan</span>
             <span class="shortcut-desc">Kelola pengadaan unit mobil masuk.</span>
           </a>
-        <?php elseif ($role === 'Admin Dealer'): ?>
+        <?php elseif ($role === 'Sales'): ?>
           <a href="/dashboard" class="shortcut-card">
             <span class="shortcut-icon">📊</span>
             <span class="shortcut-title">Dashboard Dealer</span>

@@ -35,7 +35,7 @@ class AuthController extends Controller
             $roleNames = [
                 'manager' => 'Manager',
                 'admin sistem' => 'Admin Sistem',
-                'admin dealer' => 'Admin Dealer',
+                'sales' => 'Sales',
                 'finance' => 'Finance',
                 'service advisor' => 'Service Advisor',
                 'mekanik' => 'Mekanik'
@@ -72,7 +72,7 @@ class AuthController extends Controller
         }
 
         if ($user['status'] !== 'active') {
-            $_SESSION['flash_error'] = 'Akun tidak aktif. Hubungi Admin Dealer.';
+            $_SESSION['flash_error'] = 'Akun tidak aktif. Hubungi Sales.';
             $this->redirect('/login');
         }
 

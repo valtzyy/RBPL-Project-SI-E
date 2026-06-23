@@ -18,6 +18,7 @@ $filters      = $filters ?? [
 ];
 
 $baseParams = $filters;
+$sidebarPath = ROOT_PATH . '/app/views/layouts/SideBar.php';
 ?>
 
 <!DOCTYPE html>
@@ -298,18 +299,7 @@ $baseParams = $filters;
   <div class="body-row">
 
     <!-- ═══ SIDEBAR ═══ -->
-    <aside class="sidebar">
-      <div class="profile">
-        <div class="avatar">AD</div>
-        <div>
-          <div class="profile-name">Admin Dealer</div>
-          <div class="profile-role">Manager Operasional</div>
-        </div>
-      </div>
-      <ul class="nav">
-        <li class="active"><span class="nav-ic">📊</span> Riwayat Transaksi</li>
-      </ul>
-    </aside>
+    <?php require $sidebarPath; ?>
 
     <!-- ═══ MAIN ═══ -->
     <main class="main">

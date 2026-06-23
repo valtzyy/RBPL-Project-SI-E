@@ -438,7 +438,7 @@
             <select id="mock_role" name="mock_role" class="form-input select-input">
               <option value="">-- Gunakan Login Database Asli --</option>
               <option value="admin sistem">Admin Sistem</option>
-              <option value="admin dealer">Admin Dealer</option>
+              <option value="sales">Sales</option>
               <option value="finance">Finance</option>
               <option value="service advisor">Service Advisor</option>
               <option value="mekanik">Mekanik</option>
