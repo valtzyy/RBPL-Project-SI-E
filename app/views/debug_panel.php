@@ -442,7 +442,6 @@
                         <label for="w_status_approval">Status Keputusan</label>
                         <select id="w_status_approval" class="form-control" required>
                             <option value="disetujui">disetujui (approved)</option>
-                            <option value="ditolak">ditolak (rejected)</option>
                         </select>
                     </div>
                     
