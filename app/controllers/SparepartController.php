@@ -111,6 +111,7 @@ class SparepartController extends Controller
 
         $results = $this->sparepartModel->searchParts($query);
         echo json_encode($results);
+        $this->view('sparepart/search', ['title' => 'Pencarian Sparepart', 'results' => $results]);
     }
 
     public function invoiceDraft(): void

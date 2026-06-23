@@ -43,8 +43,7 @@ $menus = [
     'service advisor' => [
         ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],
         ['label' => 'Booking Servis', 'url' => '/booking', 'icon' => '📅'],
-        ['label' => 'Antrean Booking', 'url' => '/booking/queue', 'icon' => '⏳'],
-        ['label' => 'Work Orders', 'url' => '/service-advisor/work-orders', 'icon' => '🔧'],
+        ['label' => 'Sparepart', 'url' => '/api/sparepart/search', 'icon' => '🔩'],
     ],
     'mekanik' => [
         ['label' => 'Panel Mekanik', 'url' => '/mechanic/panel', 'icon' => '🔧'],

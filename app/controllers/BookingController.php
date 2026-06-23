@@ -17,7 +17,7 @@ class BookingController extends Controller {
     }
 
     // GET /booking — form booking untuk Admin
-    public function index(): void {
+    public function queue(): void {
         $db        = Database::getInstance();
         $customers = $db->query(
             "SELECT id, name, phone FROM customers ORDER BY name ASC"
@@ -181,7 +181,7 @@ class BookingController extends Controller {
     }
 
     // GET /booking/queue?date=YYYY-MM-DD — dashboard SA
-    public function queue(): void {
+    public function index(): void {
         $date = $_GET['date'] ?? date('Y-m-d');
         $bookings = $this->bookingModel->getQueueForSA($date);
         
