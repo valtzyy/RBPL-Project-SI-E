@@ -100,6 +100,7 @@
                     </table>
                 <?php endif; ?>
             </section>
+            
         </div>
     </main>
 </div>
