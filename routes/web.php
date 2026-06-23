@@ -139,6 +139,16 @@ $router->get('/customers/create',       'CustomerController@create');
 $router->post('/customers',             'CustomerController@store');
 $router->get('/customers/:id',          'CustomerController@show');
 
+// Sprint 5 - Pembayaran Tunai (Admin & Finance)
+$router->get('/admin/transactions',             'AdminTransactionController@index');
+$router->get('/admin/transactions/:id',         'AdminTransactionController@show');
+$router->get('/admin/transactions/:id/receipt', 'AdminTransactionController@downloadReceipt');
+
+// Sprint 5 - Finance: Verifikasi Pembayaran
+$router->get('/finance/payments',                'FinanceController@index');
+$router->get('/finance/payments/:id',            'FinanceController@show');
+$router->post('/finance/payments/:id/verify',    'FinanceController@verifyPayment');
+
 // Booking Servis - Sprint 10
 $router->get('/booking',             'BookingController@index');
 $router->get('/booking/check-slot',  'BookingController@checkSlot');
