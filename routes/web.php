@@ -56,7 +56,6 @@ $router->get('/credit/create-form', 'CreditController@createForm');
 // 5. Ini rute untuk MELIHAT STATUS PENGAJUAN KREDIT
 // Digunakan untuk menampilkan status submitted/approved/rejected
 $router->get('/credit/status', 'CreditController@status');
-$router->get('/credit/status-view','CreditController@statusView');
 $router->get('/credit/tracking', 'CreditController@tracking');
 
 // 6. Ini rute untuk MENYIMPAN KEPUTUSAN KREDIT
