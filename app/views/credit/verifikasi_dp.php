@@ -37,6 +37,14 @@
 <div class="container">
 
     <div class="page-header">
+        <!-- Tombol Kembali ke Home (selalu tampil) -->
+        <a href="/" style="display:inline-flex; align-items:center; gap:6px; font-size:13px; color:#64748b; margin-bottom:16px; text-decoration:none;" onmouseover="this.style.color='#172033'" onmouseout="this.style.color='#64748b'">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Kembali ke Home
+        </a>
         <h1>Verifikasi Pembayaran Uang Muka (DP)</h1>
         <p>Halaman pencatatan dan verifikasi pelunasan uang muka oleh divisi Finance.</p>
     </div>
@@ -103,6 +111,9 @@
             <div id="resultBox" class="result-card">
                 <strong id="resultTitle"></strong>
                 <p id="resultMessage" style="margin-top: 5px; font-size: 14px;"></p>
+                <a id="btnKembali" href="/" style="display: none; margin-top: 14px; padding: 10px 22px; background: #3b82f6; color: #fff; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 14px; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-house"></i> Kembali ke Home
+                </a>
             </div>
         </div>
     </div>

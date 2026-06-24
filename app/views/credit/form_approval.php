@@ -37,6 +37,14 @@
 <div class="container">
 
     <div class="page-header">
+        <!-- Tombol Kembali ke Home (selalu tampil) -->
+        <a href="/" style="display:inline-flex; align-items:center; gap:6px; font-size:13px; color:#64748b; margin-bottom:16px; text-decoration:none;" onmouseover="this.style.color='#172033'" onmouseout="this.style.color='#64748b'">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Kembali ke Home
+        </a>
         <h1>Persetujuan Kredit Leasing</h1>
         <p>Prosedur persetujuan kelayakan kredit dari lembaga leasing eksternal.</p>
     </div>
