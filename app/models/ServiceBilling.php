@@ -198,12 +198,13 @@ class ServiceBilling extends Model
 
     /**
      * Riwayat servis (log + sparepart) untuk satu work order.
-     * Tetap diidentifikasi via work_order_id, bukan plate_number.
+     * Tetap diidentifikasi via plate_number.
      */
-    public function getHistoryByWorkOrderId(int $workOrderId): array|false
+    public function getHistoryByPlateNumber(string $plateNumber): array
     {
-        $sql = "
-            SELECT
+        try {
+            $sql = "
+            SELECT 
                 wo.id AS work_order_id,
                 wo.status AS wo_status,
                 wo.description AS wo_description,
@@ -221,51 +222,56 @@ class ServiceBilling extends Model
             LEFT JOIN work_order_logs wol ON wo.id = wol.work_order_id
             LEFT JOIN sparepart_usages su ON wo.id = su.work_order_id
             LEFT JOIN spareparts sp ON su.sparepart_id = sp.id
-            WHERE wo.id = :workOrderId
+            JOIN service_bookings sb ON wo.booking_id = sb.id
+            JOIN service_customers sc ON sb.service_customer_id = sc.id
+            WHERE sc.plate_number = :plateNumber
         ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindValue(':plateNumber', $plateNumber, PDO::PARAM_STR);
+            $stmt->execute();
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindValue(':workOrderId', $workOrderId, PDO::PARAM_INT);
-        $stmt->execute();
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Grouping hasil
+            $grouped = [];
+            foreach ($rows as $row) {
+                $woId = $row['work_order_id'];
 
-        if (empty($rows)) {
-            return false;
-        }
+                if (!isset($grouped[$woId])) {
+                    $grouped[$woId] = [
+                        'work_order_id' => $row['work_order_id'],
+                        'wo_status'     => $row['wo_status'],
+                        'wo_description' => $row['wo_description'],
+                        'wo_created_at' => $row['wo_created_at'],
+                        'logs'          => [],
+                        'spareparts'    => []
+                    ];
+                }
 
-        $result = [
-            'work_order_id'  => $rows[0]['work_order_id'],
-            'wo_status'      => $rows[0]['wo_status'],
-            'wo_description' => $rows[0]['wo_description'],
-            'wo_created_at'  => $rows[0]['wo_created_at'],
-            'logs'           => [],
-            'spareparts'     => [],
-        ];
+                // Masukkan log
+                if ($row['log_id'] !== null) {
+                    $grouped[$woId]['logs'][] = [
+                        'log_id'      => $row['log_id'],
+                        'log_status'  => $row['log_status'],
+                        'log_notes'   => $row['log_notes'],
+                        'log_created' => $row['log_created_at']
+                    ];
+                }
 
-        $seenLogs  = [];
-        $seenParts = [];
-
-        foreach ($rows as $row) {
-            if ($row['log_id'] !== null && !isset($seenLogs[$row['log_id']])) {
-                $seenLogs[$row['log_id']] = true;
-                $result['logs'][] = [
-                    'log_id'      => $row['log_id'],
-                    'log_status'  => $row['log_status'],
-                    'log_notes'   => $row['log_notes'],
-                    'log_created' => $row['log_created_at'],
-                ];
+                // Masukkan sparepart
+                if ($row['usage_id'] !== null) {
+                    $grouped[$woId]['spareparts'][] = [
+                        'usage_id'       => $row['usage_id'],
+                        'sparepart_name' => $row['sparepart_name'],
+                        'quantity'       => $row['sparepart_qty']
+                    ];
+                }
             }
 
-            if ($row['usage_id'] !== null && !isset($seenParts[$row['usage_id']])) {
-                $seenParts[$row['usage_id']] = true;
-                $result['spareparts'][] = [
-                    'usage_id'       => $row['usage_id'],
-                    'sparepart_name' => $row['sparepart_name'],
-                    'quantity'       => $row['sparepart_qty'],
-                ];
-            }
+            return array_values($grouped);
+        } catch (PDOException $e) {
+            error_log("DB Error: " . $e->getMessage());
+            return [];
         }
 
-        return $result;
     }
 }

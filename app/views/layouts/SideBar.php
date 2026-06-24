@@ -7,63 +7,65 @@ $roleKey = $activeRole ? strtolower($activeRole) : 'guest';
 
 $initials = 'GU';
 if ($user && !empty($user['name'])) {
-    $words = explode(' ', trim($user['name']));
-    if (count($words) >= 2) {
-        $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
-    } else {
-        $initials = strtoupper(substr($words[0], 0, 2));
-    }
+  $words = explode(' ', trim($user['name']));
+  if (count($words) >= 2) {
+    $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
+  } else {
+    $initials = strtoupper(substr($words[0], 0, 2));
+  }
 }
 
 $menus = [
-    'admin sistem' => [
-        ['label' => 'Manajemen Akun', 'url' => '/admin/users', 'icon' => '👥'],
-        ['label' => 'Stok Kendaraan', 'url' => '/inventory', 'icon' => '🚗'],
-        ['label' => 'Pengadaan', 'url' => '/procurement', 'icon' => '📥'],
-    ],
-    'sales' => [
-        ['label' => 'Manajemen Pelanggan', 'url' => '/customers', 'icon' => '👥'],
-        ['label' => 'Penjualan Mobil', 'url' => '/transactions', 'icon' => '🚗'],
-        ['label' => 'Pengajuan Kredit', 'icon' => '💳', 'submenu' => [
-            ['label' => 'Buat Pengajuan', 'url' => '/credit/create-form'],
-            ['label' => 'Upload Syarat', 'url' => '/credit/upload'],
-            ['label' => 'Status Pengajuan', 'url' => '/credit/status'],
-        ]],
-        ['label' => 'Jadwal Serah Terima', 'url' => '/delivery', 'icon' => '🚚'],
-        ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => '🗂️'],
-    ],
-    'finance' => [
-        ['label' => 'Verifikasi Pembayaran', 'url' => '/finance/payments', 'icon' => '✅'],
-        ['label' => 'Nota Penjualan', 'url' => '/service-billing', 'icon' => '💵'],
-        ['label' => 'Status Kredit', 'url' => '/credit/status', 'icon' => '💳'],
-        ['label' => 'Kasir Nota', 'url' => '/kasir/nota', 'icon' => '🧾'],
-    ],
-    'service advisor' => [
-        ['label' => 'Booking Servis', 'url' => '/booking', 'icon' => '📅'],
-        ['label' => 'Work Order', 'url' => '/work-orders', 'icon' => '📝'],
-        ['label' => 'Sparepart', 'url' => '/sparepart', 'icon' => '🔩'],
-    ],
-    'mekanik' => [
-        ['label' => 'Work Order Saya', 'url' => '/work-orders', 'icon' => '🔧'],
-        ['label' => 'Log Kerja Mekanik', 'url' => '/work-order/log', 'icon' => '📋'],
-    ],
-    'manager' => [
-        ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],
-        ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => '🗂️'],
-        ['label' => 'Reports', 'icon' => '📈', 'submenu' => [
-            ['label' => 'Sales Report', 'url' => '/reports#sales-report'],
-            ['label' => 'Stock Report', 'url' => '/reports#stock-report'],
-            ['label' => 'Credit Report', 'url' => '/reports#credit-report'],
-            ['label' => 'Service Report', 'url' => '/reports#service-report'],
-            ['label' => 'Sparepart Report', 'url' => '/reports#sparepart-report'],
-        ]],
-        ['label' => 'Audit Log', 'url' => '/reports/audit-log', 'icon' => '📝'],
-    ],
+  'admin sistem' => [
+    ['label' => 'Manajemen Akun', 'url' => '/admin/users', 'icon' => '👥'],
+    ['label' => 'Stok Kendaraan', 'url' => '/inventory', 'icon' => '🚗'],
+    ['label' => 'Pengadaan', 'url' => '/procurement', 'icon' => '📥'],
+  ],
+  'sales' => [
+    ['label' => 'Manajemen Pelanggan', 'url' => '/customers', 'icon' => '👥'],
+    ['label' => 'Penjualan Mobil', 'url' => '/transactions', 'icon' => '🚗'],
+    ['label' => 'Pengajuan Kredit', 'icon' => '💳', 'submenu' => [
+      ['label' => 'Buat Pengajuan', 'url' => '/credit/create-form'],
+      ['label' => 'Upload Syarat', 'url' => '/credit/upload'],
+      ['label' => 'Status Pengajuan', 'url' => '/credit/status'],
+    ]],
+    ['label' => 'Jadwal Serah Terima', 'url' => '/delivery', 'icon' => '🚚'],
+    ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => '🗂️'],
+  ],
+  'finance' => [
+    ['label' => 'Verifikasi', 'icon' => '✅', 'submenu' => [
+      ['label' => 'Verifikasi Pembayaran', 'url' => '/finance/payments'],
+      ['label' => 'Nota Penjualan', 'url' => '/service-billing'],
+    ]],
+    ['label' => 'Status Kredit', 'url' => '/credit/status', 'icon' => '💳'],
+    ['label' => 'Kasir Nota', 'url' => '/kasir/nota', 'icon' => '🧾'],
+  ],
+  'service advisor' => [
+    ['label' => 'Booking Servis', 'url' => '/booking', 'icon' => '📅'],
+    ['label' => 'Work Order', 'url' => '/work-orders', 'icon' => '📝'],
+    ['label' => 'Sparepart', 'url' => '/sparepart', 'icon' => '🔩'],
+  ],
+  'mekanik' => [
+    ['label' => 'Work Order Saya', 'url' => '/work-orders', 'icon' => '🔧'],
+    ['label' => 'Log Kerja Mekanik', 'url' => '/work-order/log', 'icon' => '📋'],
+  ],
+  'manager' => [
+    ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],
+    ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => '🗂️'],
+    ['label' => 'Reports', 'icon' => '📈', 'submenu' => [
+      ['label' => 'Sales Report', 'url' => '/reports#sales-report'],
+      ['label' => 'Stock Report', 'url' => '/reports#stock-report'],
+      ['label' => 'Credit Report', 'url' => '/reports#credit-report'],
+      ['label' => 'Service Report', 'url' => '/reports#service-report'],
+      ['label' => 'Sparepart Report', 'url' => '/reports#sparepart-report'],
+    ]],
+    ['label' => 'Audit Log', 'url' => '/reports/audit-log', 'icon' => '📝'],
+  ],
 ];
 
 $activeMenu = $menus[$roleKey] ?? [
-    ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],
-    ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => '🗂️'],
+  ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],
+  ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => '🗂️'],
 ];
 
 $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
@@ -81,13 +83,13 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
     <?php foreach ($activeMenu as $item): ?>
       <?php if (isset($item['submenu'])): ?>
         <?php
-          $isOpen = false;
-          foreach ($item['submenu'] as $subItem) {
-              if (strpos($currentUri, $subItem['url']) !== false) {
-                  $isOpen = true;
-                  break;
-              }
+        $isOpen = false;
+        foreach ($item['submenu'] as $subItem) {
+          if (strpos($currentUri, $subItem['url']) !== false) {
+            $isOpen = true;
+            break;
           }
+        }
         ?>
         <li style="padding: 0; display: block;">
           <details class="sidebar-details" <?= $isOpen ? 'open' : '' ?>>
@@ -107,13 +109,13 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
         </li>
       <?php else: ?>
         <?php
-          $isActive = false;
-          if ($item['url'] === '/dashboard' || $item['url'] === '/') {
-              $isActive = ($currentUri === '/' || strpos($currentUri, '/dashboard') !== false);
-          } else {
-              $isActive = (strpos($currentUri, $item['url']) !== false);
-          }
-          $activeClass = $isActive ? 'active' : '';
+        $isActive = false;
+        if ($item['url'] === '/dashboard' || $item['url'] === '/') {
+          $isActive = ($currentUri === '/' || strpos($currentUri, '/dashboard') !== false);
+        } else {
+          $isActive = (strpos($currentUri, $item['url']) !== false);
+        }
+        $activeClass = $isActive ? 'active' : '';
         ?>
         <a href="<?= htmlspecialchars($item['url']) ?>" style="text-decoration: none; color: inherit; display: block;">
           <li class="<?= $activeClass ?>">

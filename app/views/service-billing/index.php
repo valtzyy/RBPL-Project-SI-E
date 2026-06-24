@@ -836,6 +836,7 @@ body { font-family: 'Segoe UI', system-ui, Arial, sans-serif; background: var(--
                 const name = row.dataset.name || '';
                 const vehicle = row.dataset.vehicle || '';
                 const rowStat = row.dataset.status || '';
+                const plateNumber = row.dataset.plate || '';
 
                 const cocokKata = keyword === '' || name.includes(keyword) || vehicle.includes(keyword);
                 const cocokStatus = status === '' || rowStat === status;

@@ -46,8 +46,8 @@ class DashboardController extends Controller {
     public function apiDetails() {
         header('Content-Type: application/json');
         $limit = (int)$this->input('limit', 10);
-        require_once ROOT_PATH . '/app/models/Sparepart.php';
-        $sparepartModel = new Sparepart();
+        require_once ROOT_PATH . '/app/models/SparepartModel.php';
+        $sparepartModel = new SparepartModel();
         
         $response = [
             'recent_transactions' => $this->dashboardModel->getRecentTransactions($limit),
