@@ -49,7 +49,7 @@ class SparepartController extends Controller
                 header('Content-Type: application/json');
                 echo json_encode(['success' => true, 'message' => 'Sparepart berhasil disimpan.', 'id' => $insertId]);
             } else {
-                $this->redirect('/sparepart/create?success=1');
+                $this->redirect('/sparepart');
             }
         } catch (Exception $e) {
             http_response_code(500);

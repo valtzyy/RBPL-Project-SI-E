@@ -38,12 +38,7 @@
     box-sizing: border-box;
 }
 
-body {
-    background-color: var(--bg-body);
-    color: var(--text-body);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    padding: 20px;
-}
+
 
 /* --- Layout & Card Containers --- */
 .main-content {

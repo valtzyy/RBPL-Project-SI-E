@@ -48,6 +48,7 @@ $menus = [
   'mekanik' => [
     ['label' => 'Work Order Saya', 'url' => '/work-orders', 'icon' => '🔧'],
     ['label' => 'Log Kerja Mekanik', 'url' => '/work-order/log', 'icon' => '📋'],
+    ['label' => 'Sparepart', 'url' => '/sparepart', 'icon' => '🔩'],
   ],
   'manager' => [
     ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],

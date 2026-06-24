@@ -52,28 +52,5 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('form-sparepart');
-        const toastOverlay = document.getElementById('toast-overlay');
-        const toastText = document.getElementById('toast-text');
-        const toastIcon = document.getElementById('toast-icon');
-
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            // Show the toast overlay
-            toastOverlay.style.display = 'flex';
-            toastText.textContent = 'Menyimpan data...';
-            toastIcon.className = 'spinner';
-
-            // Simulate a delay for demonstration purposes
-            setTimeout(() => {
-                // Hide the toast overlay after 2 seconds
-                toastOverlay.style.display = 'none';
-
-                // Optionally, you can show a success message or redirect the user
-                window.location.href = '/sparepart/create?success=1';
-            }, 2000);
-        });
-    });
+<script src="/public/js/sparepart.js">
+    
