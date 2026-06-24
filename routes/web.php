@@ -37,18 +37,6 @@ $router->get('/login',       'AuthController@showLogin');
 $router->post('/login',      'AuthController@login');
 $router->post('/logout',     'AuthController@logout');
 
-// Admin - Manajemen Akun
-$router->get('/admin/users',                'UserManagementController@index');
-$router->get('/admin/users/create',         'UserManagementController@create');
-$router->post('/admin/users',               'UserManagementController@store');
-$router->get('/admin/users/:id/edit',       'UserManagementController@edit');
-$router->post('/admin/users/:id',           'UserManagementController@update');
-$router->post('/admin/users/:id/deactivate','UserManagementController@deactivate');
-
-// Profile
-$router->get('/change-password',  'ProfileController@editPassword');
-$router->post('/change-password', 'ProfileController@updatePassword');
-
 // 2. Ini rute untuk MEMPROSES UPLOAD (Saat tombol diklik)
 $router->post('/document',      'DocumentController@simpanDokumen');
 
@@ -237,16 +225,7 @@ $router->get('/api/dashboard/trends',         'DashboardController@apiTrenServis
 $router->get('/api/dashboard/sales-trends',   'DashboardController@apiSalesTrends');
 $router->get('/api/dashboard/inventory-kpi',  'DashboardController@apiInventoryKpi');
 $router->get('/api/dashboard/details',        'DashboardController@apiDetails');
-// ===========================
-// Sprint 6 - Serah Terima
-// ===========================
-$router->get('/delivery',                      'DeliveryScheduleController@index');
-$router->get('/delivery/create',               'DeliveryScheduleController@create');
-$router->get('/delivery/:id',                  'DeliveryScheduleController@show');
-$router->get('/delivery/:id/document',         'DeliveryScheduleController@document');
-$router->post('/delivery',                     'DeliveryScheduleController@store');
-$router->post('/delivery/:id/confirm',         'DeliveryScheduleController@confirm');
-$router->post('/delivery/:id/fail', 'DeliveryScheduleController@fail');
-
-// SPRINT 7 - Riwayat Transaksi & Laporan Penjualan
-$router->get('/history', 'TransaksiController@history');
+$router->get('/api/dashboard/today',           'DashboardController@apiToday');
+$router->get('/api/dashboard/accumulated',     'DashboardController@apiAccumulated');
+$router->get('/api/dashboard/stock-allocation','DashboardController@apiStockAllocation');
+$router->get('/dashboard/export',              'DashboardController@exportCsv');
