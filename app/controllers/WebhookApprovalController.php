@@ -83,8 +83,15 @@ class WebhookApprovalController extends Controller
                 throw new Exception("Pengajuan kredit dengan ID tersebut tidak ditemukan.");
             }
 
-            $transaction_id = $creditApp['transaction_id'];
-            $current_tx_status = $creditApp['current_tx_status'];
+            $transaction_id      = $creditApp['transaction_id'];
+            $current_tx_status   = $creditApp['current_tx_status'];
+            $current_credit_status = $creditApp['status'];
+
+            // Guard: Tolak jika pengajuan sudah pernah diputuskan sebelumnya
+            if (in_array($current_credit_status, ['approved', 'rejected'])) {
+                http_response_code(409);
+                throw new Exception("Pengajuan kredit ini sudah pernah diputuskan ('" . $current_credit_status . "'). Tidak dapat diproses ulang.");
+            }
 
             // Memulai database transaksi
             $db = Database::getInstance();
@@ -103,22 +110,18 @@ class WebhookApprovalController extends Controller
                 ]);
 
                 // 4. Logika Alur Sekuensial
-                // Status transaksi utama belum berubah menjadi 'lunas' pada tahap ini karena DP belum diverifikasi oleh Finance.
-                $status_transaksi_baru = null;
-
-                $dpRecord = $downPaymentModel->findByCreditApplicationId($id_kredit);
-                $dp_lunas = ($dpRecord && !empty($dpRecord['paid_at'])) ? true : false;
+                // Status transaksi utama BELUM berubah di tahap ini.
+                // Transaksi baru menjadi 'lunas' setelah Finance memverifikasi DP (VerifikasiDpController).
 
                 $db->commit();
 
                 $response["status"] = "success";
                 $response["message"] = "Persetujuan kelayakan kredit berhasil dicatat.";
                 $response["data"] = [
-                    "id_kredit" => $id_kredit,
-                    "transaction_id" => $transaction_id,
-                    "status_approval" => $db_status,
-                    "dp_lunas" => $dp_lunas,
-                    "status_transaksi" => $status_transaksi_baru ?? $current_tx_status
+                    "id_kredit"        => $id_kredit,
+                    "transaction_id"   => $transaction_id,
+                    "status_approval"  => $db_status,
+                    "status_transaksi" => $current_tx_status
                 ];
 
             } catch (Exception $txException) {

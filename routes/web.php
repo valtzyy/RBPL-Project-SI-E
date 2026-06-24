@@ -32,23 +32,6 @@ $router->post('/admin/users/:id/deactivate','UserManagementController@deactivate
 $router->get('/change-password',  'ProfileController@editPassword');
 $router->post('/change-password', 'ProfileController@updatePassword');
 
-// Auth
-$router->get('/login',       'AuthController@showLogin');
-$router->post('/login',      'AuthController@login');
-$router->post('/logout',     'AuthController@logout');
-
-// Admin - Manajemen Akun
-$router->get('/admin/users',                'UserManagementController@index');
-$router->get('/admin/users/create',         'UserManagementController@create');
-$router->post('/admin/users',               'UserManagementController@store');
-$router->get('/admin/users/:id/edit',       'UserManagementController@edit');
-$router->post('/admin/users/:id',           'UserManagementController@update');
-$router->post('/admin/users/:id/deactivate','UserManagementController@deactivate');
-
-// Profile
-$router->get('/change-password',  'ProfileController@editPassword');
-$router->post('/change-password', 'ProfileController@updatePassword');
-
 // 2. Ini rute untuk MEMPROSES UPLOAD (Saat tombol diklik)
 $router->post('/document',      'DocumentController@simpanDokumen');
 
@@ -103,7 +86,7 @@ $router->post('/credit/reapply',     'CreditController@reapply');
 $router->get('/procurement',               'ProcurementController@index');
 $router->post('/procurement/store',        'ProcurementController@store');
 //PBI 2.4 & 2.5
-// $router->get('/procurement/receipt',       'ProcurementController@receiptList');
+$router->get('/procurement/receipt',       'ProcurementController@receiptList');
 $router->get('/procurement/receipt/:id',   'ProcurementController@receipt');
 $router->post('/procurement/receipt/store', 'ProcurementController@storeReceipt');
 

@@ -36,8 +36,12 @@ $menus = [
     'finance' => [
         ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],
         ['label' => 'Verifikasi Pembayaran', 'url' => '/finance/payments', 'icon' => '✅'],
+        ['label' => 'Kredit & Leasing', 'icon' => '💳', 'submenu' => [
+            ['label' => 'Verifikasi DP', 'url' => '/verifikasi-dp'],
+            ['label' => 'Approval Kredit', 'url' => '/form-approval'],
+            ['label' => 'Status Kredit', 'url' => '/credit/status'],
+        ]],
         ['label' => 'Nota Penjualan', 'url' => '/service-billing', 'icon' => '💵'],
-        ['label' => 'Status Kredit', 'url' => '/credit/status', 'icon' => '💳'],
         ['label' => 'Kasir Nota', 'url' => '/kasir/nota', 'icon' => '🧾'],
     ],
     'service advisor' => [

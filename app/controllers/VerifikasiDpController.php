@@ -87,6 +87,12 @@ class VerifikasiDpController extends Controller
                 $user_finance = (int)$_SESSION['user_id'];
             }
 
+            // Validasi: verifikator wajib ada
+            if ($user_finance === null) {
+                http_response_code(400);
+                throw new Exception("Verifikator tidak ditemukan. Pastikan Anda sudah login atau sertakan 'verified_by' yang valid.");
+            }
+
             // Inisialisasi model
             $creditAppModel = new CreditApplication();
             $downPaymentModel = new DownPayment();
@@ -118,39 +124,44 @@ class VerifikasiDpController extends Controller
                 $dpRecord = $downPaymentModel->findByCreditApplicationId($id_kredit);
                 $tanggal_sekarang = date('Y-m-d');
 
+                // Guard: Tolak jika DP sudah pernah diverifikasi (paid_at sudah terisi)
+                if ($dpRecord && !empty($dpRecord['paid_at'])) {
+                    http_response_code(409);
+                    throw new Exception("Down Payment untuk pengajuan kredit ini sudah pernah diverifikasi pada " . $dpRecord['paid_at'] . ". Tidak dapat diproses ulang.");
+                }
+
                 if ($dpRecord) {
-                    // Update pembayaran DP
+                    // Update nominal DP (record ada tapi belum pernah dibayar)
                     $downPaymentModel->update((int)$dpRecord['id'], [
-                        'amount' => $nominal_dibayar,
-                        'paid_at' => $tanggal_sekarang,
+                        'amount'      => $nominal_dibayar,
+                        'paid_at'     => $tanggal_sekarang,
                         'verified_by' => $user_finance
                     ]);
                 } else {
-                    // Tambah pembayaran DP baru
+                    // Buat record DP baru
                     $downPaymentModel->create([
                         'credit_application_id' => $id_kredit,
-                        'amount' => $nominal_dibayar,
-                        'paid_at' => $tanggal_sekarang,
+                        'amount'      => $nominal_dibayar,
+                        'paid_at'     => $tanggal_sekarang,
                         'verified_by' => $user_finance
                     ]);
                 }
 
                 // 3. Logika Alur Sekuensial
-                // Transaksi otomatis dianggap 'lunas' setelah DP diverifikasi dan status kredit sudah approved.
+                // Transaksi otomatis menjadi 'lunas' setelah DP diverifikasi Finance.
                 $salesTxModel->update($transaction_id, ['status' => 'lunas']);
-                $status_transaksi_baru = 'lunas';
 
                 $db->commit();
 
                 $response["status"] = "success";
                 $response["message"] = "Verifikasi pelunasan Down Payment berhasil dicatat.";
                 $response["data"] = [
-                    "id_kredit" => $id_kredit,
-                    "transaction_id" => $transaction_id,
-                    "nominal_dibayar" => $nominal_dibayar,
-                    "tanggal_lunas" => $tanggal_sekarang,
-                    "verified_by" => $user_finance,
-                    "status_transaksi" => $status_transaksi_baru ?? $current_tx_status
+                    "id_kredit"        => $id_kredit,
+                    "transaction_id"   => $transaction_id,
+                    "nominal_dibayar"  => $nominal_dibayar,
+                    "tanggal_lunas"    => $tanggal_sekarang,
+                    "verified_by"      => $user_finance,
+                    "status_transaksi" => 'lunas'
                 ];
 
             } catch (Exception $txException) {
