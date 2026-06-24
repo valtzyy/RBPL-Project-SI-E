@@ -119,7 +119,7 @@ class ServiceBilling extends Model
                 sp.price              AS harga_satuan,
                 (sp.price * su.quantity) AS subtotal_item,
 
-                (SELECT COUNT(*) FROM work_order_logs wol WHERE wol.work_order_id = wo.id) AS jumlah_log
+                (SELECT COUNT(*) FROM work_order_logs wol WHERE wol.work_order_id = wo.id AND wol.status = 'rework') AS jumlah_log
 
             FROM work_orders wo
             JOIN service_bookings sb       ON wo.booking_id          = sb.id
@@ -128,6 +128,7 @@ class ServiceBilling extends Model
             LEFT JOIN users u               ON wo.assigned_mechanic   = u.id
             LEFT JOIN sparepart_usages su   ON su.work_order_id       = wo.id
             LEFT JOIN spareparts sp         ON su.sparepart_id        = sp.id
+            JOIN work_order_logs wol ON wo.id = wol.work_order_id 
             WHERE wo.id = :workOrderId
         ";
 
@@ -141,7 +142,6 @@ class ServiceBilling extends Model
         }
 
         $first = $rows[0];
-
         $brand       = $first['brand'] ?: ($first['vehicle_name'] ?? '-');
         $vehicleType = $first['brand'] ? $first['vehicle_type'] : '';
         $color       = $first['color'] ?? $first['vehicle_color'] ?? null;
@@ -193,7 +193,7 @@ class ServiceBilling extends Model
      */
     public function hitungBiayaJasaDariLog(int $jumlahLog): float
     {
-        return 150000 + ($jumlahLog * 25000);
+        return 120000 + ($jumlahLog * 25000);
     }
 
     /**
