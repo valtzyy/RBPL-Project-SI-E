@@ -1,38 +1,24 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi Pembayaran Uang Muka (DP)</title>
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Link to the styling template -->
-    <link rel="stylesheet" href="/css/upload-document.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
-    <style>
-        .result-card {
-            margin-top: 20px;
-            display: none;
-            padding: 15px;
-            border-radius: 8px;
-        }
-        .result-success {
-            background-color: #d1fae5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
-        }
-        .result-error {
-            background-color: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
-        }
-    </style>
-</head>
-<body>
+<link rel="stylesheet" href="/css/upload-document.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+    .result-card {
+        margin-top: 20px;
+        display: none;
+        padding: 15px;
+        border-radius: 8px;
+    }
+    .result-success {
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+    .result-error {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fca5a5;
+    }
+</style>
 
 <div class="container">
 
@@ -53,7 +39,7 @@
                     <div class="form-grid">
                         <div class="form-group" style="grid-column: span 2;">
                             <label for="id_kredit">Pengajuan Kredit (Sudah Disetujui)</label>
-                            <select id="id_kredit" required>
+                            <select id="id_kredit" required style="height: 46px; border: 1px solid #dbe1ea; border-radius: 10px; padding: 10px; background: white;">
                                 <option value="" disabled selected>-- Pilih Pengajuan Kredit --</option>
                                 <?php
                                 $selectedId = (int)($_GET['id_kredit'] ?? 0);
@@ -70,14 +56,14 @@
                             </select>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" style="margin-top: 15px;">
                             <label for="nominal_dibayar">Nominal Uang Muka Dibayar (Rp)</label>
                             <input type="number" id="nominal_dibayar" placeholder="Masukkan jumlah nominal..." required step="0.01">
                         </div>
 
-                        <div class="form-group" style="grid-column: span 2;">
+                        <div class="form-group" style="grid-column: span 2; margin-top: 15px;">
                             <label for="verified_by">Staf Finance (Verifikator)</label>
-                            <select id="verified_by" required>
+                            <select id="verified_by" required style="height: 46px; border: 1px solid #dbe1ea; border-radius: 10px; padding: 10px; background: white;">
                                 <option value="" disabled selected>-- Pilih Staf Finance --</option>
                                 <?php foreach ($financeUsers as $user): ?>
                                 <option value="<?= $user['id'] ?>">
@@ -92,7 +78,7 @@
                     </div>
 
                     <div class="action-buttons mt-20">
-                        <button type="submit" class="btn btn-primary" style="background: #10b981; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                        <button type="submit" class="btn btn-primary" style="background: #10b981; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; border: none; cursor: pointer;">
                             <i class="fa-solid fa-receipt"></i> Verifikasi Pembayaran DP
                         </button>
                     </div>
@@ -111,6 +97,3 @@
 
 <!-- Script -->
 <script src="/js/verifikasi-dp.js"></script>
-
-</body>
-</html>

@@ -1,38 +1,24 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Persetujuan Kredit Leasing</title>
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Link to the styling template -->
-    <link rel="stylesheet" href="/css/upload-document.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
-    <style>
-        .result-card {
-            margin-top: 20px;
-            display: none;
-            padding: 15px;
-            border-radius: 8px;
-        }
-        .result-success {
-            background-color: #d1fae5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
-        }
-        .result-error {
-            background-color: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
-        }
-    </style>
-</head>
-<body>
+<link rel="stylesheet" href="/css/upload-document.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+    .result-card {
+        margin-top: 20px;
+        display: none;
+        padding: 15px;
+        border-radius: 8px;
+    }
+    .result-success {
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+    .result-error {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fca5a5;
+    }
+</style>
 
 <div class="container">
 
@@ -55,7 +41,7 @@
                     <div class="form-grid">
                         <div class="form-group" style="grid-column: span 2;">
                             <label for="id_kredit">Pengajuan Kredit</label>
-                            <select id="id_kredit" required>
+                            <select id="id_kredit" required style="height: 46px; border: 1px solid #dbe1ea; border-radius: 10px; padding: 10px; background: white;">
                                 <option value="" disabled selected>-- Pilih Pengajuan Kredit --</option>
                                 <?php foreach ($submittedApps as $app): ?>
                                 <option value="<?= $app['id'] ?>">
@@ -68,7 +54,7 @@
                             </select>
                         </div>
 
-                        <div class="form-group" style="grid-column: span 2;">
+                        <div class="form-group" style="grid-column: span 2; margin-top: 15px;">
                             <label for="catatan">Catatan / Keterangan Keputusan</label>
                             <input type="text" id="catatan" placeholder="Masukkan catatan kelayakan kredit..." required>
                         </div>
@@ -94,6 +80,3 @@
 
 <!-- Script -->
 <script src="/js/form-approval.js"></script>
-
-</body>
-</html>
