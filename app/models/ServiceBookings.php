@@ -99,13 +99,12 @@ class ServiceBooking extends Model {
             JOIN   service_customers sc ON sc.id = sb.service_customer_id
             JOIN   customers         c  ON c.id  = sc.customer_id
             LEFT JOIN work_orders    wo ON wo.booking_id = sb.id
-            WHERE  sb.booking_date = ?
-              AND  sb.status IN ('queued', 'confirmed')
+            WHERE  sb.status IN ('queued', 'confirmed')
             ORDER  BY 
                    (CASE WHEN wo.status = 'in_progress' THEN 1 ELSE 0 END) ASC,
                    sb.id ASC
         ");
-        $stmt->execute([$date]);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 

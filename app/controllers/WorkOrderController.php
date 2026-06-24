@@ -4,12 +4,12 @@
 require_once ROOT_PATH . '/app/models/WorkOrder.php';
 require_once ROOT_PATH . '/app/models/WorkOrderLog.php';
 
-class WorkOrderController extends Controller 
+class WorkOrderController extends Controller
 {
     private WorkOrder $workOrderModel;
     private WorkOrderLog $workOrderLogModel;
 
-    public function __construct() 
+    public function __construct()
     {
         $this->workOrderModel = new WorkOrder();
         $this->workOrderLogModel = new WorkOrderLog();
@@ -18,20 +18,41 @@ class WorkOrderController extends Controller
     /**
      * Menampilkan dashboard utama panel teknisi
      */
-    public function index() 
+    public function index()
     {
         // Mendapatkan ID mekanik dari session jika sistem login sudah terintegrasi, 
         // fallback ke ID 5 untuk keperluan testing mandiri / sinkronisasi awal.
-        $mechanicId = (int) ($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? $_SESSION['id'] ?? 5); 
-        
-        $orders = $this->workOrderModel->getByMechanic($mechanicId);
-        $this->view('bengkel/mechanic_panel', ['orders' => $orders]);
+        // $mechanicId = (int) ($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? $_SESSION['id'] ?? 5); 
+        $role = Auth::role();
+        if ($role === 'Mekanik') {
+            $orders = $this->workOrderModel->getByMechanic(Auth::id());
+            $this->view('bengkel/mechanic_panel', ['orders' => $orders]);
+        } elseif ($role === 'Service Advisor') {
+            $orders = $this->workOrderModel->getAllWorkOrders();
+
+            $totalHandled = 0;
+            $totalCompleted = 0;
+
+            foreach ($orders as $order) {
+                if ($order['status'] === 'in_progress') {
+                    $totalHandled++;
+                } elseif ($order['status'] === 'done' || $order['status'] === 'ready') {
+                    $totalCompleted++;
+                }
+            }
+
+            $this->view('bengkel/service_advisor_panel', [
+                'orders' => $orders,
+                'totalHandled' => $totalHandled,
+                'totalCompleted' => $totalCompleted
+            ]);
+        }
     }
 
     /**
      * Menerima kiriman request POST dari tombol aksi perubahan status utama
      */
-    public function updateStatus(): void 
+    public function updateStatus(): void
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $woId = (int) $this->input('work_order_id');
@@ -43,15 +64,15 @@ class WorkOrderController extends Controller
                 // Memproses aksi tombol dari web untuk merubah status pengerjaan secara real-time
                 // =========================================================================
                 $success = $this->workOrderModel->updateWorkOrderStatus($woId, $newStatus);
-                
+
                 if ($success) {
-                    $this->redirect('/mechanic/panel');
+                    $this->redirect('/work-orders');
                     return;
                 }
             }
-            
+
             // Jika gagal, kembalikan ke halaman utama dengan membawa informasi gagal tanpa merusak halaman
-            $this->redirect('/mechanic/panel?status=failed');
+            $this->redirect('/work-orders');
         }
     }
 
@@ -62,13 +83,13 @@ class WorkOrderController extends Controller
     {
         $woId = (int) $this->input('id');
         if ($woId <= 0) {
-            $this->redirect('/mechanic/panel');
+            $this->redirect('/work-orders');
             return;
         }
 
         $order = $this->workOrderModel->getWorkOrderDetail($woId);
         if (!$order) {
-            $this->redirect('/mechanic/panel');
+            $this->redirect('/work-orders');
             return;
         }
 
@@ -95,39 +116,19 @@ class WorkOrderController extends Controller
                 $successLog = $this->workOrderLogModel->createLog($woId, $status, $notes);
 
                 if ($successLog) {
-                    $this->redirect('/mechanic/work-order/log?id=' . $woId . '&status=success');
+                    $this->redirect('/work-order/log?id=' . $woId);
                     return;
                 }
             }
 
-            $this->redirect('/mechanic/work-order/log?id=' . $woId . '&status=failed');
+            $this->redirect('/work-order/log?id=' . $woId);
         }
-     }
+    }
 
     /**
      * Menampilkan dashboard utama panel Service Advisor
      */
-    public function serviceAdvisorIndex(): void
-    {
-        $orders = $this->workOrderModel->getAllWorkOrders();
-        
-        $totalHandled = 0;
-        $totalCompleted = 0;
-        
-        foreach ($orders as $order) {
-            if ($order['status'] === 'in_progress') {
-                $totalHandled++;
-            } elseif ($order['status'] === 'done' || $order['status'] === 'ready') {
-                $totalCompleted++;
-            }
-        }
-        
-        $this->view('bengkel/service_advisor_panel', [
-            'orders' => $orders,
-            'totalHandled' => $totalHandled,
-            'totalCompleted' => $totalCompleted
-        ]);
-    }
+    public function serviceAdvisorIndex(): void {}
 
     /**
      * Menampilkan halaman detail work order untuk Service Advisor (Read-only)

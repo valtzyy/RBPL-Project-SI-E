@@ -38,11 +38,11 @@
     <div class="stats-row">
         <div class="stat-card">
             <h3>Ketersediaan Slot</h3>
-            <p class="stat-value"><?= $totalAntrean  ?></p>
+            <p class="stat-value"><?= 5-$totalAntrean  ?></p>
         </div>
         <div class="stat-card">
             <h3>Total Antrean</h3>
-            <p class="stat-value"><?= count($bookings) ?> Kendaraan</p>
+            <p class="stat-value"><?= $totalAntrean ?> Kendaraan</p>
         </div>
     </div>
 
@@ -104,16 +104,9 @@
 </div>
 
 <style>
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background-color: #f4f6f9;
-        color: #333;
-        margin: 0;
-        padding: 40px 20px;
-    }
 
     .queue-container {
-        max-width: 1100px;
+        max-width: 100%;
         margin: 0 auto;
     }
 

@@ -1,7 +1,7 @@
 <!-- app/views/booking/inspect.php -->
 <div class="inspect-container">
     <div class="inspect-card">
-        <a href="/booking/queue?date=<?= $booking['booking_date'] ?>" class="back-link">&larr; Kembali ke Antrean</a>
+        <a href="/booking" class="back-link">&larr; Kembali ke Antrean</a>
         
         <h2>Lembar Observasi Awal & Pemeriksaan Teknis</h2>
         <p class="subtitle">Catat kondisi kelayakan unit kendaraan sebelum dimasukkan ke antrean pengerjaan teknisi.</p>
@@ -48,13 +48,6 @@
 </div>
 
 <style>
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background-color: #f4f6f9;
-        color: #333;
-        margin: 0;
-        padding: 40px 20px;
-    }
     .inspect-container {
         max-width: 750px;
         margin: 0 auto;
@@ -219,7 +212,7 @@
                     alertBox.innerHTML = data.message + ' Mengalihkan...';
                     alertBox.style.display = 'block';
                     setTimeout(() => {
-                        window.location.href = `/booking/queue?date=<?= $booking['booking_date'] ?>`;
+                        window.location.href = `/booking`;
                     }, 2000);
                 } else {
                     alertBox.className = 'alert alert-danger';

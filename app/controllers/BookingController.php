@@ -4,20 +4,23 @@ require_once ROOT_PATH . '/app/models/ServiceBookings.php';
 require_once ROOT_PATH . '/app/models/ServiceCustomers.php';
 require_once ROOT_PATH . '/app/models/WorkOrders.php';
 
-class BookingController extends Controller {
+class BookingController extends Controller
+{
 
     private ServiceBooking  $bookingModel;
     private WorkOrders     $workOrderModel;
     private ServiceCustomer $serviceCustomerModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->bookingModel         = new ServiceBooking();
         $this->workOrderModel       = new WorkOrders();
         $this->serviceCustomerModel = new ServiceCustomer();
     }
 
     // GET /booking — form booking untuk Admin
-    public function queue(): void {
+    public function queue(): void
+    {
         $db        = Database::getInstance();
         $customers = $db->query(
             "SELECT id, name, phone FROM customers ORDER BY name ASC"
@@ -30,11 +33,12 @@ class BookingController extends Controller {
     }
 
     // GET /booking/check-slot?date=YYYY-MM-DD
-    public function checkSlot(): void {
+    public function checkSlot(): void
+    {
         $date = $_GET['date'] ?? date('Y-m-d');
         $pekerja = $this->workOrderModel->countActiveWorkOrders();
-        
-        if ($pekerja >= 5) {
+
+        if ($pekerja > 5) {
             $this->jsonResponse([
                 'date'      => $date,
                 'available' => false,
@@ -49,18 +53,11 @@ class BookingController extends Controller {
                 'totalAntrean' => $pekerja,
             ]);
         }
-
-        $remaining = $this->bookingModel->getRemainingSlot($date);
-        $this->jsonResponse([
-            'date'      => $date,
-            'available' => true,
-            'remaining' => $remaining,
-            'message'   => 'Slot tersedia'
-        ]);
     }
 
     // POST /booking/create-customer — daftarkan customer baru dan kembalikan ID-nya
-    public function createCustomer(): void {
+    public function createCustomer(): void
+    {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->jsonResponse(['success' => false, 'message' => 'Method not allowed.'], 405);
             return;
@@ -86,27 +83,30 @@ class BookingController extends Controller {
             $this->jsonResponse([
                 'success' => true,
                 'customer_id' => $customerId,
-                'message' => 'Pelanggan baru berhasil didaftarkan.'
+                'message' => 'Pelanggan baru berhasil didaftarkan.',
+                'redirect' => '/booking'
             ], 201);
         } catch (Exception $e) {
             $this->jsonResponse([
                 'success' => false,
-                'message' => 'Gagal mendaftarkan pelanggan: ' . $e->getMessage()
+                'message' => 'Gagal mendaftarkan pelanggan: ' . $e->getMessage(),
+                'redirect' => '/booking'
             ], 500);
         }
     }
 
     // POST /booking/store — simpan booking baru oleh Admin
-    public function store(): void {
+    public function store(): void
+    {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/booking');
             return;
         }
 
         $customerId   = (int)   ($_POST['customer_id']   ?? 0);
-        $plateNumber  = trim(    $_POST['plate_number']   ?? '');
-        $vehicleName  = trim(    $_POST['vehicle_name']   ?? '');
-        $bookingDate  = trim(    $_POST['booking_date']   ?? '');
+        $plateNumber  = trim($_POST['plate_number']   ?? '');
+        $vehicleName  = trim($_POST['vehicle_name']   ?? '');
+        $bookingDate  = trim($_POST['booking_date']   ?? '');
 
         // Validasi input
         if (!$customerId || !$plateNumber || !$vehicleName || !$bookingDate) {
@@ -162,47 +162,44 @@ class BookingController extends Controller {
                 $db->commit();
                 $this->jsonResponse([
                     'success' => true,
-                    'message' => 'Booking berhasil. Status: queued.'
+                    'message' => 'Booking berhasil. Status: queued.',
+                    'redirect' => '/booking'
                 ], 201);
             } else {
                 $db->rollBack();
                 $this->jsonResponse([
                     'success' => false,
-                    'message' => 'Booking gagal. Silakan coba lagi.'
+                    'message' => 'Booking gagal. Silakan coba lagi.',
+                    'redirect' => '/booking'
                 ], 500);
             }
         } catch (Exception $e) {
             if ($db->inTransaction()) {
                 $db->rollBack();
             }
-            $this->jsonResponse([
-                'success' => false,
-                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
-            ], 500);
         }
     }
 
     // GET /booking/queue?date=YYYY-MM-DD — dashboard SA
-    public function index(): void {
+    public function index(): void
+    {
         $date = $_GET['date'] ?? date('Y-m-d');
         $bookings = $this->bookingModel->getQueueForSA($date);
-        
+
         $pekerja = $this->workOrderModel->countActiveWorkOrders();
-        $totalAntrean = 5 - $pekerja;
-        if ($totalAntrean < 0) {
-            $totalAntrean = 0;
-        }
+
 
         $this->view('booking/queue', [
             'title'        => 'Dashboard Antrean Booking',
             'date'         => $date,
             'bookings'     => $bookings,
-            'totalAntrean' => $totalAntrean
+            'totalAntrean' => $pekerja
         ]);
     }
 
     // POST /booking/confirm — SA konfirmasi booking
-    public function confirm(): void {
+    public function confirm(): void
+    {
         $id = (int) ($_POST['id'] ?? 0);
         if (!$id) {
             $this->jsonResponse(['success' => false, 'message' => 'ID tidak valid.'], 422);
@@ -221,7 +218,7 @@ class BookingController extends Controller {
         }
 
         // Cek kapasitas bengkel (max 5 mobil in progress)
-        if ($this->workOrderModel->countActiveWorkOrders() >= 5) {
+        if ($this->workOrderModel->countActiveWorkOrders() > 5) {
             $this->jsonResponse([
                 'success' => false,
                 'message' => 'Bengkel sedang penuh (maksimal 5 mobil dalam pengerjaan). Selesaikan salah satu pekerjaan terlebih dahulu.'
@@ -260,7 +257,8 @@ class BookingController extends Controller {
     }
 
     // POST /booking/reject — SA tolak booking
-    public function reject(): void {
+    public function reject(): void
+    {
         $id = (int) ($_POST['id'] ?? 0);
         if (!$id) {
             $this->jsonResponse(['success' => false, 'message' => 'ID tidak valid.'], 422);
@@ -285,7 +283,8 @@ class BookingController extends Controller {
     }
 
     // GET /booking/inspect/:id — form sheet observasi oleh SA (PBI-10.5)
-    public function inspectForm(string $id): void {
+    public function inspectForm(string $id): void
+    {
         $bookingId = (int) $id;
         $booking = $this->bookingModel->findById($bookingId);
 
@@ -320,9 +319,11 @@ class BookingController extends Controller {
     }
 
     // POST /booking/inspect/:id/convert — Simpan observasi & buat Work Order resmi (PBI-10.6)
-    public function convertToWorkOrder(string $id): void {
+    public function convertToWorkOrder(string $id): void
+    {
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->redirect('/booking/queue');
+            $this->redirect('/booking');
             return;
         }
 
@@ -347,7 +348,7 @@ class BookingController extends Controller {
         }
 
         // Cek limit 5 mobil aktif
-        if ($this->workOrderModel->countActiveWorkOrders() >= 5) {
+        if ($this->workOrderModel->countActiveWorkOrders() > 5) {
             $this->jsonResponse([
                 'success' => false,
                 'message' => 'Bengkel penuh (maksimal 5 mobil dalam pengerjaan). Harap selesaikan pekerjaan lain terlebih dahulu.'
@@ -407,12 +408,14 @@ class BookingController extends Controller {
 
     // ── HELPER ────────────────────────────────────────
 
-    private function isValidDate(string $date): bool {
+    private function isValidDate(string $date): bool
+    {
         $d = DateTime::createFromFormat('Y-m-d', $date);
         return $d && $d->format('Y-m-d') === $date;
     }
 
-    private function jsonResponse(array $data, int $code = 200): void {
+    private function jsonResponse(array $data, int $code = 200): void
+    {
         http_response_code($code);
         header('Content-Type: application/json');
         echo json_encode($data);

@@ -286,11 +286,6 @@
             <h2>🔧 Monitoring Work Orders</h2>
             <p>Daftar seluruh instruksi kerja aktif dan riwayat penanganan unit di bengkel.</p>
         </div>
-        <div>
-            <span style="font-size: 13px; background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 20px; font-weight: 500; border: 1px solid rgba(255,255,255,0.15)">
-                Service Advisor Mode (Read-Only)
-            </span>
-        </div>
     </div>
 
     <!-- Stats Cards -->

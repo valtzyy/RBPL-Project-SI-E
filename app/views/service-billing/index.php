@@ -773,7 +773,7 @@ body { font-family: 'Segoe UI', system-ui, Arial, sans-serif; background: var(--
                                                 <td class="center">
                                                     <button
                                                         class="dl-btn dl-btn--detail"
-                                                        onclick="bukaDetail(<?= (int)$t['work_order_id'] ?>)">
+                                                        onclick="bukaDetail(<?= $t['work_order_id'] ?>)">
                                                         Rincian
                                                     </button>
                                                 </td>
@@ -847,7 +847,7 @@ body { font-family: 'Segoe UI', system-ui, Arial, sans-serif; background: var(--
         /**
          * Buka modal dan load data detail via fetch JSON.
          */
-         function bukaDetail(workOrderId) {
+         function bukaDetail(id) {
             const overlay = document.getElementById('modalOverlay');
             const body = document.getElementById('modalBody');
             const subtitle = document.getElementById('modalSubtitle');
@@ -857,7 +857,7 @@ body { font-family: 'Segoe UI', system-ui, Arial, sans-serif; background: var(--
             subtitle.textContent = '';
             overlay.classList.add('open');
 
-            fetch('/service-billing/' + workOrderId)
+            fetch('/service-billing/' + id)
                 .then(function(res) {
                     if (!res.ok) throw new Error('Gagal memuat data tagihan.');
                     return res.json();

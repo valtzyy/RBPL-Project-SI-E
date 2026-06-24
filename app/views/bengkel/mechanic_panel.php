@@ -272,11 +272,6 @@
             <h2>🔧 Panel Kerja Mekanik</h2>
             <p>Daftar instruksi kerja aktif berdasarkan penugasan sistem.</p>
         </div>
-        <div>
-            <span style="font-size: 13px; background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 20px; font-weight: 500; border: 1px solid rgba(255,255,255,0.15)">
-                Mekanik ID: <?= htmlspecialchars((string)($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? $_SESSION['id'] ?? 5)) ?>
-            </span>
-        </div>
     </div>
 
     <?php if (isset($_GET['status'])): ?>
@@ -412,7 +407,7 @@
                                 </form>
                             </td>
                             <td style="text-align: center;">
-                                <a href="/mechanic/work-order/log?id=<?= $order['id'] ?>" class="btn-log">
+                                <a href="/work-order/log?id=<?= $order['id'] ?>" class="btn-log">
                                     <span>📝</span> Log & Catatan
                                 </a>
                             </td>

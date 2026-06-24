@@ -165,25 +165,22 @@ $router->post('/booking/inspect/:id/convert', 'BookingController@convertToWorkOr
 
 
 // 1. Menampilkan Halaman Panel Kerja Mekanik (UI Ter-assign)
-$router->get('/mechanic/panel', 'WorkOrderController@index');
+$router->get('/work-orders', 'WorkOrderController@index');
 
 // 2. API/Action untuk Mengubah Progres Item / Status Kerja Mekanik
 $router->post('/mechanic/work-order/update-status', 'WorkOrderController@updateStatus');
 
 // 3. Menampilkan Halaman Tambah Log & History Log
-$router->get('/mechanic/work-order/log', 'WorkOrderController@addLogForm');
+$router->get('/work-order/log', 'WorkOrderController@addLogForm');
 
 // 4. API/Action untuk Menyimpan Log Baru
 $router->post('/mechanic/work-order/log/store', 'WorkOrderController@storeLog');
 
-// 5. Halaman Work Orders khusus untuk Service Advisor (Read-only)
-$router->get('/service-advisor/work-orders', 'WorkOrderController@serviceAdvisorIndex');
-$router->get('/service-advisor/work-orders/:id', 'WorkOrderController@serviceAdvisorDetail');
 // ============================================================
 
 // sprint-12 pembayaran services
 $router->get('/service-billing',      'ServiceBillingController@index');
-$router->get('/service-billing/:plateNumber', 'ServiceBillingController@findByPlateNumber');
+$router->get('/service-billing/:id', 'ServiceBillingController@detail');
 $router->get('/service-billing/detail/:plateNumber',  'ServiceBillingController@detail');
 $router->get('/service-billing/detail/history/:plateNumber',  'ServiceBillingController@detailLog');
 
@@ -227,9 +224,9 @@ $router->get('/kasir/invoice', 'SparepartController@invoiceView');
 // ============================================================
 
 // Modul Gudang Suku Cadang & Purchase Order (PO)
-$router->get('/sparepart',           'SparepartController@index');
-$router->post('/sparepart/po/store', 'SparepartController@storePO');
-$router->get('/sparepart/po/terima', 'SparepartController@terimaPO'); // Jika menerima pakai query string (?id=)
+$router->get('/purchase-order',           'SparepartController@index');
+$router->post('/purchase-order/store', 'SparepartController@storePO');
+$router->get('/purchase-order/receipt', 'SparepartController@terimaPO'); // Jika menerima pakai query string (?id=)
 
 // Modul Dashboard Eksekutif / Manajerial
 $router->get('/dashboard',            'DashboardController@index');
@@ -253,60 +250,3 @@ $router->post('/delivery/:id/fail', 'DeliveryScheduleController@fail');
 
 // SPRINT 7 - Riwayat Transaksi & Laporan Penjualan
 $router->get('/history', 'TransaksiController@history');
-
-
-//PENGADAAN KENDARAAN
-//PBI 2.3
-$router->get('/procurement',               'ProcurementController@index');
-$router->post('/procurement/store',        'ProcurementController@store');
-//PBI 2.4 & 2.5
-$router->get('/procurement/receipt',       'ProcurementController@receiptList');
-$router->get('/procurement/receipt/:id',   'ProcurementController@receipt');
-$router->post('/procurement/receipt/store', 'ProcurementController@storeReceipt');
-
-
-// Sprint 3 - Manajemen Stok Kendaraan
-$router->get('/inventory', 'VehicleController@index');
-$router->get('/inventory/create', 'VehicleController@create');
-$router->post('/inventory/store', 'VehicleController@store');
-$router->get('/inventory/edit/:id', 'VehicleController@edit');
-$router->post('/inventory/update/:id', 'VehicleController@update');
-$router->post('/inventory/delete/:id', 'VehicleController@delete');
-
-// API/controller CRUD inventaris kendaraan
-$router->get('/api/inventory', 'VehicleController@apiIndex');
-$router->get('/api/inventory/:id', 'VehicleController@apiShow');
-$router->post('/api/inventory', 'VehicleController@apiStore');
-$router->post('/api/inventory/update/:id', 'VehicleController@apiUpdate');
-$router->post('/api/inventory/delete/:id', 'VehicleController@apiDelete');
-
-// Backend hooks untuk integrasi modul procurement dan sales
-$router->post('/procurement-receipts', 'ProcurementReceiptController@store');
-$router->post('/sales-transactions/:id/status', 'SalesTransactionController@updateStatus');
-
-
-// Transactions - Sprint 4
-$router->get('/transactions',           'SalesTransactionController@index');
-$router->get('/transactions/create',    'SalesTransactionController@create');
-$router->get('/transactions/:id',       'SalesTransactionController@show');
-$router->post('/transactions',          'SalesTransactionController@store');
-
-// Vehicles - Sprint 4
-$router->get('/vehicles/available',     'VehicleController@available');
-
-// Customers - Sprint 4
-$router->get('/customers',              'CustomerController@index');
-$router->get('/customers/create',       'CustomerController@create');
-$router->post('/customers',             'CustomerController@store');
-$router->get('/customers/:id',          'CustomerController@show');
-
-// Booking Servis - Sprint 10
-$router->get('/booking',             'BookingController@index');
-$router->get('/booking/check-slot',  'BookingController@checkSlot');
-$router->post('/booking/create-customer', 'BookingController@createCustomer');
-$router->post('/booking/store',      'BookingController@store');
-$router->get('/booking/queue',       'BookingController@queue');
-$router->post('/booking/confirm',    'BookingController@confirm');
-$router->post('/booking/reject',     'BookingController@reject');
-$router->get('/booking/inspect/:id', 'BookingController@inspectForm');
-$router->post('/booking/inspect/:id/convert', 'BookingController@convertToWorkOrder');

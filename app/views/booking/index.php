@@ -3,7 +3,7 @@
     <div class="booking-card">
         <h2>Pendaftaran Booking Servis</h2>
         <p class="subtitle">Daftarkan jadwal servis pelanggan dan periksa ketersediaan slot secara real-time.</p>
-        
+
         <div id="alert-box" class="alert" style="display: none;"></div>
 
         <form id="booking-form" method="POST" action="/booking/store">
@@ -92,33 +92,40 @@
         border-radius: 8px;
         border: 1px solid #e9ecef;
     }
+
     .step-indicator {
         font-size: 13px;
         font-weight: 600;
         color: #868e96;
         transition: color 0.2s;
     }
+
     .step-indicator.active {
         color: #0056b3;
     }
+
     .step-divider {
         flex: 1;
         height: 2px;
         background-color: #e9ecef;
         margin: 0 12px;
     }
+
     .btn-group {
         display: flex;
         gap: 12px;
         margin-top: 15px;
     }
+
     .btn-secondary {
         background-color: #6c757d;
         color: white;
     }
+
     .btn-secondary:hover {
         background-color: #5a6268;
     }
+
     body {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         background-color: #f4f6f9;
@@ -126,30 +133,36 @@
         margin: 0;
         padding: 40px 20px;
     }
+
     .booking-container {
         max-width: 600px;
         margin: 0 auto;
     }
+
     .booking-card {
         background: #ffffff;
         padding: 40px;
         border-radius: 12px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     }
+
     h2 {
         margin-top: 0;
         font-size: 24px;
         color: #111;
         font-weight: 700;
     }
+
     .subtitle {
         color: #666;
         font-size: 14px;
         margin-bottom: 30px;
     }
+
     .form-group {
         margin-bottom: 20px;
     }
+
     label {
         display: block;
         font-weight: 600;
@@ -157,12 +170,14 @@
         margin-bottom: 8px;
         color: #444;
     }
+
     .radio-group {
         display: flex;
         gap: 20px;
         margin-top: 5px;
         margin-bottom: 10px;
     }
+
     .radio-label {
         font-weight: 500;
         display: flex;
@@ -172,11 +187,14 @@
         font-size: 14px;
         color: #555;
     }
+
     .radio-label input {
         width: auto;
         margin: 0;
     }
-    select, input {
+
+    select,
+    input {
         width: 100%;
         padding: 12px;
         border: 1px solid #ddd;
@@ -185,15 +203,19 @@
         box-sizing: border-box;
         transition: border-color 0.2s;
     }
-    select:focus, input:focus {
+
+    select:focus,
+    input:focus {
         border-color: #0056b3;
         outline: none;
     }
+
     .slot-indicator {
         margin-top: 8px;
         font-size: 13px;
         font-weight: 600;
     }
+
     .btn {
         width: 100%;
         padding: 14px;
@@ -204,13 +226,16 @@
         cursor: pointer;
         transition: background-color 0.2s;
     }
+
     .btn-primary {
         background-color: #0056b3;
         color: white;
     }
+
     .btn-primary:hover {
         background-color: #004085;
     }
+
     .alert {
         padding: 12px 16px;
         border-radius: 8px;
@@ -218,11 +243,13 @@
         font-size: 14px;
         font-weight: 500;
     }
+
     .alert-success {
         background-color: #d4edda;
         color: #155724;
         border: 1px solid #c3e6cb;
     }
+
     .alert-danger {
         background-color: #f8d7da;
         color: #721c24;
@@ -313,37 +340,28 @@
                 customerFormData.append('new_customer_phone', phone);
 
                 fetch('/booking/create-customer', {
-                    method: 'POST',
-                    body: customerFormData
-                })
-                .then(res => res.json())
-                .then(data => {
-                    nextBtn.disabled = false;
-                    nextBtn.innerHTML = 'Selanjutnya';
-                    if (data.success) {
-                        lastCreatedCustomerId = data.customer_id;
-                        lastCreatedCustomerName = name;
-                        lastCreatedCustomerPhone = phone;
+                        method: 'POST',
+                        body: customerFormData
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
 
-                        // Add customer option and select it
-                        let newOption = new Option(name, data.customer_id, true, true);
-                        customerSelect.add(newOption);
-                        customerSelect.value = data.customer_id;
+                            showAlert(data.message, 'success');
 
-                        showAlert(data.message, 'success');
-                        setTimeout(() => {
-                            alertBox.style.display = 'none';
-                            goToStep2();
-                        }, 800);
-                    } else {
-                        showAlert(data.message || 'Gagal mendaftarkan pelanggan.');
-                    }
-                })
-                .catch(err => {
-                    nextBtn.disabled = false;
-                    nextBtn.innerHTML = 'Selanjutnya';
-                    showAlert('Terjadi kesalahan koneksi saat mendaftarkan pelanggan.');
-                });
+                            setTimeout(() => {
+                                window.location.href = data.redirect;
+                            }, 1000);
+
+                        } else {
+                            showAlert(data.message, 'danger');
+                        }
+                    })
+                    .catch(err => {
+                        nextBtn.disabled = false;
+                        nextBtn.innerHTML = 'Selanjutnya';
+                        showAlert('Terjadi kesalahan koneksi saat mendaftarkan pelanggan.');
+                    });
             }
         });
 
@@ -392,7 +410,7 @@
         // Submit form via AJAX
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             // Step 2 validation
             const plateNumber = document.getElementById('plate_number').value.trim();
             const vehicleName = document.getElementById('vehicle_name').value.trim();
@@ -407,36 +425,36 @@
             alertBox.style.display = 'none';
 
             fetch(form.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    showAlert(data.message, 'success');
-                    form.reset();
-                    slotIndicator.innerHTML = '';
-                    
-                    // Reset Step 1 & 2 states
-                    step2.style.display = 'none';
-                    step1.style.display = 'block';
-                    indicator2.classList.remove('active');
-                    indicator1.classList.add('active');
-                    existingGroup.style.display = 'block';
-                    newGroup.style.display = 'none';
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert(data.message, 'success');
+                        form.reset();
+                        slotIndicator.innerHTML = '';
 
-                    lastCreatedCustomerId = null;
-                    lastCreatedCustomerName = '';
-                    lastCreatedCustomerPhone = '';
-                    
-                    setTimeout(() => window.location.reload(), 1500);
-                } else {
-                    showAlert(data.message, 'danger');
-                }
-            })
-            .catch(err => {
-                showAlert('Terjadi kesalahan sistem.', 'danger');
-            });
+                        // Reset Step 1 & 2 states
+                        step2.style.display = 'none';
+                        step1.style.display = 'block';
+                        indicator2.classList.remove('active');
+                        indicator1.classList.add('active');
+                        existingGroup.style.display = 'block';
+                        newGroup.style.display = 'none';
+
+                        lastCreatedCustomerId = null;
+                        lastCreatedCustomerName = '';
+                        lastCreatedCustomerPhone = '';
+
+                        setTimeout(() => window.location.href = '/booking', 1500);
+                    } else {
+                        showAlert(data.message, 'danger');
+                    }
+                })
+                .catch(err => {
+                    showAlert('Terjadi kesalahan sistem.', 'danger');
+                });
         });
     });
 </script>

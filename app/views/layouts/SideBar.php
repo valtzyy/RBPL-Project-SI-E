@@ -20,7 +20,6 @@ $menus = [
         ['label' => 'Manajemen Akun', 'url' => '/admin/users', 'icon' => '👥'],
         ['label' => 'Stok Kendaraan', 'url' => '/inventory', 'icon' => '🚗'],
         ['label' => 'Pengadaan', 'url' => '/procurement', 'icon' => '📥'],
-        // ['label' => 'Pengadaan', 'url' => '/procurement/receipt', 'icon' => '📥'],
     ],
     'sales' => [
         ['label' => 'Manajemen Pelanggan', 'url' => '/customers', 'icon' => '👥'],
@@ -34,20 +33,19 @@ $menus = [
         ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => '🗂️'],
     ],
     'finance' => [
-        ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],
         ['label' => 'Verifikasi Pembayaran', 'url' => '/finance/payments', 'icon' => '✅'],
         ['label' => 'Nota Penjualan', 'url' => '/service-billing', 'icon' => '💵'],
         ['label' => 'Status Kredit', 'url' => '/credit/status', 'icon' => '💳'],
         ['label' => 'Kasir Nota', 'url' => '/kasir/nota', 'icon' => '🧾'],
     ],
     'service advisor' => [
-        ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],
         ['label' => 'Booking Servis', 'url' => '/booking', 'icon' => '📅'],
-        ['label' => 'Sparepart', 'url' => '/api/sparepart/search', 'icon' => '🔩'],
+        ['label' => 'Work Order', 'url' => '/work-orders', 'icon' => '📝'],
+        ['label' => 'Sparepart', 'url' => '/sparepart', 'icon' => '🔩'],
     ],
     'mekanik' => [
-        ['label' => 'Panel Mekanik', 'url' => '/mechanic/panel', 'icon' => '🔧'],
-        ['label' => 'Log Kerja Mekanik', 'url' => '/mechanic/work-order/log', 'icon' => '📋'],
+        ['label' => 'Work Order Saya', 'url' => '/work-orders', 'icon' => '🔧'],
+        ['label' => 'Log Kerja Mekanik', 'url' => '/work-order/log', 'icon' => '📋'],
     ],
     'manager' => [
         ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],

@@ -22,14 +22,31 @@ class WorkOrderLog extends Model
     public function createLog(int $woId, string $status, string $notes): bool
     {
         $allowedStatuses = ['started', 'paused', 'checked', 'rework', 'closed'];
+
         if (!in_array($status, $allowedStatuses)) {
-            throw new InvalidArgumentException("Status log tidak valid. Harus salah satu dari: " . implode(', ', $allowedStatuses));
+            throw new InvalidArgumentException(
+                "Status log tidak valid."
+            );
+        }
+
+        // cek data
+        $stmt = $this->db->prepare("
+        SELECT COUNT(*)
+        FROM work_order_logs
+        WHERE work_order_id = ?
+          AND status = ?
+    ");
+
+        $stmt->execute([$woId, $status]);
+
+        if ($stmt->fetchColumn() > 0) {
+            return false;
         }
 
         return $this->create([
             'work_order_id' => $woId,
-            'status'        => $status,
-            'notes'         => $notes
+            'status' => $status,
+            'notes' => $notes
         ]) > 0;
     }
 }

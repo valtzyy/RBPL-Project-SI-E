@@ -247,7 +247,7 @@
 </style>
 
 <div class="container">
-    <a href="/mechanic/panel" class="back-link">
+    <a href="/work-orders" class="back-link">
         <span>←</span> Kembali ke Panel Kerja
     </a>
 
