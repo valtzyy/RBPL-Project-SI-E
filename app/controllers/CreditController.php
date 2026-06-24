@@ -553,4 +553,47 @@ class CreditController extends Controller
             'applications' => $applications
         ]);
     }
+
+    public function statusView()
+    {
+        $applicationId = (int) ($_GET['app'] ?? 0);
+
+        if ($applicationId <= 0) {
+            http_response_code(400);
+            exit('Application ID tidak valid');
+        }
+
+        $application = $this->applicationModel->find($applicationId);
+
+        if (!$application) {
+            http_response_code(404);
+            exit('Pengajuan tidak ditemukan');
+        }
+
+        $documents = $this->documentModel
+            ->findByApplication($applicationId);
+
+        $decision = $this->decisionModel
+            ->findByApplication($applicationId);
+
+        $this->view('credit/status', [
+            'application' => $application,
+            'documents'   => $documents,
+            'decision'    => $decision
+        ]);
+    }
+
+    public function tracking()
+    {
+        $keyword = trim($_GET['q'] ?? '');
+
+        $applications =
+            $this->applicationModel
+                ->findForTracking($keyword);
+
+        $this->view('credit/tracking', [
+            'keyword'     => $keyword,
+            'applications'=> $applications
+        ]);
+    }
 }

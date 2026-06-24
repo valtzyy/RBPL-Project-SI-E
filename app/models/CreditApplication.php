@@ -108,4 +108,79 @@ class CreditApplication extends Model
 
         return $stmt->fetchAll();
     }
+
+    public function findWithTransactionStatus(int $id)
+    {
+        $stmt = $this->db->prepare("
+            SELECT ca.*, st.status AS current_tx_status 
+            FROM credit_applications ca
+            LEFT JOIN sales_transactions st ON ca.transaction_id = st.id
+            WHERE ca.id = ?
+        ");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function findForTracking(string $keyword = ''): array
+    {
+        $sql = "
+            SELECT
+                ca.id AS application_id,
+                ca.status,
+                ca.leasing_name,
+                ca.created_at,
+
+                c.name AS customer_name,
+
+                v.brand,
+                v.type AS vehicle_type
+
+            FROM credit_applications ca
+
+            JOIN sales_transactions st
+                ON st.id = ca.transaction_id
+
+            JOIN buyer_customers bc
+                ON bc.id = st.customer_id
+
+            JOIN customers c
+                ON c.id = bc.customer_id
+
+            JOIN vehicles v
+                ON v.id = st.vehicle_id
+        ";
+
+        $params = [];
+
+        if ($keyword !== '') {
+
+            $sql .= "
+            WHERE
+                CONCAT('CRD-', LPAD(ca.id,4,'0')) LIKE ?
+                OR c.name LIKE ?
+                OR ca.leasing_name LIKE ?
+                OR v.brand LIKE ?
+                OR v.type LIKE ?
+                OR ca.status LIKE ?
+            ";
+
+            $search = "%{$keyword}%";
+
+            $params = [
+                $search,
+                $search,
+                $search,
+                $search,
+                $search,
+                $search
+            ];
+        }
+
+        $sql .= " ORDER BY ca.created_at DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll();
+    }
 }

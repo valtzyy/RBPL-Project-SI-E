@@ -82,6 +82,8 @@ $router->get('/credit/create-form', 'CreditController@createForm');
 // 5. Ini rute untuk MELIHAT STATUS PENGAJUAN KREDIT
 // Digunakan untuk menampilkan status submitted/approved/rejected
 $router->get('/credit/status', 'CreditController@status');
+$router->get('/credit/status-view','CreditController@statusView');
+$router->get('/credit/tracking', 'CreditController@tracking');
 
 // 5. Ini rute untuk MENYIMPAN KEPUTUSAN KREDIT
 // 6. Ini rute untuk MENYIMPAN KEPUTUSAN KREDIT
@@ -308,3 +310,12 @@ $router->post('/booking/confirm',    'BookingController@confirm');
 $router->post('/booking/reject',     'BookingController@reject');
 $router->get('/booking/inspect/:id', 'BookingController@inspectForm');
 $router->post('/booking/inspect/:id/convert', 'BookingController@convertToWorkOrder');
+
+// ============================================================
+// RUTE SPRINT 9 (Kredit & Leasing - Approval & Uang Muka)
+// ============================================================
+$router->get('/form-approval',     'WebhookApprovalController@showForm');
+$router->post('/webhook-approval', 'WebhookApprovalController@process');
+
+$router->get('/verifikasi-dp',     'VerifikasiDpController@showForm');
+$router->post('/verifikasi-dp',    'VerifikasiDpController@process');
