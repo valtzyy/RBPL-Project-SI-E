@@ -210,11 +210,11 @@ $router->get('/test-panel',        'DebugController@index');
 $router->get('/debug-panel',       'DebugController@index');
 
 // API - Sparepart
-$router->get('/api/sparepart/test', 'SparepartController@testView');
+// $router->get('/api/sparepart/test', 'SparepartController@testView');
 $router->post('/api/sparepart/request', 'SparepartController@request');
 $router->get('/sparepart/create', 'SparepartController@createView');
 $router->post('/sparepart/store', 'SparepartController@store');
-$router->get('/api/sparepart/search', 'SparepartController@search');
+$router->get('/sparepart/search', 'SparepartController@search');
 $router->get('/api/invoice/draft', 'SparepartController@invoiceDraft');
 $router->get('/mekanik/work-order', 'SparepartController@workOrderView');
 $router->get('/kasir/invoice', 'SparepartController@invoiceView');
