@@ -212,7 +212,7 @@ $router->get('/kasir/invoice', 'SparepartController@invoiceView');
 // ============================================================
 
 // Modul Gudang Suku Cadang & Purchase Order (PO)
-$router->get('/purchase-order',           'SparepartController@index');
+$router->get('/purchase-orders',           'SparepartController@index');
 $router->post('/purchase-order/store', 'SparepartController@storePO');
 $router->get('/purchase-order/receipt', 'SparepartController@terimaPO'); // Jika menerima pakai query string (?id=)
 
@@ -229,3 +229,6 @@ $router->get('/api/dashboard/today',           'DashboardController@apiToday');
 $router->get('/api/dashboard/accumulated',     'DashboardController@apiAccumulated');
 $router->get('/api/dashboard/stock-allocation','DashboardController@apiStockAllocation');
 $router->get('/dashboard/export',              'DashboardController@exportCsv');
+
+
+$router->get('/history',  'TransaksiController@history');

@@ -253,7 +253,7 @@
     <p class="page-sub">Analisis KPI penjualan, status stok kendaraan, perputaran gudang, dan keuangan secara terpadu.</p>
   </div>
   <div class="btn-row">
-    <a href="/sparepart" class="btn btn-dark" style="text-decoration: none;">📦 Logistik & Gudang</a>
+    <a href="/purchase-orders" class="btn btn-dark" style="text-decoration: none;">📦 Logistik & Gudang</a>
   </div>
 </div>
 

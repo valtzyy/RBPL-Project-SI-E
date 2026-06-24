@@ -53,6 +53,7 @@ $menus = [
   'manager' => [
     ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],
     ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => '🗂️'],
+    ['label' => 'Purchase Order', 'url' => '/purchase-orders', 'icon' => '🛒'],
     ['label' => 'Reports', 'icon' => '📈', 'submenu' => [
       ['label' => 'Sales Report', 'url' => '/reports#sales-report'],
       ['label' => 'Stock Report', 'url' => '/reports#stock-report'],

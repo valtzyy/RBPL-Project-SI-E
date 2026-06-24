@@ -415,7 +415,7 @@
                                 </span>
                             </td>
                             <td style="text-align: center;">
-                                <a href="/service-advisor/work-orders/<?= $order['id'] ?>" class="btn-detail">
+                                <a href="/work-orders/<?= $order['id'] ?>" class="btn-detail">
                                     Detail
                                 </a>
                             </td>
