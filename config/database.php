@@ -44,7 +44,7 @@ return [
     'port'     => envRequired('DB_PORT'),
     'dbname'   => envRequired('DB_NAME'),
     'username' => envRequired('DB_USER'),
-    'password' => envRequired('DB_PASS'),
+    'password' => $_ENV['DB_PASS'] ?? '',
     'sslcert'  => $_ENV['DB_SSL_CA'] ?? '',
     'charset'  => 'utf8mb4',
 

@@ -40,3 +40,7 @@ $router->post(
 'DownPaymentController@uploadContract'
 
 ); //untuk upload kontrak kredit yang sudah ditandatangani
+
+$router->get('/e2e-testing', 'E2ETestingController@index');
+$router->post('/e2e-testing/update', 'E2ETestingController@update');
+$router->post('/e2e-testing/reset', 'E2ETestingController@reset');
