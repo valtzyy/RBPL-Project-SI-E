@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        window.location.href = '/credit/status?app=' + applicationId;
+        window.location.href = '/'
     });
 
     function readFileAsBase64(file) {

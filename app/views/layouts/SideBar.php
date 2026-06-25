@@ -33,13 +33,16 @@ $menus = [
     ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => '🗂️'],
   ],
   'finance' => [
-    ['label' => 'Verifikasi', 'icon' => '✅', 'submenu' => [
-      ['label' => 'Verifikasi Pembayaran', 'url' => '/finance/payments'],
-      ['label' => 'Nota Penjualan', 'url' => '/service-billing'],
-    ]],
-    ['label' => 'Status Kredit', 'url' => '/credit/status', 'icon' => '💳'],
-    ['label' => 'Kasir Nota', 'url' => '/kasir/nota', 'icon' => '🧾'],
-  ],
+        ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],
+        ['label' => 'Verifikasi Pembayaran', 'url' => '/finance/payments', 'icon' => '✅'],
+        ['label' => 'Kredit & Leasing', 'icon' => '💳', 'submenu' => [
+            ['label' => 'Verifikasi DP', 'url' => '/verifikasi-dp'],
+            ['label' => 'Approval Kredit', 'url' => '/form-approval'],
+            ['label' => 'Status Kredit', 'url' => '/credit/status'],
+        ]],
+        ['label' => 'Nota Penjualan', 'url' => '/service-billing', 'icon' => '💵'],
+        ['label' => 'Kasir Nota', 'url' => '/kasir/nota', 'icon' => '🧾'],
+    ],
   'service advisor' => [
     ['label' => 'Booking Servis', 'url' => '/booking', 'icon' => '📅'],
     ['label' => 'Work Order', 'url' => '/work-orders', 'icon' => '📝'],

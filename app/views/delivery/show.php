@@ -58,11 +58,41 @@
 
 
     <?php elseif ($schedule['status'] === 'failed'): ?>
-    <div style="border:1px solid #f5c6cb; border-radius:8px; padding:20px; background:#fff5f5;">
-        <h2 style="margin-top:0; font-size:16px; color:#dc3545;">Serah Terima Gagal</h2>
-        <p style="color:#555;">Jadwal ini ditandai gagal. Silakan buat jadwal baru untuk customer ini.</p>
-        <a href="/delivery/create" style="padding:8px 16px; background:#0f172a; color:white; text-decoration:none; border-radius:4px;">Buat Jadwal Baru</a>
-    </div>
+ <div style="
+    border:1px solid #f5c6cb;
+    border-radius:8px;
+    padding:24px;
+    background:#fff5f5;
+">
+    <h2 style="
+        margin:0 0 10px 0;
+        font-size:16px;
+        color:#dc3545;
+    ">
+        Serah Terima Gagal
+    </h2>
+
+    <p style="
+        margin:0 0 18px 0;
+        color:#555;
+        line-height:1.6;
+    ">
+        Jadwal ini ditandai gagal. Silakan buat jadwal baru untuk customer ini.
+    </p>
+
+    <a href="/delivery/create"
+       style="
+            display:inline-block;
+            padding:10px 18px;
+            background:#0f172a;
+            color:white;
+            text-decoration:none;
+            border-radius:6px;
+            font-weight:600;
+       ">
+        Buat Jadwal Baru
+    </a>
+</div>
     <?php endif; ?>
 
     <a href="/delivery" style="display:inline-block; margin-top:20px; padding:8px 16px; background:#6c757d; color:white; text-decoration:none; border-radius:4px;">← Kembali ke Daftar</a>

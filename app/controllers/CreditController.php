@@ -525,4 +525,66 @@ class CreditController extends Controller
             'transactions' => $transactions,
         ]);
     }
+
+    public function uploadSearch()
+    {
+        // 1. Login check
+        /*if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);s
+            exit('Login dulu');
+        }*/
+
+        // 2. Ambil transaksi yang eligible: payment_type=kredit, status=process
+        $keyword = trim($_GET['q'] ?? '');
+
+        $applications = $this->applicationModel->findForUploadSearch($keyword);
+
+        $this->view('credit/upload-search', [
+            'keyword' => $keyword,
+            'applications' => $applications
+        ]);
+    }
+
+    public function statusView()
+    {
+        $applicationId = (int) ($_GET['app'] ?? 0);
+
+        if ($applicationId <= 0) {
+            http_response_code(400);
+            exit('Application ID tidak valid');
+        }
+
+        $application = $this->applicationModel->find($applicationId);
+
+        if (!$application) {
+            http_response_code(404);
+            exit('Pengajuan tidak ditemukan');
+        }
+
+        $documents = $this->documentModel
+            ->findByApplication($applicationId);
+
+        $decision = $this->decisionModel
+            ->findByApplication($applicationId);
+
+        $this->view('credit/status', [
+            'application' => $application,
+            'documents'   => $documents,
+            'decision'    => $decision
+        ]);
+    }
+
+    public function tracking()
+    {
+        $keyword = trim($_GET['q'] ?? '');
+
+        $applications =
+            $this->applicationModel
+                ->findForTracking($keyword);
+
+        $this->view('credit/tracking', [
+            'keyword'     => $keyword,
+            'applications'=> $applications
+        ]);
+    }
 }

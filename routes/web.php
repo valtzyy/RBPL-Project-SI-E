@@ -32,11 +32,6 @@ $router->post('/admin/users/:id/deactivate','UserManagementController@deactivate
 $router->get('/change-password',  'ProfileController@editPassword');
 $router->post('/change-password', 'ProfileController@updatePassword');
 
-// Auth
-$router->get('/login',       'AuthController@showLogin');
-$router->post('/login',      'AuthController@login');
-$router->post('/logout',     'AuthController@logout');
-
 // 2. Ini rute untuk MEMPROSES UPLOAD (Saat tombol diklik)
 $router->post('/document',      'DocumentController@simpanDokumen');
 
@@ -68,6 +63,7 @@ $router->get('/credit/create-form', 'CreditController@createForm');
 // 5. Ini rute untuk MELIHAT STATUS PENGAJUAN KREDIT
 // Digunakan untuk menampilkan status submitted/approved/rejected
 $router->get('/credit/status', 'CreditController@status');
+$router->get('/credit/tracking', 'CreditController@tracking');
 
 // 5. Ini rute untuk MENYIMPAN KEPUTUSAN KREDIT
 // 6. Ini rute untuk MENYIMPAN KEPUTUSAN KREDIT
@@ -87,7 +83,7 @@ $router->post('/credit/reapply',     'CreditController@reapply');
 $router->get('/procurement',               'ProcurementController@index');
 $router->post('/procurement/store',        'ProcurementController@store');
 //PBI 2.4 & 2.5
-// $router->get('/procurement/receipt',       'ProcurementController@receiptList');
+$router->get('/procurement/receipt',       'ProcurementController@receiptList');
 $router->get('/procurement/receipt/:id',   'ProcurementController@receipt');
 $router->post('/procurement/receipt/store', 'ProcurementController@storeReceipt');
 
@@ -229,6 +225,9 @@ $router->get('/api/dashboard/today',           'DashboardController@apiToday');
 $router->get('/api/dashboard/accumulated',     'DashboardController@apiAccumulated');
 $router->get('/api/dashboard/stock-allocation','DashboardController@apiStockAllocation');
 $router->get('/dashboard/export',              'DashboardController@exportCsv');
+$router->get('/form-approval',     'WebhookApprovalController@showForm');
+$router->post('/webhook-approval', 'WebhookApprovalController@process');
 
-
+$router->get('/verifikasi-dp',     'VerifikasiDpController@showForm');
+$router->post('/verifikasi-dp',    'VerifikasiDpController@process');
 $router->get('/history',  'TransaksiController@history');

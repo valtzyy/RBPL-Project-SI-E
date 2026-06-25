@@ -167,6 +167,28 @@ public function index()
                 'status' => 'received'
             ]);
 
+            // 6. Update stok kendaraan di table vehicles_stock berdasarkan quantity actual (received)
+            foreach ($receivedQuantities as $vehicleId => $receivedQty) {
+                $vehicleId = (int)$vehicleId;
+                $receivedQty = (int)$receivedQty;
+
+                // Cari apakah sudah ada stock untuk vehicle_id ini di table vehicles_stock
+                $stmtStock = $db->prepare("SELECT id, quantity FROM vehicles_stock WHERE vehicle_id = ?");
+                $stmtStock->execute([$vehicleId]);
+                $stock = $stmtStock->fetch(PDO::FETCH_ASSOC);
+
+                if ($stock) {
+                    // Tambahkan quantity yang diterima ke stok yang sudah ada
+                    $newQty = $stock['quantity'] + $receivedQty;
+                    $stmtUpdateStock = $db->prepare("UPDATE vehicles_stock SET quantity = ? WHERE id = ?");
+                    $stmtUpdateStock->execute([$newQty, $stock['id']]);
+                } else {
+                    // Jika belum ada stok terdaftar, buat record baru
+                    $stmtInsertStock = $db->prepare("INSERT INTO vehicles_stock (vehicle_id, quantity, min_stock) VALUES (?, ?, 0)");
+                    $stmtInsertStock->execute([$vehicleId, $receivedQty]);
+                }
+            }
+
             $db->commit();
 header("Location: /procurement");
             exit();

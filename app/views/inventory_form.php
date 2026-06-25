@@ -17,7 +17,7 @@
     <?php endif; ?>
 
     <!-- Form Card -->
-    <form class="card card-body" method="post" action="<?= htmlspecialchars($action) ?>">
+    <form class="card card-body" method="post" action="<?= htmlspecialchars($action ?? '') ?>">
         <div class="row g-3">
             <div class="col-md-4">
                 <label class="form-label" for="brand">Merek (Brand)</label>
