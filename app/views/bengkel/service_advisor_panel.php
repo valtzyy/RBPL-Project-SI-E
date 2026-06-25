@@ -10,12 +10,6 @@
         padding: 0;
     }
 
-    .container {
-        padding: 40px 20px;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
     .header-section {
         background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
         color: #ffffff;
@@ -280,7 +274,7 @@
     }
 </style>
 
-<div class="container">
+<div>
     <div class="header-section">
         <div class="header-title">
             <h2>🔧 Monitoring Work Orders</h2>

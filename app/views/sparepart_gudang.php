@@ -719,9 +719,9 @@
             width: 0;
             overflow: hidden;
         }
-
+/* 
         .main-wrapper {
             margin-left: 0;
-        }
+        } */
     }
 </style>

@@ -9,12 +9,12 @@
         margin: 0;
         padding: 0;
     }
-
-    .container {
+/* 
+    /* .container {
         padding: 40px 20px;
         max-width: 1000px;
         margin: 0 auto;
-    }
+    } */ */
 
     .back-link {
         display: inline-flex;

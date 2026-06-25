@@ -46,7 +46,6 @@ if (stripos($content, '<!doctype') !== false || stripos($content, '<html') !== f
     </div>
 
   </div>
-
 </body>
 
 </html>

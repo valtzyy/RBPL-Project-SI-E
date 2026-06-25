@@ -10,11 +10,11 @@
         padding: 0;
     }
 
-    .container {
+    /* .container {
         padding: 40px 20px;
         max-width: 1200px;
         margin: 0 auto;
-    }
+    } */
 
     .header-section {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
