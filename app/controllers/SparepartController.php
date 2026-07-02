@@ -146,7 +146,8 @@ class SparepartController extends Controller
         echo json_encode($result);
     }
 
-     public function index()
+    // Halaman Utama Logistik Gudang
+    public function index()
     {
         $lowStock = $this->sparepart->getLowLevelStock(); // PBI-14.1
         $allSpareparts = $this->sparepart->getAll();

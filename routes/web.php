@@ -290,3 +290,8 @@ $router->post('/webhook-approval', 'WebhookApprovalController@process');
 $router->get('/verifikasi-dp',     'VerifikasiDpController@showForm');
 $router->post('/verifikasi-dp',    'VerifikasiDpController@process');
 $router->get('/kasir/riwayat/logs/:id', 'KasirController@historicalLogs');
+
+$router->get('/api/dashboard/today',           'DashboardController@apiToday');
+$router->get('/api/dashboard/accumulated',     'DashboardController@apiAccumulated');
+$router->get('/api/dashboard/stock-allocation','DashboardController@apiStockAllocation');
+$router->get('/dashboard/export',              'DashboardController@exportCsv');
