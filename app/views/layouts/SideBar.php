@@ -27,8 +27,8 @@ $menus = [
         ['label' => 'Penjualan Mobil', 'url' => '/transactions', 'icon' => '🚗'],
         ['label' => 'Pengajuan Kredit', 'icon' => '💳', 'submenu' => [
             ['label' => 'Buat Pengajuan', 'url' => '/credit/create-form'],
-            ['label' => 'Upload Syarat', 'url' => '/credit/upload'],
-            ['label' => 'Status Pengajuan', 'url' => '/credit/status'],
+            ['label' => 'Upload Syarat', 'url' => '/credit/upload-search'],
+            ['label' => 'Status Pengajuan', 'url' => '/credit/tracking'],
         ]],
         ['label' => 'Jadwal Serah Terima', 'url' => '/delivery', 'icon' => '🚚'],
         ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => '🗂️'],

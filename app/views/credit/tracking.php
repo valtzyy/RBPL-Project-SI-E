@@ -6,16 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pelacakan Status Pengajuan Kredit</title>
 
-```
+
 <link rel="stylesheet" href="/css/tracking.css">
-```
+
 
 </head>
 <body>
 
 <div class="container">
 
-```
+
 <!-- Header -->
 <a href="/" class="back-link">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
