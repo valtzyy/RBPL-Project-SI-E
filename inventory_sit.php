@@ -116,15 +116,35 @@ try {
         $salesCustomerId = (int) $db->lastInsertId();
     }
 
-    $stmt = $db->prepare('INSERT INTO payment_types (name) VALUES (?)');
-    $stmt->execute(['SIT Cash ' . $suffix]);
-    $paymentTypeId = (int) $db->lastInsertId();
+    $salesColumns = $db->query('SHOW COLUMNS FROM sales_transactions')->fetchAll();
+    $salesColumnMap = array_column($salesColumns, null, 'Field');
 
-    $stmt = $db->prepare('
-        INSERT INTO sales_transactions (transaction_code, customer_id, vehicle_id, sales_user_id, payment_type, status)
-        VALUES (?, ?, ?, ?, ?, ?)
-    ');
-    $stmt->execute(['SIT-SALES-' . $suffix, $salesCustomerId, $vehicleId, $salesUserId, $paymentTypeId, 'process']);
+    $salesData = [
+        'transaction_code' => 'SIT-SALES-' . $suffix,
+        'customer_id' => $salesCustomerId,
+        'vehicle_id' => $vehicleId,
+        'sales_user_id' => $salesUserId,
+        'status' => 'process',
+    ];
+
+    if (isset($salesColumnMap['payment_type'])) {
+        $paymentTypeId = $db->query('SELECT id FROM payment_types ORDER BY id ASC LIMIT 1')->fetchColumn();
+        $paymentTypeRequired = strtoupper((string) $salesColumnMap['payment_type']['Null']) === 'NO'
+            && $salesColumnMap['payment_type']['Default'] === null;
+
+        if ($paymentTypeId !== false) {
+            $salesData['payment_type'] = (int) $paymentTypeId;
+        } elseif ($paymentTypeRequired) {
+            throw new RuntimeException('SIT tidak bisa membuat sales transaction: payment_type wajib, tetapi tabel payment_types kosong.');
+        }
+    }
+
+    $stmt = $db->prepare(sprintf(
+        'INSERT INTO sales_transactions (%s) VALUES (%s)',
+        implode(', ', array_map(fn($column) => "`{$column}`", array_keys($salesData))),
+        implode(', ', array_fill(0, count($salesData), '?'))
+    ));
+    $stmt->execute(array_values($salesData));
     $transactionId = (int) $db->lastInsertId();
 
     $salesService->updateStatus($transactionId, 'lunas');
