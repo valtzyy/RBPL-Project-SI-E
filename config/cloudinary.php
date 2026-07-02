@@ -5,15 +5,13 @@
 $envFile = ROOT_PATH . '/.env';
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-if (!file_exists($envFile)) {
-    throw new Exception("File .env tidak ditemukan di: $envFile");
-}
-
-foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
-    if (str_starts_with(trim($line), '#')) continue; // skip komentar
-    if (!str_contains($line, '=')) continue;          // skip baris tanpa '='
-    [$key, $value] = explode('=', $line, 2);
-    $_ENV[trim($key)] = trim($value);
+if (file_exists($envFile)) {
+    foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        if (str_starts_with(trim($line), '#')) continue;
+        if (!str_contains($line, '=')) continue;
+        [$key, $value] = explode('=', $line, 2);
+        $_ENV[trim($key)] = trim($value);
+    }
 }
 
 return [
