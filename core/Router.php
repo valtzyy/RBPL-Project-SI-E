@@ -84,6 +84,26 @@ class Router
             exit("Method controller tidak ditemukan: {$methodName}");
         }
 
+        // Global middleware log injection
+        $excludeControllers = ['WebhookApprovalController', 'DebugController', 'DebugResetController'];
+        if (!in_array($controllerName, $excludeControllers, true)) {
+            $auditLogPath = ROOT_PATH . '/app/models/AuditLog.php';
+            if (file_exists($auditLogPath)) {
+                require_once $auditLogPath;
+                if (class_exists('AuditLog')) {
+                    $auditLogModel = new AuditLog();
+                    $actionName = strtoupper($methodName);
+                    $moduleName = strtoupper(str_replace('Controller', '', $controllerName));
+                    $description = "Akses global: {$controllerName}@{$methodName}";
+                    $auditLogModel->record([
+                        'action' => $actionName,
+                        'module' => $moduleName,
+                        'description' => $description
+                    ]);
+                }
+            }
+        }
+
         $controller->$methodName(...$params);
     }
 }

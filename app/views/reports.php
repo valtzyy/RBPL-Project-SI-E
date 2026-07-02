@@ -158,6 +158,10 @@
                 <label for="vehicle_type">Vehicle Type</label>
                 <input type="text" id="vehicle_type" class="filter-input" placeholder="SUV / Sedan">
             </div>
+            <div class="filter-group">
+                <label for="sales">Sales (Name/ID)</label>
+                <input type="text" id="sales" class="filter-input" placeholder="Nama sales / ID">
+            </div>
         </div>
     </div>
 
@@ -254,7 +258,7 @@
 <script>
 function currentQueryString() {
     const params = new URLSearchParams();
-    ['start_date', 'end_date', 'status', 'payment_type', 'vehicle_type'].forEach(function (field) {
+    ['start_date', 'end_date', 'status', 'payment_type', 'vehicle_type', 'sales'].forEach(function (field) {
         const input = document.getElementById(field);
         if (input) {
             const value = input.value.trim();

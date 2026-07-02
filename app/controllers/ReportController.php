@@ -13,7 +13,7 @@ class ReportController extends Controller
 
     public function __construct()
     {
-        Auth::requireRole(['Manager']);
+        Auth::requireRole(['Manager', 'Admin']);
         $this->reportModel = new Report();
         $this->auditLogModel = new AuditLog();
         $this->exporter = new ReportExporter();
@@ -164,6 +164,7 @@ class ReportController extends Controller
             'status' => trim((string) $this->input('status', '')),
             'payment_type' => trim((string) $this->input('payment_type', '')),
             'vehicle_type' => trim((string) $this->input('vehicle_type', '')),
+            'sales' => trim((string) $this->input('sales', '')),
         ];
     }
 

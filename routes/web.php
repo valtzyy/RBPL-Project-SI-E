@@ -8,6 +8,9 @@
 $router->get('/',               'HomeController@index');
 $router->get('/reports',   'ReportController@testingPage');
 $router->get('/reports/audit-log', 'ReportController@auditLogPage');
+$router->get('/reports/:type', 'ReportController@report');
+$router->get('/reports/:type/export/pdf', 'ReportController@exportPdf');
+$router->get('/reports/:type/export/excel', 'ReportController@exportExcel');
 
 // Halaman Utama / Dashboard
 $router->get('/',               'HomeController@index');
