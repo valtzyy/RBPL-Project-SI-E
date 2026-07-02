@@ -30,7 +30,7 @@ class Transaksi extends Model {
         // [PBI-7.2] AMBIL DATA ASLI + CASE WHEN UNTUK LABEL PAYMENT TYPE
         $sqlData = "SELECT t.id, t.transaction_code, t.created_at, t.status, t.payment_type,
                     CASE WHEN t.payment_type = 1 THEN 'Kredit' WHEN t.payment_type = 2 THEN 'Tunai' ELSE 'Lain' END as payment_type_label,
-                    c.name as customer_name, v.type as vehicle_type, u.name as sales_name
+                    c.name as customer_name, v.type as vehicle_type, u.name as sales_name, v.price as amount
                     " . $queryBase . " 
                     ORDER BY t.created_at DESC LIMIT :limit OFFSET :offset"; // [PBI-7.3]
         

@@ -8,6 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+require_once ROOT_PATH . '/config/env.php';
 require_once ROOT_PATH . '/core/Database.php';
 require_once ROOT_PATH . '/core/Model.php';
 require_once ROOT_PATH . '/core/Controller.php';
