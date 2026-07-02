@@ -198,30 +198,33 @@ function rupiah(float $n): string
          * Filter baris tabel berdasarkan input search dan dropdown status.
          */
         function filterTagihan() {
-            const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
-            const status = document.getElementById('statusFilter').value;
-            const rows = document.querySelectorAll('#tagihan-table tbody tr');
+    const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
+    const status = document.getElementById('statusFilter').value;
+    const rows = document.querySelectorAll('#tagihan-table tbody tr');
 
-            rows.forEach(function(row) {
-                const name = row.dataset.name || '';
-                const plate = row.dataset.plate || '';
-                const vehicle = row.dataset.vehicle || '';
-                const rowStat = row.dataset.status || '';
+    rows.forEach(function(row) {
+        // Mengubah data ke lowercase agar pencarian tidak sensitif huruf besar/kecil
+        const name = (row.dataset.name || '').toLowerCase();
+        const plate = (row.dataset.plate || '').toLowerCase();
+        const vehicle = (row.dataset.vehicle || '').toLowerCase();
+        const rowStat = row.dataset.status || '';
 
-                // Normalisasi spasi agar "B 1234 AB" ketemu walau diketik "B1234AB"
-                const keywordFlat = keyword.replace(/\s+/g, '');
-                const plateFlat = plate.replace(/\s+/g, '');
+        // Normalisasi spasi untuk plat nomor
+        const keywordFlat = keyword.replace(/\s+/g, '');
+        const plateFlat = plate.replace(/\s+/g, '');
 
-                const cocokKata = keyword === '' ||
-                    name.includes(keyword) ||
-                    vehicle.includes(keyword) ||
-                    plate.includes(keyword) ||
-                    (keywordFlat.length > 0 && plateFlat.includes(keywordFlat));
-                const cocokStatus = status === '' || rowStat === status;
+        // Logika baru: Menggunakan .startsWith() untuk mengutamakan huruf depan
+        const cocokKata = keyword === '' ||
+            name.startsWith(keyword) ||
+            vehicle.startsWith(keyword) ||
+            plate.startsWith(keyword) ||
+            (keywordFlat.length > 0 && plateFlat.startsWith(keywordFlat));
+            
+        const cocokStatus = status === '' || rowStat === status;
 
-                row.style.display = (cocokKata && cocokStatus) ? '' : 'none';
-            });
-        }
+        row.style.display = (cocokKata && cocokStatus) ? '' : 'none';
+    });
+}
 
         /**
          * Buka modal dan load data detail via fetch JSON.
