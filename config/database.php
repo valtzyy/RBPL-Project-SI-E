@@ -1,19 +1,14 @@
 <?php
 
-// 1. Ambil teks isi sertifikat CA dari Environment Variable Vercel
-$ca_content = getenv('DB_SSL_CA_CONTENT');
+// 1. Ambil teks path relatif dari .env (nilainya akan berisi "./config/certs/ca.pem")
+$env_path = getenv('DB_SSL_CA') ?: './config/certs/ca.pem';
 
-// 2. Tentukan jalur file sertifikat fisik buatan
-// Di Vercel Serverless, hanya folder '/tmp' yang diizinkan untuk menulis file fisik
-$is_vercel = getenv('VERCEL') === '1';
-$ssl_ca_path = $is_vercel ? '/tmp/aiven_ca.pem' : dirname(__DIR__) . '/config/certs/ca.pem';
+// 2. Bersihkan teks './' di depan jika ada, agar tidak merusak penggabungan path
+$clean_path = ltrim($env_path, './');
 
-// 3. Jika di Vercel dan data env tersedia, buat file ca.pem secara otomatis di folder /tmp
-if ($is_vercel && !empty($ca_content) && !file_exists($ssl_ca_path)) {
-    // Menghidupkan kembali karakter baris baru (\n) yang sempat merapat di dashboard env
-    $formatted_ca = str_replace('\n', "\n", $ca_content);
-    file_put_contents($ssl_ca_path, $formatted_ca);
-}
+// 3. Gabungkan dengan folder root proyek menggunakan dirname(__DIR__) karena file ini ada di folder /config
+// Hasil akhirnya akan menjadi path absolut yang valid di server Vercel maupun Lokal
+$absolute_ssl_path = dirname(__DIR__) . '/' . $clean_path;
 
 return [
     'host'     => envRequired('DB_HOST'),
@@ -21,8 +16,8 @@ return [
     'dbname'   => envRequired('DB_NAME'),
     'username' => envRequired('DB_USER'),
     'password' => envRequired('DB_PASS'),
-    // Isikan dengan path file fisik yang sudah dijamin ada di atas
-    'sslcert'  => env('DB_SSL_CA', $ssl_ca_path), 
+    // Panggil variabel path absolut yang sudah diolah dengan aman di atas
+    'sslcert'  => $absolute_ssl_path, 
     'charset'  => 'utf8mb4',
 
     'options'  => [
@@ -30,8 +25,8 @@ return [
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES   => false,
         
-        // Tetap pasangkan penanda SSL CA fisik menggunakan standard baru PHP 8.5
-        \Pdo\Mysql::ATTR_SSL_CA             => $ssl_ca_path,
-        \Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT => true, // Set ke true karena file fisik ca.pem sekarang resmi ada!
+        // Masukkan path absolut ke setelan driver PDO PHP 8.5+
+        \Pdo\Mysql::ATTR_SSL_CA             => $absolute_ssl_path,
+        \Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT => true, 
     ],
 ];
