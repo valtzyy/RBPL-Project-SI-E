@@ -43,15 +43,34 @@ class AuthController extends Controller
 
             if (array_key_exists($mockRole, $roleNames)) {
                 $roleName = $roleNames[$mockRole];
-                $mockUser = [
-                    'id' => 999,
-                    'name' => 'Mock ' . $roleName,
-                    'username' => strtolower(str_replace(' ', '_', $roleName)),
-                    'email' => strtolower(str_replace(' ', '_', $roleName)) . '@dealerlink.com',
-                    'role_id' => 99,
-                    'role_name' => $roleName
+                
+                // Map mock role to seeded user emails
+                $emailMap = [
+                    'manager' => 'manager@dealer.test',
+                    'admin' => 'admin@dealer.test',
+                    'sales' => 'sales@dealer.test',
+                    'finance' => 'finance@dealer.test',
+                    'service advisor' => 'advisor@dealer.test',
+                    'mekanik' => 'mekanik@dealer.test'
                 ];
-                Auth::login($mockUser);
+
+                $email = $emailMap[$mockRole] ?? null;
+                $user = $email ? $this->userModel->findForLogin($email) : null;
+
+                if ($user) {
+                    Auth::login($user);
+                } else {
+                    // Fallback to old mock user if database is completely empty
+                    $mockUser = [
+                        'id' => 999,
+                        'name' => 'Mock ' . $roleName,
+                        'username' => strtolower(str_replace(' ', '_', $roleName)),
+                        'email' => strtolower(str_replace(' ', '_', $roleName)) . '@dealerlink.com',
+                        'role_id' => 99,
+                        'role_name' => $roleName
+                    ];
+                    Auth::login($mockUser);
+                }
                 $this->redirect('/');
             }
         }
