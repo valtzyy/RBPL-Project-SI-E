@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/CSS/style.css">
 <style>
     /* === SIHIR CSS: Aturan Khusus Saat Masuk Mode Print / Cetak === */
     @media print {

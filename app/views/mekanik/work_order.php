@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/CSS/style.css">
 <div class="form-container" style="max-width: 700px; margin: 0 auto; padding-top: 20px;">
     <div class="form-header">
         <h2>Pencarian Suku Cadang Mekanik</h2>
@@ -5,7 +6,7 @@
     </div>
 
     <div class="form-group" style="margin-bottom: 24px;">
-        <input type="number" id="input_wo_id_mekanik" class="form-input" placeholder=" " value="101" required>
+        <input type="number" id="input_wo_id_mekanik" class="form-input" placeholder=" " value="<?= htmlspecialchars($_GET['id'] ?? '101') ?>" required>
         <label for="input_wo_id_mekanik" class="form-label">Nomor Work Order Aktif</label>
     </div>
 

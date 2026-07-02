@@ -20,7 +20,10 @@ $menus = [
         ['label' => 'Manajemen Akun', 'url' => '/admin/users', 'icon' => '👥'],
         ['label' => 'Stok Kendaraan', 'url' => '/inventory', 'icon' => '🚗'],
         ['label' => 'Pengadaan', 'url' => '/procurement', 'icon' => '📥'],
-        // ['label' => 'Pengadaan', 'url' => '/procurement/receipt', 'icon' => '📥'],
+        ['label' => 'Suku Cadang', 'icon' => '⚙️', 'submenu' => [
+            ['label' => 'Stok Suku Cadang', 'url' => '/sparepart'],
+            ['label' => 'Tambah Master Data', 'url' => '/sparepart/create'],
+        ]],
     ],
     'sales' => [
         ['label' => 'Manajemen Pelanggan', 'url' => '/customers', 'icon' => '👥'],
@@ -50,8 +53,10 @@ $menus = [
         ['label' => 'Antrean Booking', 'url' => '/booking/queue', 'icon' => '⏳'],
     ],
     'mekanik' => [
-        ['label' => 'Panel Mekanik', 'url' => '/mechanic/panel', 'icon' => '🔧'],
+        ['label' => 'Panel Kerja Mekanik', 'url' => '/mechanic/panel', 'icon' => '🔧'],
         ['label' => 'Log Kerja Mekanik', 'url' => '/mechanic/work-order/log', 'icon' => '📋'],
+        ['label' => 'Request Suku Cadang', 'url' => '/mekanik/work-order', 'icon' => '🛠️'],
+        ['label' => 'Stok Suku Cadang', 'url' => '/sparepart', 'icon' => '⚙️'],
     ],
     'manager' => [
         ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],
@@ -103,7 +108,14 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
             </summary>
             <div class="sidebar-submenu">
               <?php foreach ($item['submenu'] as $subItem): ?>
-                <?php $subActive = (strpos($currentUri, $subItem['url']) !== false) ? 'active' : ''; ?>
+                <?php 
+                  $subActive = '';
+                  if ($subItem['url'] === '/sparepart') {
+                      $subActive = ($currentUri === '/sparepart') ? 'active' : '';
+                  } else {
+                      $subActive = (strpos($currentUri, $subItem['url']) !== false) ? 'active' : '';
+                  }
+                ?>
                 <a class="sidebar-sublink <?= $subActive ?>" href="<?= htmlspecialchars($subItem['url']) ?>">
                   <?= htmlspecialchars($subItem['label']) ?>
                 </a>
