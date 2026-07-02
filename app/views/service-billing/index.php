@@ -108,11 +108,12 @@ function rupiah(float $n): string
                                         <tr
                                             data-name="<?= htmlspecialchars(strtolower($t['customer_name'])) ?>"
                                             data-vehicle="<?= htmlspecialchars(strtolower($t['brand'] . ' ' . $t['vehicle_type'])) ?>"
+                                            data-plate="<?= htmlspecialchars(strtolower($t['plate_number'] ?? '')) ?>"
                                             data-status="<?= htmlspecialchars($t['wo_status']) ?>">
                                             <td><?= $i + 1 ?></td>
                                             <td>
                                                 <div class="td-name"><?= htmlspecialchars($t['customer_name']) ?></div>
-                                                <div class="td-sub"><?= htmlspecialchars($t['customer_phone'] ?? '-') ?></div>
+                                                <div class="td-sub"><?= htmlspecialchars($t['plate_number'] ?? '-') ?></div>
                                             </td>
                                             <td>
                                                 <div class="td-name"><?= htmlspecialchars($t['brand'] . ' ' . $t['vehicle_type']) ?></div>
@@ -203,10 +204,19 @@ function rupiah(float $n): string
 
             rows.forEach(function(row) {
                 const name = row.dataset.name || '';
+                const plate = row.dataset.plate || '';
                 const vehicle = row.dataset.vehicle || '';
                 const rowStat = row.dataset.status || '';
 
-                const cocokKata = keyword === '' || name.includes(keyword) || vehicle.includes(keyword);
+                // Normalisasi spasi agar "B 1234 AB" ketemu walau diketik "B1234AB"
+                const keywordFlat = keyword.replace(/\s+/g, '');
+                const plateFlat = plate.replace(/\s+/g, '');
+
+                const cocokKata = keyword === '' ||
+                    name.includes(keyword) ||
+                    vehicle.includes(keyword) ||
+                    plate.includes(keyword) ||
+                    (keywordFlat.length > 0 && plateFlat.includes(keywordFlat));
                 const cocokStatus = status === '' || rowStat === status;
 
                 row.style.display = (cocokKata && cocokStatus) ? '' : 'none';

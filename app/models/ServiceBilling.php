@@ -35,6 +35,7 @@ class ServiceBilling extends Model
                 sb.booking_date,
                 sb.vehicle_name,
                 sb.vehicle_color,
+                sc.plate_number,
 
                 v.brand,
                 v.type                AS vehicle_type,
@@ -53,6 +54,7 @@ class ServiceBilling extends Model
             LEFT JOIN vehicles v            ON sb.vehicle_id          = v.id
             LEFT JOIN sparepart_usages su   ON su.work_order_id       = wo.id
             LEFT JOIN spareparts sp         ON su.sparepart_id        = sp.id
+            LEFT JOIN service_customers sc  ON sb.service_customer_id = sc.id
 
             WHERE wo.status IN ('ready', 'done')
 
