@@ -6,7 +6,7 @@ return [
     'dbname'   => envRequired('DB_NAME'),
     'username' => envRequired('DB_USER'),
     'password' => envRequired('DB_PASS'),
-    'sslcert'  => $_ENV['DB_SSL_CA'] ?? '',
+    'sslcert'  => env('DB_SSL_CA', ''),
     'charset'  => 'utf8mb4',
 
     'options'  => [
