@@ -16,6 +16,18 @@ class Router
 
     public function run(): void
     {
+        header('Content-Type: application/json');
+
+    echo json_encode([
+        'REQUEST_URI' => $_SERVER['REQUEST_URI'] ?? null,
+        'SCRIPT_NAME' => $_SERVER['SCRIPT_NAME'] ?? null,
+        'PHP_SELF' => $_SERVER['PHP_SELF'] ?? null,
+        'PATH_INFO' => $_SERVER['PATH_INFO'] ?? null,
+        'REQUEST_METHOD' => $_SERVER['REQUEST_METHOD'] ?? null,
+    ], JSON_PRETTY_PRINT);
+
+    exit;
+
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
