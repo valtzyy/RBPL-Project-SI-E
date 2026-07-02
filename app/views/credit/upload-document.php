@@ -172,7 +172,7 @@
                     </div>
 
                     <div class="action-buttons">
-                        <a href="/">
+                        <a href="/credit/upload-search">
                             <button type="button" class="btn btn-outline">
                             Simpan Draft
                             </button>

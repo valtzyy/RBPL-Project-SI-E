@@ -1,23 +1,4 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pilih Pengajuan – Upload Dokumen</title>
-    <link rel="stylesheet" href="/css/upload-search.css">
-</head>
-<body>
-
-<div class="container">
-
-    <!-- Header -->
-    <a href="/" class="back-link">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8"
-                  stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Kembali
-    </a>
+<link rel="stylesheet" href="/css/upload-search.css">
 
     <div class="page-header">
         <h1>Upload Dokumen Kredit</h1>
@@ -149,5 +130,3 @@
 </div>
 
 <script src="/js/upload-search.js"></script>
-</body>
-</html>
