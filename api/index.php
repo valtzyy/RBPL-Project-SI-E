@@ -24,6 +24,7 @@ try {
     require_once ROOT_PATH . '/core/Model.php';
     require_once ROOT_PATH . '/core/Controller.php';
     require_once ROOT_PATH . '/core/Router.php';
+    require_once ROOT_PATH . '/core/Auth.php';
 
     $router = new Router();
     require_once ROOT_PATH . '/routes/web.php';
