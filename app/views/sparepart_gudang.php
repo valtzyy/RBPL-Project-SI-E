@@ -317,6 +317,28 @@
         }
 
         /* ─── SCROLLBAR ───────────────────────────── */
+
+        .sidebar-user .user-arrow { margin-left: auto; color: var(--sidebar-text); font-size: 10px; }
+
+        .user-dropdown {
+            display: none;
+            background: #17192d;
+            border-bottom: 1px solid rgba(255,255,255,.06);
+        }
+        .user-dropdown.open { display: block; }
+        .user-dropdown a,
+        .user-dropdown button {
+            display: flex; align-items: center; gap: 9px;
+            width: 100%; padding: 10px 20px 10px 26px;
+            color: var(--sidebar-text); font-size: 12.5px; font-family: inherit;
+            font-weight: 500; text-decoration: none; background: none;
+            border: none; cursor: pointer; text-align: left;
+            transition: background .12s, color .12s;
+        }
+        .user-dropdown a:hover,
+        .user-dropdown button:hover { background: var(--sidebar-hover-bg); color: #fff; }
+        .user-dropdown button { color: #fc8181; }
+        .user-dropdown button:hover { color: #fff; background: #7f1d1d; }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #c1c9d8; border-radius: 10px; }
@@ -338,13 +360,40 @@
         <div class="brand-sub">Management System</div>
     </div>
 
-    <div class="sidebar-user">
-        <div class="avatar"><?= strtoupper(substr($user['name'] ?? 'A', 0, 1)) ?></div>
-        <div>
-            <div class="name"><?= htmlspecialchars($user['name'] ?? 'Admin Gudang') ?></div>
-            <div class="role"><?= htmlspecialchars($user['role'] ?? 'Staff Logistik') ?></div>
+    <?php if (Auth::check()): ?>
+    <div class="sidebar-user" onclick="toggleUserMenu()" id="userBlock">
+        <div class="avatar"><?= strtoupper(substr(Auth::user()['name'], 0, 1)) ?></div>
+        <div class="user-info">
+            <div class="name"><?= htmlspecialchars(Auth::user()['name']) ?></div>
+            <div class="role"><?= htmlspecialchars(Auth::user()['role_name']) ?></div>
         </div>
+        <span class="user-arrow" id="userArrow">▼</span>
     </div>
+    <div class="user-dropdown" id="userDropdown">
+        <a href="/change-password">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            Ganti Password
+        </a>
+        <?php if (Auth::role() === 'Admin Dealer'): ?>
+        <a href="/admin/users">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+            Manajemen Akun
+        </a>
+        <?php endif; ?>
+        <form method="POST" action="/logout" style="margin:0;">
+            <button type="submit">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                Logout
+            </button>
+        </form>
+    </div>
+    <?php endif; ?>
 
     <nav class="sidebar-nav">
         <div class="nav-label">Utama</div>
@@ -358,26 +407,19 @@
 
         <div class="nav-label" style="margin-top:6px;">Operasional</div>
 
-        <a href="/procurement" class="nav-item">
-            <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 10V11"/>
-            </svg>
-            Procurement
-        </a>
-
-        <a href="/vehicles" class="nav-item">
+        <a href="/inventory" class="nav-item">
             <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
                 <path d="M13 6H6l-3 6v3h3m10-9h2l3 6v3h-3m-4-9l1 9M6 12h13"/>
             </svg>
-            Vehicles
+            Inventory Kendaraan
         </a>
 
         <a href="/transactions" class="nav-item">
             <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01m-.01 4h.01"/>
             </svg>
-            Transactions
+            Transaksi
         </a>
 
         <a href="/sparepart" class="nav-item active">
@@ -388,14 +430,6 @@
             Sparepart
         </a>
 
-        <div class="nav-label" style="margin-top:6px;">Sistem</div>
-
-        <a href="/audit-log" class="nav-item">
-            <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            Audit Log
-        </a>
     </nav>
 </aside>
 
@@ -666,6 +700,24 @@
 
     </main>
 </div>
+
+<script>
+function toggleUserMenu() {
+    const dd = document.getElementById('userDropdown');
+    const ar = document.getElementById('userArrow');
+    dd.classList.toggle('open');
+    if (ar) ar.textContent = dd.classList.contains('open') ? '▲' : '▼';
+}
+document.addEventListener('click', function(e) {
+    const block = document.getElementById('userBlock');
+    const dd    = document.getElementById('userDropdown');
+    if (block && dd && !block.contains(e.target) && !dd.contains(e.target)) {
+        dd.classList.remove('open');
+        const ar = document.getElementById('userArrow');
+        if (ar) ar.textContent = '▼';
+    }
+});
+</script>
 
 </body>
 </html>
