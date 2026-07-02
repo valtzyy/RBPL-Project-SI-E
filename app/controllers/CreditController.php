@@ -23,6 +23,15 @@ class CreditController extends Controller
 
     public function __construct()
     {
+        $uri = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
+        if (str_contains($uri, '/credit/decision')) {
+            Auth::requireRole(['Finance']);
+        } elseif (str_contains($uri, '/credit/status')) {
+            Auth::requireRole(['Sales', 'Finance']);
+        } else {
+            Auth::requireRole(['Sales']);
+        }
+
         // Inisialisasi 1x per request — hemat memory vs bikin ulang tiap method
         $this->cloudinary       = new CloudinaryService();
         $this->leasing          = new LeasingService();
@@ -492,7 +501,7 @@ class CreditController extends Controller
         ]);
     }
 
-        public function createForm()
+    public function createForm()
     {
         // 1. Login check
         /*if (!isset($_SESSION['user_id'])) {
@@ -523,6 +532,68 @@ class CreditController extends Controller
         // 3. Render view
         $this->view('credit/create', [
             'transactions' => $transactions,
+        ]);
+    }
+
+    public function uploadSearch()
+    {
+        // 1. Login check
+        /*if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);s
+            exit('Login dulu');
+        }*/
+
+        // 2. Ambil transaksi yang eligible: payment_type=kredit, status=process
+        $keyword = trim($_GET['q'] ?? '');
+
+        $applications = $this->applicationModel->findForUploadSearch($keyword);
+
+        $this->view('credit/upload-search', [
+            'keyword' => $keyword,
+            'applications' => $applications
+        ]);
+    }
+
+    public function statusView()
+    {
+        $applicationId = (int) ($_GET['app'] ?? 0);
+
+        if ($applicationId <= 0) {
+            http_response_code(400);
+            exit('Application ID tidak valid');
+        }
+
+        $application = $this->applicationModel->find($applicationId);
+
+        if (!$application) {
+            http_response_code(404);
+            exit('Pengajuan tidak ditemukan');
+        }
+
+        $documents = $this->documentModel
+            ->findByApplication($applicationId);
+
+        $decision = $this->decisionModel
+            ->findByApplication($applicationId);
+
+        $this->view('credit/status', [
+            'application' => $application,
+            'documents'   => $documents,
+            'decision'    => $decision
+        ]);
+    }
+
+    public function tracking()
+    {
+        $keyword = trim($_GET['q'] ?? '');
+
+        $applications =
+            $this->applicationModel
+                ->findForTracking($keyword);
+
+        $this->view('credit/tracking', [
+            'keyword'     => $keyword,
+            'applications'=> $applications
         ]);
     }
 }

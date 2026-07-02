@@ -174,6 +174,15 @@
       transition: all 0.2s ease;
     }
 
+    .select-input {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
     .form-input:focus {
       outline: none;
       border-color: #94a3b8;
@@ -420,6 +429,30 @@
       <!-- Login Form -->
       <form method="POST" action="/login">
         
+        <!-- Mock Role Picker -->
+        <div class="form-group">
+          <div class="form-label-row">
+            <label for="mock_role" class="form-label">LOGIN MOCK SEBAGAI ROLE</label>
+          </div>
+          <div class="input-wrapper">
+            <select id="mock_role" name="mock_role" class="form-input select-input">
+              <option value="">-- Gunakan Login Database Asli --</option>
+              <option value="admin">Admin</option>
+              <option value="sales">Sales</option>
+              <option value="finance">Finance</option>
+              <option value="service advisor">Service Advisor</option>
+              <option value="mekanik">Mekanik</option>
+              <option value="manager">Manager</option>
+            </select>
+            <svg class="input-icon left-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+        </div>
+
         <!-- Input Username/Email -->
         <div class="form-group">
           <div class="form-label-row">
@@ -539,6 +572,22 @@
         } else {
           eyeIcon.innerHTML = eyeClosedPath;
           toggleBtn.setAttribute('aria-label', 'Sembunyikan Password');
+        }
+      });
+
+      // Autofill on Mock Role Change
+      const mockRoleSelect = document.getElementById('mock_role');
+      const identityInput = document.getElementById('identity');
+      const passwordInputEl = document.getElementById('password');
+
+      mockRoleSelect.addEventListener('change', function () {
+        const val = this.value;
+        if (val) {
+          identityInput.value = val.replace(/\s+/g, '_') + '@dealerlink.com';
+          passwordInputEl.value = 'password';
+        } else {
+          identityInput.value = '';
+          passwordInputEl.value = '';
         }
       });
     });

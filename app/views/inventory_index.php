@@ -1,21 +1,17 @@
-<!doctype html>
-<html lang="id">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= htmlspecialchars($title ?? 'Inventaris Kendaraan') ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-<main class="container py-4">
+<!-- Bootstrap 5 CSS for vehicle inventory component -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="container-fluid py-2">
+    <!-- Header Row -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
-            <h1 class="h3 mb-1">Inventaris Kendaraan</h1>
-            <p class="text-muted mb-0">Master data kendaraan, stok, dan status ketersediaan.</p>
+            <h1 class="h3 mb-1">🚗 Inventaris Kendaraan</h1>
+            <p class="text-muted mb-0">Master data kendaraan, stok, dan status ketersediaan di dealer.</p>
         </div>
-        <a class="btn btn-primary" href="/inventory/create">Tambah Kendaraan</a>
+        <a class="btn btn-primary" href="/inventory/create">➕ Tambah Kendaraan Baru</a>
     </div>
 
+    <!-- Alert Notifications -->
     <?php if (!empty($success)): ?>
         <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
     <?php endif; ?>
@@ -24,14 +20,15 @@
         <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
+    <!-- Filter Card -->
     <form class="card card-body mb-4" method="get" action="/inventory">
         <div class="row g-3">
             <div class="col-md-3">
-                <label class="form-label" for="keyword">Search</label>
-                <input class="form-control" id="keyword" name="keyword" value="<?= htmlspecialchars($filters['keyword'] ?? '') ?>" placeholder="Brand, type, rangka">
+                <label class="form-label" for="keyword">Pencarian Kata Kunci</label>
+                <input class="form-control" id="keyword" name="keyword" value="<?= htmlspecialchars($filters['keyword'] ?? '') ?>" placeholder="Cari Brand, tipe, atau no rangka...">
             </div>
             <div class="col-md-2">
-                <label class="form-label" for="brand">Brand</label>
+                <label class="form-label" for="brand">Merek (Brand)</label>
                 <select class="form-select" id="brand" name="brand">
                     <option value="">Semua</option>
                     <?php foreach (($options['brands'] ?? []) as $brand): ?>
@@ -42,7 +39,7 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label" for="type">Type</label>
+                <label class="form-label" for="type">Tipe</label>
                 <select class="form-select" id="type" name="type">
                     <option value="">Semua</option>
                     <?php foreach (($options['types'] ?? []) as $type): ?>
@@ -53,7 +50,7 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label" for="color">Color</label>
+                <label class="form-label" for="color">Warna</label>
                 <select class="form-select" id="color" name="color">
                     <option value="">Semua</option>
                     <?php foreach (($options['colors'] ?? []) as $color): ?>
@@ -64,7 +61,7 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label" for="status">Status</label>
+                <label class="form-label" for="status">Status Unit</label>
                 <select class="form-select" id="status" name="status">
                     <option value="">Semua</option>
                     <?php foreach (($options['statuses'] ?? []) as $status): ?>
@@ -80,19 +77,20 @@
         </div>
     </form>
 
+    <!-- Data Table Card -->
     <div class="card">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                 <tr>
-                    <th>Brand</th>
-                    <th>Type</th>
-                    <th>Color</th>
+                    <th>Merek</th>
+                    <th>Tipe</th>
+                    <th>Warna</th>
                     <th>Nomor Rangka</th>
                     <th>Nomor Mesin</th>
                     <th class="text-end">Harga</th>
                     <th class="text-center">Stok</th>
-                    <th class="text-center">Min</th>
+                    <th class="text-center">Min Stok</th>
                     <th>Status</th>
                     <th class="text-end">Aksi</th>
                 </tr>
@@ -100,14 +98,14 @@
                 <tbody>
                 <?php foreach (($inventory['data'] ?? []) as $vehicle): ?>
                     <tr>
-                        <td><?= htmlspecialchars($vehicle['brand']) ?></td>
+                        <td><strong><?= htmlspecialchars($vehicle['brand']) ?></strong></td>
                         <td><?= htmlspecialchars($vehicle['type']) ?></td>
                         <td><?= htmlspecialchars($vehicle['color']) ?></td>
-                        <td><?= htmlspecialchars($vehicle['chassis_number']) ?></td>
-                        <td><?= htmlspecialchars($vehicle['engine_number']) ?></td>
-                        <td class="text-end">Rp <?= number_format((float) $vehicle['price'], 0, ',', '.') ?></td>
+                        <td><code><?= htmlspecialchars($vehicle['chassis_number']) ?></code></td>
+                        <td><code><?= htmlspecialchars($vehicle['engine_number']) ?></code></td>
+                        <td class="text-end" style="font-weight: 600;">Rp <?= number_format((float) $vehicle['price'], 0, ',', '.') ?></td>
                         <td class="text-center"><?= (int) $vehicle['stock_quantity'] ?></td>
-                        <td class="text-center"><?= (int) $vehicle['min_stock'] ?></td>
+                        <td class="text-center text-muted"><?= (int) $vehicle['min_stock'] ?></td>
                         <td>
                             <span class="badge text-bg-<?= $vehicle['status'] === 'sold' ? 'secondary' : ($vehicle['status'] === 'held' ? 'warning' : 'success') ?>">
                                 <?= htmlspecialchars(ucfirst($vehicle['status'])) ?>
@@ -115,7 +113,7 @@
                         </td>
                         <td class="text-end">
                             <a class="btn btn-sm btn-outline-secondary" href="/inventory/edit/<?= (int) $vehicle['id'] ?>">Edit</a>
-                            <form class="d-inline" method="post" action="/inventory/delete/<?= (int) $vehicle['id'] ?>" onsubmit="return confirm('Hapus kendaraan ini?')">
+                            <form class="d-inline" method="post" action="/inventory/delete/<?= (int) $vehicle['id'] ?>" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kendaraan ini dari inventaris?')">
                                 <button class="btn btn-sm btn-outline-danger" type="submit">Hapus</button>
                             </form>
                         </td>
@@ -124,7 +122,7 @@
 
                 <?php if (empty($inventory['data'])): ?>
                     <tr>
-                        <td class="text-center text-muted py-4" colspan="10">Data kendaraan belum tersedia.</td>
+                        <td class="text-center text-muted py-4" colspan="10">Data kendaraan tidak ditemukan atau belum tersedia.</td>
                     </tr>
                 <?php endif; ?>
                 </tbody>
@@ -132,6 +130,7 @@
         </div>
     </div>
 
+    <!-- Pagination -->
     <?php
     $page = (int) ($inventory['page'] ?? 1);
     $lastPage = (int) ($inventory['last_page'] ?? 1);
@@ -149,6 +148,4 @@
             </ul>
         </nav>
     <?php endif; ?>
-</main>
-</body>
-</html>
+</div>

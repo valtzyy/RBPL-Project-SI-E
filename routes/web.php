@@ -8,6 +8,9 @@
 $router->get('/',               'HomeController@index');
 $router->get('/reports',   'ReportController@testingPage');
 $router->get('/reports/audit-log', 'ReportController@auditLogPage');
+$router->get('/reports/:type', 'ReportController@report');
+$router->get('/reports/:type/export/pdf', 'ReportController@exportPdf');
+$router->get('/reports/:type/export/excel', 'ReportController@exportExcel');
 
 // Halaman Utama / Dashboard
 $router->get('/',               'HomeController@index');
@@ -26,24 +29,7 @@ $router->get('/admin/users/create',         'UserManagementController@create');
 $router->post('/admin/users',               'UserManagementController@store');
 $router->get('/admin/users/:id/edit',       'UserManagementController@edit');
 $router->post('/admin/users/:id',           'UserManagementController@update');
-$router->post('/admin/users/:id/deactivate','UserManagementController@deactivate');
-
-// Profile
-$router->get('/change-password',  'ProfileController@editPassword');
-$router->post('/change-password', 'ProfileController@updatePassword');
-
-// Auth
-$router->get('/login',       'AuthController@showLogin');
-$router->post('/login',      'AuthController@login');
-$router->post('/logout',     'AuthController@logout');
-
-// Admin - Manajemen Akun
-$router->get('/admin/users',                'UserManagementController@index');
-$router->get('/admin/users/create',         'UserManagementController@create');
-$router->post('/admin/users',               'UserManagementController@store');
-$router->get('/admin/users/:id/edit',       'UserManagementController@edit');
-$router->post('/admin/users/:id',           'UserManagementController@update');
-$router->post('/admin/users/:id/deactivate','UserManagementController@deactivate');
+$router->post('/admin/users/:id/deactivate', 'UserManagementController@deactivate');
 
 // Profile
 $router->get('/change-password',  'ProfileController@editPassword');
@@ -70,29 +56,20 @@ $router->post('/credit/upload', 'CreditController@uploadDocument');
 // 3. Ini rute untuk MENAMPILKAN FORM UPLOAD DOKUMEN (PBI-8.2)
 $router->get('/credit/upload', 'CreditController@uploadForm');
 
-// 4. Ini rute untuk MELIHAT STATUS PENGAJUAN KREDIT
-// 3. Ini rute untuk MENAMPILKAN FORM UPLOAD DOKUMEN (PBI-8.2)
-$router->get('/credit/upload', 'CreditController@uploadForm');
-
 // 4. Ini rute untuk MENAMPILKAN FORM CREATE PENGAJUAN KREDIT (PBI-8.4 UI)
 $router->get('/credit/create-form', 'CreditController@createForm');
 
-// 5. Ini rute untuk MELIHAT STATUS PENGAJUAN KREDIT
-// Digunakan untuk menampilkan status submitted/approved/rejected
-$router->get('/credit/status', 'CreditController@status');
+// 5. Ini rute untuk LIST PENGAJUAN KREDIT YANG BELUM UPLOAD DOKUMEN
+$router->get('/credit/upload-search', 'CreditController@uploadSearch');
 
-// 5. Ini rute untuk MENYIMPAN KEPUTUSAN KREDIT
-// 6. Ini rute untuk MENYIMPAN KEPUTUSAN KREDIT
+// 6. Ini rute untuk MELIHAT STATUS PENGAJUAN KREDIT
+// Digunakan untuk menampilkan status submitted/approved/rejected
+$router->get('/credit/tracking', 'CreditController@tracking');
+
+// 7. Ini rute untuk MENYIMPAN KEPUTUSAN KREDIT
 // Digunakan untuk approve atau reject pengajuan kredit
 // Data akan disimpan ke tabel credit_decisions dan memperbarui status pada credit_applications
 $router->post('/credit/decision', 'CreditController@decision');
-
-// 6. SPRINT 8 - PBI-8.7: Follow-up setelah kredit ditolak
-// 7. SPRINT 8 - PBI-8.7: Follow-up setelah kredit ditolak
-// Customer pilih: batal / ganti tunai / re-apply ke leasing lain
-$router->post('/credit/cancel',      'CreditController@cancel');
-$router->post('/credit/switch-cash', 'CreditController@switchToCash');
-$router->post('/credit/reapply',     'CreditController@reapply');
 
 //PENGADAAN KENDARAAN
 //PBI 2.3
@@ -139,6 +116,16 @@ $router->get('/customers/create',       'CustomerController@create');
 $router->post('/customers',             'CustomerController@store');
 $router->get('/customers/:id',          'CustomerController@show');
 
+// Sprint 5 - Pembayaran Tunai (Admin & Finance)
+$router->get('/admin/transactions',             'AdminTransactionController@index');
+$router->get('/admin/transactions/:id',         'AdminTransactionController@show');
+$router->get('/admin/transactions/:id/receipt', 'AdminTransactionController@downloadReceipt');
+
+// Sprint 5 - Finance: Verifikasi Pembayaran
+$router->get('/finance/payments',                'FinanceController@index');
+$router->get('/finance/payments/:id',            'FinanceController@show');
+$router->post('/finance/payments/:id/verify',    'FinanceController@verifyPayment');
+
 // Booking Servis - Sprint 10
 $router->get('/booking',             'BookingController@index');
 $router->get('/booking/check-slot',  'BookingController@checkSlot');
@@ -168,13 +155,13 @@ $router->post('/mechanic/work-order/log/store', 'WorkOrderController@storeLog');
 // ============================================================
 
 // sprint-12 pembayaran services
-$router->get('/service-billing',      'ServiceBillingController@index');
-$router->get('/service-billing/:plateNumber', 'ServiceBillingController@findByPlateNumber');
-$router->get('/service-billing/detail/:plateNumber',  'ServiceBillingController@detail');
-$router->get('/service-billing/detail/history/:plateNumber',  'ServiceBillingController@detailLog');
+$router->get('/service-billing',             'ServiceBillingController@index');
+$router->get('/service-billing/:id',         'ServiceBillingController@detail');
+$router->get('/service-billing/:id/history', 'ServiceBillingController@detailLog');
 
 $router->get('/kasir/dashboard', 'KasirController@dashboard');
 $router->get('/kasir/nota',      'KasirController@nota');
+$router->get('/kasir/nota/cetak/:id', 'KasirController@cetakNota');
 $router->get('/kasir/riwayat',   'KasirController@riwayat');
 
 
@@ -296,3 +283,18 @@ $router->post('/booking/confirm',    'BookingController@confirm');
 $router->post('/booking/reject',     'BookingController@reject');
 $router->get('/booking/inspect/:id', 'BookingController@inspectForm');
 $router->post('/booking/inspect/:id/convert', 'BookingController@convertToWorkOrder');
+
+// ============================================================
+// RUTE SPRINT 9 (Kredit & Leasing - Approval & Uang Muka)
+// ============================================================
+$router->get('/form-approval',     'WebhookApprovalController@showForm');
+$router->post('/webhook-approval', 'WebhookApprovalController@process');
+
+$router->get('/verifikasi-dp',     'VerifikasiDpController@showForm');
+$router->post('/verifikasi-dp',    'VerifikasiDpController@process');
+$router->get('/kasir/riwayat/logs/:id', 'KasirController@historicalLogs');
+
+$router->get('/api/dashboard/today',           'DashboardController@apiToday');
+$router->get('/api/dashboard/accumulated',     'DashboardController@apiAccumulated');
+$router->get('/api/dashboard/stock-allocation','DashboardController@apiStockAllocation');
+$router->get('/dashboard/export',              'DashboardController@exportCsv');

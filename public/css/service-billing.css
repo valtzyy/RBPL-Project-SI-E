@@ -670,3 +670,54 @@ body { font-family: 'Segoe UI', system-ui, Arial, sans-serif; background: var(--
     border-radius: 20px;
     line-height: 1.4;
 }
+
+/* ===================== HISTORY & TIMELINE ===================== */
+.history-header {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+/* Item history */
+.history-item {
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+}
+
+.history-item strong {
+    margin-bottom: 5px;
+}
+
+.history-description {
+    margin-top: 20px;
+}
+
+.timeline {
+    margin-top: 20px;
+}
+
+.timeline-item {
+    border-left: 4px solid #2563eb;
+    padding-left: 16px;
+    margin-bottom: 20px;
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.timeline-status {
+    font-weight: 600;
+}
+
+.timeline-date {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.timeline-notes {
+    line-height: 1.5;
+}

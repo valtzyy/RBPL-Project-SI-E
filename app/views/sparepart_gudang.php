@@ -1,94 +1,462 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+/**
+ * View: sparepart_gudang.php
+ * DealerLink – Gudang Suku Cadang (Partial View)
+ *
+ * Variabel dari Controller:
+ *   $title        – string
+ *   $lowStock     – array suku cadang stok kritis  [id, name, stock, min_stock, sku]
+ *   $allSpareparts– array semua suku cadang        [id, name, stock]
+ *   $allPO        – array log purchase order       [id, supplier_name, sparepart_name, quantity, status, created_at]
+ */
+?>
+<style>
+    :root {
+        --accent:             #6c63ff;
+        --accent-soft:        rgba(108,99,255,.12);
+        --card-bg:            #ffffff;
+        --card-border:        #e8eaf0;
+        --card-shadow:        0 1px 4px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+        --text-primary:       #1a202c;
+        --text-secondary:     #4a5568;
+        --text-muted:         #718096;
+        --green:              #38a169;
+        --orange:             #dd6b20;
+        --red:                #e53e3e;
+        --blue:               #3182ce;
+        --purple:             #805ad5;
+        --radius:             10px;
+    }
 
-<head>
-    <title>Gudang Logistik & Suku Cadang</title>
-</head>
+    .spareparts-page {
+        font-family: 'Inter', sans-serif;
+    }
 
-<body style="font-family: Arial, sans-serif; margin: 30px;">
-    <h1>📦 Manajemen Suku Cadang Dealer (Sprint 14)</h1>
-    <a href="/dashboard">📊 Pergi ke Dashboard Eksekutif</a>
-    <hr>
+    /* ─── BUTTONS ─────────────────────────────── */
+    .btn-sp {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 7px 14px; border-radius: 7px; font-size: 12.5px;
+        font-weight: 600; cursor: pointer; text-decoration: none;
+        border: none; transition: opacity .15s, transform .1s;
+        font-family: inherit;
+    }
+    .btn-sp:active { transform: scale(.97); }
+    .btn-sp-primary { background: var(--accent); color: #fff; }
+    .btn-sp-primary:hover { opacity: .88; }
+    .btn-sp-outline {
+        background: transparent; color: var(--text-secondary);
+        border: 1.5px solid var(--card-border);
+    }
+    .btn-sp-outline:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-sp-danger { background: #fed7d7; color: #9b2335; }
+    .btn-sp-danger:hover { background: #feb2b2; }
+    .btn-sp-success-solid { background: var(--green); color: #fff; }
+    .btn-sp-success-solid:hover { opacity: .88; }
 
-    <div style="background-color: #ffcccc; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
-        <h3 style="color: #cc0000; margin-top: 0;">⚠️ Peringatan Stok Kritis (Low-Level Stock)</h3>
-        <ul>
-            <?php if (empty($lowStock)): ?>
-                <li>Semua stok suku cadang dalam kondisi aman.</li>
-            <?php else: ?>
-                <?php foreach ($lowStock as $ls): ?>
-                    <li><strong><?= $ls['name'] ?></strong> - Sisa Stok: <?= $ls['stock'] ?> (Batas Min: <?= $ls['min_stock'] ?>)</li>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </ul>
+    /* ─── CARDS ───────────────────────────────── */
+    .card-sp {
+        background: var(--card-bg); border: 1px solid var(--card-border);
+        border-radius: var(--radius); box-shadow: var(--card-shadow);
+        padding: 20px 22px;
+        margin-bottom: 24px;
+    }
+
+    .card-sp-title {
+        font-size: 13px; font-weight: 700; color: var(--text-primary);
+        display: flex; align-items: center; gap: 7px;
+        margin-bottom: 16px; padding-bottom: 12px;
+        border-bottom: 1px solid var(--card-border);
+    }
+
+    /* ─── ALERT ───────────────────────────────── */
+    .alert-critical {
+        background: #fff8f0; border-left: 4px solid var(--orange);
+        border-radius: 0 var(--radius) var(--radius) 0;
+        padding: 14px 18px; margin-bottom: 22px;
+    }
+    .alert-safe {
+        background: #f0fff4; border-left: 4px solid var(--green);
+        border-radius: 0 var(--radius) var(--radius) 0;
+        padding: 14px 18px; margin-bottom: 22px;
+    }
+    .alert-title {
+        font-size: 13px; font-weight: 700; margin-bottom: 8px;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .alert-critical .alert-title { color: var(--orange); }
+    .alert-safe    .alert-title { color: var(--green); }
+    .alert-critical ul { padding-left: 18px; color: #7b341e; font-size: 13px; }
+    .alert-safe p { font-size: 13px; color: #276749; }
+    .alert-critical li, .alert-safe li { margin-bottom: 4px; }
+
+    /* ─── STOCK STAT STRIP ────────────────────── */
+    .stat-strip {
+        display: grid; grid-template-columns: repeat(3, 1fr);
+        gap: 16px; margin-bottom: 22px;
+    }
+    @media (max-width: 800px) { .stat-strip { grid-template-columns: 1fr; } }
+
+    .stat-card {
+        background: var(--card-bg); border: 1px solid var(--card-border);
+        border-radius: var(--radius); box-shadow: var(--card-shadow);
+        padding: 16px 20px; border-top: 3px solid var(--accent);
+    }
+    .stat-card.c-red    { border-top-color: var(--red); }
+    .stat-card.c-green  { border-top-color: var(--green); }
+    .stat-card.c-orange { border-top-color: var(--orange); }
+
+    .stat-label {
+        font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .7px; color: var(--text-muted); margin-bottom: 6px;
+    }
+    .stat-value {
+        font-size: 26px; font-weight: 700; line-height: 1.1;
+    }
+    .stat-card.c-red    .stat-value { color: var(--red); }
+    .stat-card.c-green  .stat-value { color: var(--green); }
+    .stat-card.c-orange .stat-value { color: var(--orange); }
+
+    /* ─── SECTION HEADER ──────────────────────── */
+    .section-header {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        margin-bottom: 14px;
+    }
+    .section-title {
+        font-size: 13.5px; font-weight: 700; color: var(--text-primary);
+        display: flex; align-items: center; gap: 7px;
+    }
+    .section-sub { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ─── FORM ────────────────────────────────── */
+    .form-grid-sp {
+        display: grid; grid-template-columns: 1fr 1fr 1fr auto;
+        gap: 14px; align-items: end;
+    }
+    @media (max-width: 900px) { .form-grid-sp { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 560px) { .form-grid-sp { grid-template-columns: 1fr; } }
+
+    .form-group-sp { display: flex; flex-direction: column; gap: 5px; }
+
+    .form-label-sp {
+        font-size: 12px; font-weight: 600; color: var(--text-secondary);
+        text-transform: uppercase; letter-spacing: .5px;
+    }
+
+    .form-control-sp {
+        padding: 9px 12px; border: 1.5px solid var(--card-border);
+        border-radius: 7px; font-size: 13.5px; font-family: inherit;
+        color: var(--text-primary); background: var(--card-bg);
+        transition: border-color .15s, box-shadow .15s; outline: none;
+        width: 100%;
+    }
+    .form-control-sp:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    /* ─── TABLE ───────────────────────────────── */
+    .table-wrap { overflow-x: auto; }
+
+    .data-table {
+        width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .data-table th {
+        padding: 9px 14px; text-align: left; background: #f7f8fb;
+        color: var(--text-secondary); font-weight: 600;
+        font-size: 11.5px; text-transform: uppercase; letter-spacing: .4px;
+        border-bottom: 1px solid var(--card-border);
+        white-space: nowrap;
+    }
+    .data-table td {
+        padding: 11px 14px; border-bottom: 1px solid #f2f4f8;
+        vertical-align: middle;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: #fafbff; }
+
+    .empty-row td {
+        text-align: center; color: var(--text-muted);
+        padding: 32px 0 !important; font-size: 13px;
+    }
+
+    /* ─── BADGES ──────────────────────────────── */
+    .badge-sp {
+        display: inline-block; padding: 3px 10px; border-radius: 20px;
+        font-size: 11px; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .3px; white-space: nowrap;
+    }
+    .badge-sp-pending  { background: #fef3c7; color: #92400e; }
+    .badge-sp-received { background: #d1fae5; color: #065f46; }
+    .badge-sp-cancelled{ background: #fee2e2; color: #991b1b; }
+
+    .stock-critical { color: var(--red); font-weight: 700; }
+    .stock-low      { color: var(--orange); font-weight: 600; }
+    .stock-ok       { color: var(--green); }
+
+    .po-id {
+        font-family: 'Courier New', monospace;
+        font-size: 12px; font-weight: 700;
+        color: var(--accent); background: var(--accent-soft);
+        padding: 2px 8px; border-radius: 4px;
+    }
+</style>
+
+<div class="spareparts-page">
+
+    <!-- Header Row -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+        <div>
+            <h2 style="font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">⚙️ Gudang Logistik &amp; Suku Cadang</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Kelola Purchase Order &amp; pantau stok inventaris</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <a href="/dashboard" class="btn-sp btn-sp-outline">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                Dashboard Utama
+            </a>
+        </div>
     </div>
 
-    <h3>📝 Form Cetak Surat Pesanan (PO) Baru</h3>
-    <form action="/sparepart/po/store" method="POST" style="background: #f4f4f4; padding: 15px; border-radius: 5px;">
-        <label>Nama Supplier:</label><br>
-        <input type="text" name="supplier_name" required style="width: 300px; padding: 5px;"><br><br>
-
-        <label>Pilih Suku Cadang:</label><br>
-        <select name="sparepart_id" required style="width: 308px; padding: 5px;">
-            <?php foreach (($allSpareparts ?? []) as $sp): ?>
-                <?php if (isset($sp['id'], $sp['name'], $sp['stock'])): ?>
-                    <option value="<?= $sp['id'] ?>">
-                        <?= htmlspecialchars($sp['name']) ?> (Stok saat ini: <?= $sp['stock'] ?>)
-                    </option>
-                <?php endif; ?>
+    <!-- ── ALERT STOK KRITIS ─────────────────────── -->
+    <?php if (!empty($lowStock)): ?>
+    <div class="alert-critical">
+        <div class="alert-title">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            </svg>
+            <?= count($lowStock) ?> Suku Cadang dalam Kondisi Stok Kritis
+        </div>
+        <ul>
+            <?php foreach ($lowStock as $ls): ?>
+                <li>
+                    <strong><?= htmlspecialchars($ls['name']) ?></strong>
+                    <?php if (!empty($ls['sku'])): ?>
+                        <span style="color:#a0522d;font-size:11px;">(SKU: <?= htmlspecialchars($ls['sku']) ?>)</span>
+                    <?php endif; ?>
+                    — Sisa stok: <strong><?= $ls['stock'] ?> pcs</strong>,
+                    batas minimum: <?= $ls['min_stock'] ?> pcs.
+                </li>
             <?php endforeach; ?>
-        </select><br><br>
+        </ul>
+    </div>
+    <?php else: ?>
+    <div class="alert-safe">
+        <div class="alert-title">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Semua Stok Suku Cadang Dalam Kondisi Aman
+        </div>
+        <p>Tidak ada item yang berada di bawah batas minimum stok saat ini.</p>
+    </div>
+    <?php endif; ?>
 
-        <label>Kuantitas Pesanan:</label><br>
-        <input type="number" name="quantity" min="1" value="1" required style="width: 300px; padding: 5px;"><br><br>
+    <!-- ── STAT STRIP ─────────────────────────────── -->
+    <?php
+        $totalItems   = count($allSpareparts ?? []);
+        $kritisCount  = count($lowStock ?? []);
+        $amanCount    = $totalItems - $kritisCount;
+        $pendingPO    = count(array_filter($allPO ?? [], fn($p) => strtolower($p['status'] ?? '') === 'pending'));
+    ?>
+    <div class="stat-strip">
+        <div class="stat-card c-green">
+            <div class="stat-label">Total Jenis Suku Cadang</div>
+            <div class="stat-value"><?= $totalItems ?> <span style="font-size:14px;font-weight:500;color:var(--text-muted)">item</span></div>
+        </div>
+        <div class="stat-card c-red">
+            <div class="stat-label">Stok Kritis / Menipis</div>
+            <div class="stat-value"><?= $kritisCount ?> <span style="font-size:14px;font-weight:500;color:var(--text-muted)">item</span></div>
+        </div>
+        <div class="stat-card c-orange">
+            <div class="stat-label">PO Menunggu Penerimaan</div>
+            <div class="stat-value">
+                <?= $pendingPO ?>
+                <span style="font-size:14px;font-weight:500;color:var(--text-muted)">PO</span>
+            </div>
+        </div>
+    </div>
 
-        <button type="submit" style="background: green; color: white; padding: 8px 15px; border: none; cursor: pointer;">Kirim & Cetak Surat Pesanan</button>
-    </form>
+    <!-- ── FORM CETAK PO ──────────────────────────── -->
+    <?php if (Auth::role() === 'Admin'): ?>
+    <div class="section-header" style="margin-bottom:14px;">
+        <div>
+            <div class="section-title">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M12 4v16m8-8H4"/>
+                </svg>
+                Buat Purchase Order (PO) Baru
+            </div>
+            <div class="section-sub">Isi form berikut untuk mencetak surat pesanan ke supplier</div>
+        </div>
+    </div>
 
-    <h3>📋 Log Riwayat Dokumen Purchase Order (PO)</h3>
-    <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
-        <tr style="background-color: #eee;">
-            <th>ID PO</th>
-            <th>Nama Supplier</th>
-            <th>Suku Cadang</th>
-            <th>Jumlah Pesanan</th>
-            <th>Status</th>
-            <th>Aksi Penyesuaian Gudang</th>
-        </tr>
-        <?php if (empty($allPO)): ?>
-            <tr>
-                <td colspan="6" style="text-align: center; padding: 15px; color: #777;">
-                    Belum ada log riwayat dokumen Purchase Order (PO).
-                </td>
-            </tr>
-        <?php else: ?>
-            <?php foreach (($allPO ?? []) as $po): ?>
-                <tr>
-                    <td>PO-00<?= $po['id'] ?? '?' ?></td>
-                    <td><?= htmlspecialchars($po['supplier_name'] ?? '-') ?></td>
+    <div class="card-sp">
+        <div class="card-sp-title">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            Form Surat Pesanan
+        </div>
 
-                    <td><?= htmlspecialchars($po['sparepart_name'] ?? $po['name'] ?? '-') ?></td>
+        <form action="/sparepart/po/store" method="POST">
+            <div class="form-grid-sp">
+                <!-- Nama Supplier -->
+                <div class="form-group-sp">
+                    <label class="form-label-sp" for="supplier_name">Nama Supplier</label>
+                    <input
+                        type="text"
+                        id="supplier_name"
+                        name="supplier_name"
+                        class="form-control-sp"
+                        placeholder="cth. PT Mitra Otomotif"
+                        required
+                    >
+                </div>
 
-                    <td><?= $po['quantity'] ?? 0 ?> Pcs</td>
-                    <td>
-                        <?php
-                        $status = strtolower($po['status'] ?? 'pending');
-                        ?>
-                        <span style="padding: 3px 8px; border-radius: 3px; background: <?= $status === 'received' ? '#d4edda' : '#fff3cd' ?>">
-                            <?= strtoupper($status) ?>
-                        </span>
-                    </td>
-                    <td>
-                        <?php if ($status === 'pending'): ?>
-                            <a href="/sparepart/po/terima?id=<?= $po['id'] ?? '' ?>" onclick="return confirm('Apakah item kiriman supplier ini sudah sampai dan sesuai?')" style="background: blue; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px; font-size: 12px;">✔️ Terima & Tambah Inventaris</a>
-                        <?php else: ?>
-                            <span style="color: green; font-size: 12px;">Selesai di-restock</span>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        <?php endif; ?>
-    </table>
-</body>
+                <!-- Pilih Suku Cadang -->
+                <div class="form-group-sp">
+                    <label class="form-label-sp" for="sparepart_id">Suku Cadang</label>
+                    <select id="sparepart_id" name="sparepart_id" class="form-control-sp" required>
+                        <option value="" disabled selected>— Pilih suku cadang —</option>
+                        <?php foreach (($allSpareparts ?? []) as $sp): ?>
+                            <?php if (isset($sp['id'], $sp['name'], $sp['stock'])): ?>
+                                <option value="<?= $sp['id'] ?>"
+                                    <?php if (isset($sp['min_stock']) && $sp['stock'] <= $sp['min_stock']): ?>
+                                        style="color:#c53030;font-weight:600;"
+                                    <?php endif; ?>
+                                >
+                                    <?= htmlspecialchars($sp['name']) ?>
+                                    (Stok: <?= $sp['stock'] ?> pcs<?= isset($sp['min_stock']) && $sp['stock'] <= $sp['min_stock'] ? ' ⚠' : '' ?>)
+                                </option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
 
-</html>
+                <!-- Kuantitas -->
+                <div class="form-group-sp">
+                    <label class="form-label-sp" for="quantity">Kuantitas Pesanan</label>
+                    <input
+                        type="number"
+                        id="quantity"
+                        name="quantity"
+                        class="form-control-sp"
+                        min="1"
+                        value="1"
+                        placeholder="Jumlah (pcs)"
+                        required
+                    >
+                </div>
+
+                <!-- Submit -->
+                <div class="form-group-sp">
+                    <label class="form-label-sp" style="opacity:0">Aksi</label>
+                    <button type="submit" class="btn-sp btn-sp-primary" style="height:40px;width:100%;justify-content:center;">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M17 17H17.01M17 3H5a2 2 0 00-2 2v4a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2zM3 13h.01M7 13h.01M11 13H3a2 2 0 00-2 2v4a2 2 0 002 2h18a2 2 0 002-2v-4a2 2 0 00-2-2h-8z"/>
+                        </svg>
+                        Kirim &amp; Cetak PO
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <?php endif; ?>
+
+    <!-- ── LOG PURCHASE ORDER ─────────────────────── -->
+    <div class="section-header">
+        <div>
+            <div class="section-title">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                Log Riwayat Purchase Order
+            </div>
+            <div class="section-sub">
+                <?= count($allPO ?? []) ?> total PO tercatat &nbsp;·&nbsp;
+                <?= $pendingPO ?> menunggu konfirmasi penerimaan
+            </div>
+        </div>
+    </div>
+
+    <div class="card-sp">
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Kode PO</th>
+                        <th>Supplier</th>
+                        <th>Suku Cadang</th>
+                        <th>Jumlah</th>
+                        <th>Tanggal</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($allPO)): ?>
+                        <tr class="empty-row">
+                            <td colspan="7">
+                                <svg width="32" height="32" fill="none" stroke="#cbd5e0" stroke-width="1.5" viewBox="0 0 24 24" style="display:block;margin:0 auto 8px;">
+                                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                Belum ada log riwayat Purchase Order.
+                            </td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($allPO as $po): ?>
+                            <?php
+                                $status     = strtolower($po['status'] ?? 'pending');
+                                $badgeClass = match($status) {
+                                    'received'  => 'badge-sp-received',
+                                    'cancelled' => 'badge-sp-cancelled',
+                                    default     => 'badge-sp-pending',
+                                };
+                                $poId       = str_pad($po['id'] ?? '0', 5, '0', STR_PAD_LEFT);
+                                $spareName  = htmlspecialchars($po['sparepart_name'] ?? $po['name'] ?? '–');
+                                $supplier   = htmlspecialchars($po['supplier_name'] ?? '–');
+                                $qty        = $po['quantity'] ?? 0;
+                                $createdAt  = isset($po['created_at'])
+                                    ? date('d M Y', strtotime($po['created_at']))
+                                    : '–';
+                            ?>
+                            <tr>
+                                <td><span class="po-id">PO-<?= $poId ?></span></td>
+                                <td><?= $supplier ?></td>
+                                <td><?= $spareName ?></td>
+                                <td style="font-weight:600"><?= $qty ?> pcs</td>
+                                <td style="color:var(--text-muted);font-size:12px"><?= $createdAt ?></td>
+                                <td><span class="badge-sp <?= $badgeClass ?>"><?= strtoupper($status) ?></span></td>
+                                <td>
+                                    <?php if ($status === 'pending'): ?>
+                                        <a href="/sparepart/po/terima?id=<?= $po['id'] ?? '' ?>"
+                                           onclick="return confirm('Konfirmasi: item kiriman supplier sudah diterima dan sesuai?')"
+                                           class="btn-sp btn-sp-success-solid"
+                                           style="font-size:12px;padding:5px 12px;">
+                                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                                <path d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            Terima &amp; Restock
+                                        </a>
+                                    <?php elseif ($status === 'received'): ?>
+                                        <span style="color:var(--green);font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px;">
+                                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            Selesai di-restock
+                                        </span>
+                                    <?php else: ?>
+                                        <span style="color:var(--red);font-size:12px;">Dibatalkan</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

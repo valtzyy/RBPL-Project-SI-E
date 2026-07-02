@@ -1,4 +1,13 @@
 <?php
+// app/controllers/ServiceBillingController.php
+//
+// CATATAN PERBAIKAN (Juni 2026):
+// Versi sebelumnya routing pakai parameter :plateNumber, padahal kolom itu
+// tidak ada di database manapun (lihat catatan di ServiceBilling.php).
+// JS pemanggil di app/views/service-billing/index.php justru mengirim
+// work_order_id (angka) via fetch('/service-billing/' + workOrderId).
+// Controller ini disesuaikan agar konsisten dengan apa yang benar-benar
+// dikirim oleh frontend dan apa yang benar-benar ada di database.
 
 require_once ROOT_PATH . '/core/Controller.php';
 require_once ROOT_PATH . '/app/models/ServiceBilling.php';
@@ -9,6 +18,7 @@ class ServiceBillingController extends Controller
 
     public function __construct()
     {
+        Auth::requireRole(['Finance']);
         $this->model = new ServiceBilling();
     }
 

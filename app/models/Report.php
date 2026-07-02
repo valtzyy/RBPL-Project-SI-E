@@ -79,6 +79,16 @@ class Report extends Model
             $params[] = $filters['vehicle_type'];
         }
 
+        if (($filters['sales'] ?? '') !== '') {
+            if (is_numeric($filters['sales'])) {
+                $sql .= " AND st.sales_user_id = ? ";
+                $params[] = (int) $filters['sales'];
+            } else {
+                $sql .= " AND u.name LIKE ? ";
+                $params[] = '%' . $filters['sales'] . '%';
+            }
+        }
+
         $sql .= " ORDER BY st.created_at DESC, st.id DESC ";
 
         return $this->fetchAll($sql, $params);

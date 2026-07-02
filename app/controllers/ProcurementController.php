@@ -7,15 +7,25 @@ require_once ROOT_PATH . '/app/models/procurementreceipt.php';
 
 class ProcurementController extends Controller
 {
-public function index()
-{
-    $vehicle = new Vehicle();
+    public function __construct()
+    {
+        Auth::requireRole(['Admin']);
+    }
+
+    public function index()
+    {
+     $procurementModel = new Procurement();
+        $procurements = $procurementModel->all();
+         $vehicle = new Vehicle();
 
     $vehicles = $vehicle->all();
 
-    $this->view('Procurement/form', [
-        'vehicles' => $vehicles
-    ]);
+
+        $this->view('Procurement/index', [
+            'procurements' => $procurements,
+            'vehicles' => $vehicles
+        ]);
+  
 }
 
     public function store()
@@ -162,17 +172,31 @@ public function index()
                 'status' => 'received'
             ]);
 
+            // 6. Update stok kendaraan di table vehicles_stock berdasarkan quantity actual (received)
+            foreach ($receivedQuantities as $vehicleId => $receivedQty) {
+                $vehicleId = (int)$vehicleId;
+                $receivedQty = (int)$receivedQty;
+
+                // Cari apakah sudah ada stock untuk vehicle_id ini di table vehicles_stock
+                $stmtStock = $db->prepare("SELECT id, quantity FROM vehicles_stock WHERE vehicle_id = ?");
+                $stmtStock->execute([$vehicleId]);
+                $stock = $stmtStock->fetch(PDO::FETCH_ASSOC);
+
+                if ($stock) {
+                    // Tambahkan quantity yang diterima ke stok yang sudah ada
+                    $newQty = $stock['quantity'] + $receivedQty;
+                    $stmtUpdateStock = $db->prepare("UPDATE vehicles_stock SET quantity = ? WHERE id = ?");
+                    $stmtUpdateStock->execute([$newQty, $stock['id']]);
+                } else {
+                    // Jika belum ada stok terdaftar, buat record baru
+                    $stmtInsertStock = $db->prepare("INSERT INTO vehicles_stock (vehicle_id, quantity, min_stock) VALUES (?, ?, 0)");
+                    $stmtInsertStock->execute([$vehicleId, $receivedQty]);
+                }
+            }
+
             $db->commit();
-
-            // Tampilkan hasil pencocokan ke user
-            $statusMsg = $isMatch 
-                ? "Penerimaan berhasil dicatat! Semua unit SESUAI dengan pesanan." 
-                : "Penerimaan berhasil dicatat DENGAN KETIDAKSESUAIAN (Silakan periksa log inspection_result).";
-                
-            echo "<h3>Hasil Validasi Penerimaan:</h3>";
-            echo "<p>{$statusMsg}</p>";
-            echo "<p><a href='/'>Kembali ke Beranda</a></p>";
-
+header("Location: /procurement");
+            exit();
         } catch (Exception $e) {
             if ($db->inTransaction()) {
                 $db->rollBack();
@@ -182,13 +206,5 @@ public function index()
         }
     }
 
-    public function receiptList()
-    {
-        $procurementModel = new Procurement();
-        $procurements = $procurementModel->all();
-
-        $this->view('Procurement/receipt_list', [
-            'procurements' => $procurements
-        ]);
-    }
+    
 }

@@ -35,7 +35,6 @@ class VehicleInventoryService
     public function create(array $input): int
     {
         $data = $this->validateVehicleData($input);
-        $quantity = $this->nonNegativeInt($input['quantity'] ?? 0, 'Quantity stok');
         $minStock = $this->nonNegativeInt($input['min_stock'] ?? 0, 'Minimum stok');
 
         if ($this->vehicleModel->chassisNumberExists($data['chassis_number'])) {
@@ -53,7 +52,7 @@ class VehicleInventoryService
 
         try {
             $vehicleId = $this->vehicleModel->create($data);
-            $this->stockService->updateStockSettings($vehicleId, $quantity, $minStock);
+            $this->stockService->updateMinimumStock($vehicleId, $minStock);
             if ($ownsTransaction) {
                 $this->db->commit();
             }
@@ -71,7 +70,6 @@ class VehicleInventoryService
     {
         $this->find($id);
         $data = $this->validateVehicleData($input);
-        $quantity = $this->nonNegativeInt($input['quantity'] ?? 0, 'Quantity stok');
         $minStock = $this->nonNegativeInt($input['min_stock'] ?? 0, 'Minimum stok');
 
         if ($this->vehicleModel->chassisNumberExists($data['chassis_number'], $id)) {
@@ -89,7 +87,7 @@ class VehicleInventoryService
 
         try {
             $this->vehicleModel->update($id, $data);
-            $this->stockService->updateStockSettings($id, $quantity, $minStock);
+            $this->stockService->updateMinimumStock($id, $minStock);
             if ($ownsTransaction) {
                 $this->db->commit();
             }

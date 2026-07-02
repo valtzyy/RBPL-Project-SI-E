@@ -172,10 +172,11 @@
                     </div>
 
                     <div class="action-buttons">
-
-                        <button type="button" class="btn btn-outline">
+                        <a href="/">
+                            <button type="button" class="btn btn-outline">
                             Simpan Draft
-                        </button>
+                            </button>
+                        </a>
 
                         <button type="submit" class="btn btn-primary">
                             Submit Verifikasi

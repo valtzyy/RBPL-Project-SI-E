@@ -14,6 +14,27 @@ class ServiceCustomer extends Model {
         return $stmt->fetch() ?: null;
     }
 
+    // Cari service_customer by plate_number
+    public function findByPlate(string $plate): ?array {
+        $stmt = $this->db->prepare("
+            SELECT * FROM {$this->table}
+            WHERE plate_number = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$plate]);
+        return $stmt->fetch() ?: null;
+    }
+
+    // Update customer_id untuk service_customer tertentu (e.g. transfer kepemilikan/update owner)
+    public function updateCustomer(int $id, int $customerId): bool {
+        $stmt = $this->db->prepare("
+            UPDATE {$this->table}
+            SET customer_id = ?
+            WHERE id = ?
+        ");
+        return $stmt->execute([$customerId, $id]);
+    }
+
     // Buat service_customer baru
     public function registerCustomer(int $customerId, string $plate): int {
         $stmt = $this->db->prepare("

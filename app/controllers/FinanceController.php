@@ -4,10 +4,17 @@ require_once ROOT_PATH . '/app/models/SalesTransaction.php';
 
 class FinanceController extends Controller
 {
+    private SalesTransaction $transactionModel;
+
     /**
      * GET /finance/payments
      * Halaman antrean verifikasi pembayaran (khusus role Finance)
      */
+    public function __construct() {
+        Auth::requireRole(['Finance']);
+        $this->transactionModel = new SalesTransaction();
+    }
+
     public function index(): void
     {
         $transactions = (new SalesTransaction())->getAllWithPaymentDetails();
@@ -68,7 +75,7 @@ class FinanceController extends Controller
         $transactionModel = new SalesTransaction();
         
         // Ambil user ID dari session (finance yang sedang login)
-        $userId = Auth::id() ?? ($_SESSION['user_id'] ?? 1);
+        $userId = Auth::id() ?? ($_SESSION['user_id'] ?? 3);
 
         try {
             // Update payment status to verified

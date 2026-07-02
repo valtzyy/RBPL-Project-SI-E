@@ -25,9 +25,9 @@ class CloudinaryService
         $cfg = require $cfgPath;
 
         // Validasi isi array config agar tidak memicu "Undefined array key" (Eror 500)
-        $cloudName = $cfg['cloud_name'] ?? $_ENV['CLOUDINARY_CLOUD_NAME'] ?? null;
-        $apiKey    = $cfg['api_key'] ?? $_ENV['CLOUDINARY_API_KEY'] ?? null;
-        $apiSecret = $cfg['api_secret'] ?? $_ENV['CLOUDINARY_API_SECRET'] ?? null;
+        $cloudName = $cfg['cloud_name'] ?? env('CLOUDINARY_CLOUD_NAME');
+        $apiKey    = $cfg['api_key'] ?? env('CLOUDINARY_API_KEY');
+        $apiSecret = $cfg['api_secret'] ?? env('CLOUDINARY_API_SECRET');
 
         // Set credentials ke Configuration Cloudinary
         $this->config = Configuration::instance([

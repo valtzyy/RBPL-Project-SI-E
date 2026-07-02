@@ -36,21 +36,18 @@
         placeholder="nama@dealerlink.com"
     >
 </div>
-
-<?php if (empty($user)): ?>
-    <div class="form-group">
-        <label for="password" class="form-label">Password Awal</label>
-        <input
-            type="password"
-            id="password"
-            name="password"
-            required
-            minlength="8"
-            class="form-input"
-            placeholder="Minimal 8 karakter"
-        >
-    </div>
-<?php endif; ?>
+<div class="form-group">
+    <label for="password" class="form-label"><?= empty($user) ? 'Password Awal' : 'Ganti Password (Kosongkan jika tidak diubah)' ?></label>
+    <input
+        type="password"
+        id="password"
+        name="password"
+        <?= empty($user) ? 'required' : '' ?>
+        minlength="8"
+        class="form-input"
+        placeholder="<?= empty($user) ? 'Minimal 8 karakter' : 'Kosongkan jika tidak ingin mengubah' ?>"
+    >
+</div>
 
 <div class="form-group">
     <label for="role_id" class="form-label">Hak Akses (Role)</label>

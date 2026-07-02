@@ -70,7 +70,7 @@ class AuditLog extends Model
 
     private function resolveUserId(): ?int
     {
-        $sessionUserId = $_SESSION['user_id'] ?? null;
+        $sessionUserId = $_SESSION['user']['id'] ?? $_SESSION['user_id'] ?? null;
         if (is_numeric($sessionUserId) && (int) $sessionUserId > 0) {
             return (int) $sessionUserId;
         }

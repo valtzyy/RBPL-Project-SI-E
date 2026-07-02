@@ -57,27 +57,21 @@ class SalesTransactionController extends Controller
             // Set kendaraan jadi held
             (new Vehicle())->setHeld((int) $vehicleId);
 
-            // Jika bukan kredit (paymentType != 1), maka otomatis buat tagihan payment
-            if ($paymentType !== 1) {
-                require_once ROOT_PATH . '/app/models/Payment.php';
-                $vehicle = (new Vehicle())->find((int) $vehicleId);
-                $vehiclePrice = $vehicle['price'] ?? 0;
+            
+            require_once ROOT_PATH . '/app/models/Payment.php';
+            $vehicle = (new Vehicle())->find((int) $vehicleId);
+            $vehiclePrice = $vehicle['price'] ?? 0;
 
-                (new Payment())->create([
-                    'transaction_id' => $transactionId,
-                    'amount'         => $vehiclePrice,
-                    'payment_date'   => date('Y-m-d'),
-                    'status'         => 'pending'
-                ]);
+            (new Payment())->create([
+                'transaction_id' => $transactionId,
+                'amount'         => $vehiclePrice,
+                'payment_date'   => date('Y-m-d'),
+                'status'         => 'pending'
+            ]);
 
-                // Redirect ke daftar transaksi admin/kasir/sales
-                $this->redirect('/transactions?success=1');
-            } else {
-                // Jika kredit
-                $this->redirect('/credit-applications/create?vehicle_id=' . $vehicleId);
-            }
-
-        } catch (Exception $e) {
+            $this->redirect('/transactions');
+        }
+        catch (Exception $e) {
             echo '<pre>ERROR: ' . $e->getMessage() . '</pre>';
         }
     }
@@ -94,6 +88,7 @@ class SalesTransactionController extends Controller
 
     public function __construct()
     {
+        Auth::requireRole(['Sales']);
         $this->salesTransactionService = new SalesTransactionService();
     }
 

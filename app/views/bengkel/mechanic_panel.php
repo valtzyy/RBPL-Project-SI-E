@@ -311,7 +311,7 @@
                         <th style="width: 12%;">Status Utama</th>
                         <th style="width: 13%;">Status Pengerjaan</th>
                         <th style="width: 20%;">Ubah Status Utama</th>
-                        <th style="width: 15%; text-align: center;">Log Pengerjaan</th>
+                        <th style="width: 15%; text-align: center;">Aksi Pengerjaan</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -412,9 +412,14 @@
                                 </form>
                             </td>
                             <td style="text-align: center;">
-                                <a href="/mechanic/work-order/log?id=<?= $order['id'] ?>" class="btn-log">
-                                    <span>📝</span> Log & Catatan
-                                </a>
+                                <div style="display: flex; flex-direction: column; gap: 6px; align-items: center;">
+                                    <a href="/mechanic/work-order/log?id=<?= $order['id'] ?>" class="btn-log" style="width: 100%; justify-content: center; box-sizing: border-box;">
+                                        <span>📝</span> Log &amp; Catatan
+                                    </a>
+                                    <a href="/mekanik/work-order?id=<?= $order['id'] ?>" class="btn-log" style="width: 100%; justify-content: center; box-sizing: border-box; background-color: #f0fdf4; color: #166534; border-color: #bbf7d0;">
+                                        <span>⚙️</span> Request Part
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     <?php endforeach; ?>
