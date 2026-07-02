@@ -34,19 +34,17 @@
     >
 </div>
 
-<?php if (empty($user)): ?>
-    <div style="margin-bottom: 12px;">
-        <label for="password">Password Awal</label><br>
-        <input
-            type="password"
-            id="password"
-            name="password"
-            required
-            minlength="8"
-            style="width: 100%; padding: 8px;"
-        >
-    </div>
-<?php endif; ?>
+<div style="margin-bottom: 12px;">
+    <label for="password"><?= empty($user) ? 'Password Awal' : 'Ganti Password (Kosongkan jika tidak diubah)' ?></label><br>
+    <input
+        type="password"
+        id="password"
+        name="password"
+        <?= empty($user) ? 'required' : '' ?>
+        minlength="8"
+        style="width: 100%; padding: 8px;"
+    >
+</div>
 
 <div style="margin-bottom: 12px;">
     <label for="role_id">Role</label><br>

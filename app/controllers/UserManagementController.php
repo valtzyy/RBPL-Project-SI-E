@@ -88,6 +88,9 @@ class UserManagementController extends Controller
 
         try {
             $this->userModel->updateAccount((int) $id, $data);
+            if (isset($data['password'])) {
+                $this->userModel->updatePassword((int) $id, $data['password']);
+            }
             $_SESSION['flash_success'] = 'Akun berhasil diperbarui.';
             $this->redirect('/admin/users');
         } catch (PDOException $e) {
@@ -137,6 +140,13 @@ class UserManagementController extends Controller
             return null;
         }
 
+        if (!$isCreate && $password !== '') {
+            if (strlen($password) < 8) {
+                $_SESSION['flash_error'] = 'Password baru minimal 8 karakter.';
+                return null;
+            }
+        }
+
         $data = [
             'name' => $name,
             'username' => $username,
@@ -146,6 +156,8 @@ class UserManagementController extends Controller
         ];
 
         if ($isCreate) {
+            $data['password'] = $password;
+        } elseif ($password !== '') {
             $data['password'] = $password;
         }
 
