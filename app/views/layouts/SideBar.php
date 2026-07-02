@@ -16,23 +16,24 @@ if ($user && !empty($user['name'])) {
 }
 
 $menus = [
-  'admin sistem' => [
-    ['label' => 'Manajemen Akun', 'url' => '/admin/users', 'icon' => '👥'],
-    ['label' => 'Stok Kendaraan', 'url' => '/inventory', 'icon' => '🚗'],
-    ['label' => 'Pengadaan', 'url' => '/procurement', 'icon' => '📥'],
-  ],
-  'sales' => [
-    ['label' => 'Manajemen Pelanggan', 'url' => '/customers', 'icon' => '👥'],
-    ['label' => 'Penjualan Mobil', 'url' => '/transactions', 'icon' => '🚗'],
-    ['label' => 'Pengajuan Kredit', 'icon' => '💳', 'submenu' => [
-      ['label' => 'Buat Pengajuan', 'url' => '/credit/create-form'],
-      ['label' => 'Upload Syarat', 'url' => '/credit/upload'],
-      ['label' => 'Status Pengajuan', 'url' => '/credit/status'],
-    ]],
-    ['label' => 'Jadwal Serah Terima', 'url' => '/delivery', 'icon' => '🚚'],
-    ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => '🗂️'],
-  ],
-  'finance' => [
+    'admin' => [
+        ['label' => 'Manajemen Akun', 'url' => '/admin/users', 'icon' => '👥'],
+        ['label' => 'Stok Kendaraan', 'url' => '/inventory', 'icon' => '🚗'],
+        ['label' => 'Pengadaan', 'url' => '/procurement', 'icon' => '📥'],
+        // ['label' => 'Pengadaan', 'url' => '/procurement/receipt', 'icon' => '📥'],
+    ],
+    'sales' => [
+        ['label' => 'Manajemen Pelanggan', 'url' => '/customers', 'icon' => '👥'],
+        ['label' => 'Penjualan Mobil', 'url' => '/transactions', 'icon' => '🚗'],
+        ['label' => 'Pengajuan Kredit', 'icon' => '💳', 'submenu' => [
+            ['label' => 'Buat Pengajuan', 'url' => '/credit/create-form'],
+            ['label' => 'Upload Syarat', 'url' => '/credit/upload-search'],
+            ['label' => 'Status Pengajuan', 'url' => '/credit/tracking'],
+        ]],
+        ['label' => 'Jadwal Serah Terima', 'url' => '/delivery', 'icon' => '🚚'],
+        ['label' => 'Riwayat Transaksi', 'url' => '/history', 'icon' => '🗂️'],
+    ],
+    'finance' => [
         ['label' => 'Dashboard', 'url' => '/dashboard', 'icon' => '📊'],
         ['label' => 'Verifikasi Pembayaran', 'url' => '/finance/payments', 'icon' => '✅'],
         ['label' => 'Kredit & Leasing', 'icon' => '💳', 'submenu' => [
