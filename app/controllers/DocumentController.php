@@ -97,11 +97,11 @@ class DocumentController
      */
     private function getAivenConnection()
     {
-        $host = $_ENV['DB_HOST'];
-        $port = $_ENV['DB_PORT'];
-        $dbname = $_ENV['DB_NAME'];
-        $username = $_ENV['DB_USER'];
-        $password = $_ENV['DB_PASS'];
+        $host = envRequired('DB_HOST');
+        $port = envRequired('DB_PORT');
+        $dbname = envRequired('DB_NAME');
+        $username = envRequired('DB_USER');
+        $password = envRequired('DB_PASS');
 
         // Pastikan SSL diaktifkan jika Aiven lu mewajibkannya
         $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
