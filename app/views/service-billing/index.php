@@ -169,7 +169,7 @@ function rupiah(float $n): string
 
             <div class="dl-modal__foot">
                 <button class="dl-btn dl-btn--ghost" onclick="tutupModal()">Tutup</button>
-                <a id="btnCetakNota" href="#" class="dl-btn dl-btn--primary">
+                <a id="btnCetakNota" href="#" target="_blank" class="dl-btn dl-btn--primary" style="display:none;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <polyline points="6 9 6 2 18 2 18 9" />
                         <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
@@ -177,6 +177,9 @@ function rupiah(float $n): string
                     </svg>
                     Cetak Nota
                 </a>
+                <span id="infoBelumLunas" style="display:none;font-size:12.5px;color:var(--clr-text-muted);align-self:center;">
+                    Nota hanya bisa dicetak setelah tagihan lunas.
+                </span>
             </div>
 
         </div>
@@ -243,8 +246,20 @@ function rupiah(float $n): string
             const subtitle = document.getElementById('modalSubtitle');
             subtitle.textContent = d.brand + ' ' + d.vehicle_type + ' — ' + d.customer_name;
 
-            // Update link cetak nota
-            document.getElementById('btnCetakNota').href = '/service-billing/' + d.work_order_id + '/nota';
+            // Update link & visibilitas tombol cetak nota
+            // Pakai endpoint yang sama dengan menu Nota Servis (KasirController@cetakNota)
+            // — bukan endpoint baru, supaya logika nota tidak terduplikasi di 2 tempat.
+            const btnCetak = document.getElementById('btnCetakNota');
+            const infoBelum = document.getElementById('infoBelumLunas');
+
+            if (d.wo_status === 'done') {
+                btnCetak.href = '/kasir/nota/cetak/' + d.work_order_id;
+                btnCetak.style.display = '';
+                infoBelum.style.display = 'none';
+            } else {
+                btnCetak.style.display = 'none';
+                infoBelum.style.display = '';
+            }
 
             // Helper format Rupiah (di JS)
             function rp(n) {

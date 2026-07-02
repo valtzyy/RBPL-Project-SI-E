@@ -26,7 +26,7 @@ $router->get('/admin/users/create',         'UserManagementController@create');
 $router->post('/admin/users',               'UserManagementController@store');
 $router->get('/admin/users/:id/edit',       'UserManagementController@edit');
 $router->post('/admin/users/:id',           'UserManagementController@update');
-$router->post('/admin/users/:id/deactivate','UserManagementController@deactivate');
+$router->post('/admin/users/:id/deactivate', 'UserManagementController@deactivate');
 
 // Profile
 $router->get('/change-password',  'ProfileController@editPassword');
@@ -152,13 +152,13 @@ $router->post('/mechanic/work-order/log/store', 'WorkOrderController@storeLog');
 // ============================================================
 
 // sprint-12 pembayaran services
-$router->get('/service-billing',      'ServiceBillingController@index');
-$router->get('/service-billing/:plateNumber', 'ServiceBillingController@findByPlateNumber');
-$router->get('/service-billing/detail/:plateNumber',  'ServiceBillingController@detail');
-$router->get('/service-billing/detail/history/:plateNumber',  'ServiceBillingController@detailLog');
+$router->get('/service-billing',             'ServiceBillingController@index');
+$router->get('/service-billing/:id',         'ServiceBillingController@detail');
+$router->get('/service-billing/:id/history', 'ServiceBillingController@detailLog');
 
 $router->get('/kasir/dashboard', 'KasirController@dashboard');
 $router->get('/kasir/nota',      'KasirController@nota');
+$router->get('/kasir/nota/cetak/:id', 'KasirController@cetakNota');
 $router->get('/kasir/riwayat',   'KasirController@riwayat');
 
 
@@ -289,3 +289,4 @@ $router->post('/webhook-approval', 'WebhookApprovalController@process');
 
 $router->get('/verifikasi-dp',     'VerifikasiDpController@showForm');
 $router->post('/verifikasi-dp',    'VerifikasiDpController@process');
+$router->get('/kasir/riwayat/logs/:id', 'KasirController@historicalLogs');
