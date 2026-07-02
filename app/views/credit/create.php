@@ -55,7 +55,7 @@
             </div>
 
             <div class="action-buttons">
-                <a href="/credit/status" class="btn btn-outline">Batal</a>
+                <a href="/" class="btn btn-outline">Batal</a>
                 <button type="submit" class="btn btn-primary">Buat Pengajuan</button>
             </div>
 

@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (response.ok) {
                 alert('Pengajuan berhasil dibuat! ID: ' + (result.application_id || ''));
-                window.location.href = '/credit/upload?app=' + result.application_id;
+                window.location.href = '/credit/upload-search'
             } else {
                 alert('Gagal: ' + (result.message || response.statusText));
             }
