@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\Bzip2Exception;
@@ -19,6 +20,10 @@ function bzclose($bz): void
     if ($safeResult === false) {
         throw Bzip2Exception::createFromPhpError();
     }
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/bzip2.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -95,3 +100,4 @@ function bzwrite($bz, string $data, int $length = null): int
     }
     return $safeResult;
 }
+

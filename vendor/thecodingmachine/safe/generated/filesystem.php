@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\FilesystemException;
@@ -23,6 +24,10 @@ function chgrp(string $filename, $group): void
     if ($safeResult === false) {
         throw FilesystemException::createFromPhpError();
     }
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/filesystem.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -1603,3 +1608,4 @@ function unlink(string $filename, $context = null): void
         throw FilesystemException::createFromPhpError();
     }
 }
+

@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\RrdException;
@@ -20,6 +21,10 @@ function rrd_create(string $filename, array $options): void
     if ($safeResult === false) {
         throw RrdException::createFromPhpError();
     }
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/rrd.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -188,3 +193,4 @@ function rrd_xport(array $options): array
     }
     return $safeResult;
 }
+

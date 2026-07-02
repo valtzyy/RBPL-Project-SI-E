@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\ExecException;
@@ -40,6 +41,10 @@ function exec(string $command, ?array &$output = null, ?int &$result_code = null
         throw ExecException::createFromPhpError();
     }
     return $safeResult;
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/exec.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -152,3 +157,4 @@ function system(string $command, ?int &$result_code = null): string
     }
     return $safeResult;
 }
+

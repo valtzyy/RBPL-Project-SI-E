@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\StreamException;
@@ -20,6 +21,10 @@ function stream_context_set_params($context, array $params): void
     if ($safeResult === false) {
         throw StreamException::createFromPhpError();
     }
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/stream.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -762,3 +767,4 @@ function stream_wrapper_unregister(string $protocol): void
         throw StreamException::createFromPhpError();
     }
 }
+

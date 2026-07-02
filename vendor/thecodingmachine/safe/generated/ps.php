@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\PsException;
@@ -32,6 +33,10 @@ function ps_add_launchlink($psdoc, float $llx, float $lly, float $urx, float $ur
     if ($safeResult === false) {
         throw PsException::createFromPhpError();
     }
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/ps.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -1810,3 +1815,4 @@ function ps_translate($psdoc, float $x, float $y): void
         throw PsException::createFromPhpError();
     }
 }
+

@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\YamlException;
@@ -35,6 +36,10 @@ function yaml_parse_file(string $filename, int $pos = 0, ?int &$ndocs = null, ar
         throw YamlException::createFromPhpError();
     }
     return $safeResult;
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/yaml.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -107,3 +112,4 @@ function yaml_parse(string $input, int $pos = 0, ?int &$ndocs = null, array $cal
     }
     return $safeResult;
 }
+

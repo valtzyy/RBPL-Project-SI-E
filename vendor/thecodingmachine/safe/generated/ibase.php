@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\IbaseException;
@@ -19,6 +20,10 @@ function fbird_blob_cancel($blob_handle): void
     if ($safeResult === false) {
         throw IbaseException::createFromPhpError();
     }
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/ibase.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -659,3 +664,4 @@ function ibase_service_detach($service_handle): void
         throw IbaseException::createFromPhpError();
     }
 }
+

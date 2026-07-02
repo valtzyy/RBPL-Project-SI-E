@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\UrlException;
@@ -25,6 +26,10 @@ function base64_decode(string $string, bool $strict = false): string
         throw UrlException::createFromPhpError();
     }
     return $safeResult;
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/url.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -202,3 +207,4 @@ function parse_url(string $url, int $component = -1)
     }
     return $safeResult;
 }
+

@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\Ssh2Exception;
@@ -20,6 +21,10 @@ function ssh2_auth_agent($session, string $username): void
     if ($safeResult === false) {
         throw Ssh2Exception::createFromPhpError();
     }
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/ssh2.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -747,3 +752,4 @@ function ssh2_shell($session, string $term_type = "vanilla", array $env = null, 
     }
     return $safeResult;
 }
+

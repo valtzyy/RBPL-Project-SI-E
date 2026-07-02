@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\PcntlException;
@@ -33,6 +34,10 @@ function pcntl_getpriority(int $process_id = null, int $mode = PRIO_PROCESS): in
         throw PcntlException::createFromPhpError();
     }
     return $safeResult;
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/pcntl.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -253,3 +258,4 @@ function pcntl_sigwaitinfo(array $signals, ?array &$info = []): int
     }
     return $safeResult;
 }
+

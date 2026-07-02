@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\UopzException;
@@ -19,6 +20,10 @@ function uopz_extend(string $class, string $parent): void
     if ($safeResult === false) {
         throw UopzException::createFromPhpError();
     }
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/uopz.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -38,3 +43,4 @@ function uopz_implement(string $class, string $interface): void
         throw UopzException::createFromPhpError();
     }
 }
+

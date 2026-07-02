@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\InfoException;
@@ -118,6 +119,10 @@ function assert_options(int $what, $value = null)
         throw InfoException::createFromPhpError();
     }
     return $safeResult;
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/info.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -688,3 +693,4 @@ function set_time_limit(int $seconds): void
         throw InfoException::createFromPhpError();
     }
 }
+

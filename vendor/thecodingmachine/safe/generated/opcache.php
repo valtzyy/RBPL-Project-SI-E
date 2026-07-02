@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\OpcacheException;
@@ -20,6 +21,10 @@ function opcache_compile_file(string $filename): void
     if ($safeResult === false) {
         throw OpcacheException::createFromPhpError();
     }
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/opcache.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -41,3 +46,4 @@ function opcache_get_status(bool $include_scripts = true): array
     }
     return $safeResult;
 }
+

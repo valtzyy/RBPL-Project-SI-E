@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\EioException;
@@ -27,6 +28,10 @@ function eio_busy(int $delay, int $pri = EIO_PRI_DEFAULT, callable $callback = n
         throw EioException::createFromPhpError();
     }
     return $safeResult;
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/eio.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -2122,3 +2127,4 @@ function eio_write($fd, string $str, int $length = 0, int $offset = 0, int $pri 
     }
     return $safeResult;
 }
+

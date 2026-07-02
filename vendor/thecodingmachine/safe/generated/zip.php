@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\ZipException;
@@ -18,6 +19,10 @@ function zip_entry_close($zip_entry): void
     if ($safeResult === false) {
         throw ZipException::createFromPhpError();
     }
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/zip.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -142,3 +147,4 @@ function zip_entry_read($zip_entry, int $len = 1024): string
     }
     return $safeResult;
 }
+

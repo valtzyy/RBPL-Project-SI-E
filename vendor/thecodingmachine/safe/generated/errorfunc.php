@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\ErrorfuncException;
@@ -79,4 +80,24 @@ function error_log(string $message, int $message_type = 0, string $destination =
     if ($safeResult === false) {
         throw ErrorfuncException::createFromPhpError();
     }
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/errorfunc.php';
 }
+if (str_starts_with(PHP_VERSION, "8.2.")) {
+    require_once __DIR__ . '/8.2/errorfunc.php';
+}
+if (str_starts_with(PHP_VERSION, "8.3.")) {
+    require_once __DIR__ . '/8.2/errorfunc.php';
+}
+if (str_starts_with(PHP_VERSION, "8.4.")) {
+    require_once __DIR__ . '/8.2/errorfunc.php';
+}
+if (str_starts_with(PHP_VERSION, "8.5.")) {
+    require_once __DIR__ . '/8.2/errorfunc.php';
+}
+if (str_starts_with(PHP_VERSION, "8.6.")) {
+    require_once __DIR__ . '/8.2/errorfunc.php';
+>>>>>>> Stashed changes
+}
+

@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\MailparseException;
@@ -38,6 +39,10 @@ function mailparse_msg_extract_part_file($mimemail, $filename, callable $callbac
         throw MailparseException::createFromPhpError();
     }
     return $safeResult;
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/mailparse.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -125,3 +130,4 @@ function mailparse_stream_encode($sourcefp, $destfp, string $encoding): void
         throw MailparseException::createFromPhpError();
     }
 }
+

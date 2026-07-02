@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\ImapException;
@@ -21,6 +22,10 @@ function imap_8bit(string $string): string
         throw ImapException::createFromPhpError();
     }
     return $safeResult;
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/imap.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -2287,3 +2292,4 @@ function imap_utf8_to_mutf7(string $string): string
     }
     return $safeResult;
 }
+

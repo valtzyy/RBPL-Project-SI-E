@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\SwooleException;
@@ -21,6 +22,10 @@ function swoole_async_dns_lookup(string $hostname, callable $callback): void
     if ($safeResult === false) {
         throw SwooleException::createFromPhpError();
     }
+=======
+if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
+    require_once __DIR__ . '/8.1/swoole.php';
+>>>>>>> Stashed changes
 }
 
 
@@ -146,3 +151,4 @@ function swoole_event_write(int $fd, string $data): void
         throw SwooleException::createFromPhpError();
     }
 }
+
