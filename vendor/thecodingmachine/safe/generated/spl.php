@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\SplException;
@@ -23,10 +22,6 @@ function class_implements($object_or_class, bool $autoload = true): array
         throw SplException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/spl.php';
->>>>>>> Stashed changes
 }
 
 
@@ -139,4 +134,3 @@ function spl_autoload_unregister($callback): void
         throw SplException::createFromPhpError();
     }
 }
-

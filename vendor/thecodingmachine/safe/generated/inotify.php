@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\InotifyException;
@@ -21,10 +20,6 @@ function inotify_init()
         throw InotifyException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/inotify.php';
->>>>>>> Stashed changes
 }
 
 
@@ -47,4 +42,3 @@ function inotify_rm_watch($inotify_instance, int $watch_descriptor): void
         throw InotifyException::createFromPhpError();
     }
 }
-

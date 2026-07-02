@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\OpensslException;
@@ -21,10 +20,6 @@ function openssl_cipher_iv_length(string $cipher_algo): int
         throw OpensslException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/openssl.php';
->>>>>>> Stashed changes
 }
 
 
@@ -1487,4 +1482,3 @@ function openssl_x509_read($certificate): \OpenSSLCertificate
     }
     return $safeResult;
 }
-

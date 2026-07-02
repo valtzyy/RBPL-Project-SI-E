@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\LzfException;
@@ -22,10 +21,6 @@ function lzf_compress(string $data): string
         throw LzfException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/lzf.php';
->>>>>>> Stashed changes
 }
 
 
@@ -47,4 +42,3 @@ function lzf_decompress(string $data): string
     }
     return $safeResult;
 }
-

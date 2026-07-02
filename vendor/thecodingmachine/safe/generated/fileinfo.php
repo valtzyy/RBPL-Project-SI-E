@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\FileinfoException;
@@ -19,10 +18,6 @@ function finfo_close($finfo): void
     if ($safeResult === false) {
         throw FileinfoException::createFromPhpError();
     }
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/fileinfo.php';
->>>>>>> Stashed changes
 }
 
 
@@ -82,4 +77,3 @@ function mime_content_type($filename): string
     }
     return $safeResult;
 }
-

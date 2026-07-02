@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\PcreException;
@@ -28,10 +27,6 @@ function preg_grep(string $pattern, array $array, int $flags = 0): array
         throw PcreException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/pcre.php';
->>>>>>> Stashed changes
 }
 
 
@@ -688,4 +683,3 @@ function preg_split(string $pattern, string $subject, ?int $limit = -1, int $fla
     }
     return $safeResult;
 }
-

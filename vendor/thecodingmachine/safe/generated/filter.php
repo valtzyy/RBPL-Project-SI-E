@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\FilterException;
@@ -45,10 +44,6 @@ function filter_input_array(int $type, $options = FILTER_DEFAULT, bool $add_empt
         throw FilterException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/filter.php';
->>>>>>> Stashed changes
 }
 
 
@@ -84,4 +79,3 @@ function filter_var_array(array $array, $options = FILTER_DEFAULT, bool $add_emp
     }
     return $safeResult;
 }
-

@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\ApacheException;
@@ -20,10 +19,6 @@ function apache_get_version(): string
         throw ApacheException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/apache.php';
->>>>>>> Stashed changes
 }
 
 
@@ -202,4 +197,3 @@ function virtual(string $uri): void
         throw ApacheException::createFromPhpError();
     }
 }
-

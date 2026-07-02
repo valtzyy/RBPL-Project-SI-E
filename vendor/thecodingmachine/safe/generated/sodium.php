@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\SodiumException;
@@ -27,10 +26,6 @@ function sodium_crypto_aead_aes256gcm_decrypt(string $ciphertext, string $additi
         throw SodiumException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/sodium.php';
->>>>>>> Stashed changes
 }
 
 
@@ -353,4 +348,3 @@ function sodium_crypto_stream_xchacha20_xor_ic(string $message, string $nonce, i
     }
     return $safeResult;
 }
-

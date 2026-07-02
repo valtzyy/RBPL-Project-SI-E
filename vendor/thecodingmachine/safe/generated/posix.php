@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\PosixException;
@@ -28,10 +27,6 @@ function posix_access(string $filename, int $flags = 0): void
     if ($safeResult === false) {
         throw PosixException::createFromPhpError();
     }
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/posix.php';
->>>>>>> Stashed changes
 }
 
 
@@ -736,4 +731,3 @@ function posix_uname(): array
     }
     return $safeResult;
 }
-

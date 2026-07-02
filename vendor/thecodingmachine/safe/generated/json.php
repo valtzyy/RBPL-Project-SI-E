@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\JsonException;
@@ -56,24 +55,4 @@ function json_encode($value, int $flags = 0, int $depth = 512): string
         throw JsonException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/json.php';
 }
-if (str_starts_with(PHP_VERSION, "8.2.")) {
-    require_once __DIR__ . '/8.1/json.php';
-}
-if (str_starts_with(PHP_VERSION, "8.3.")) {
-    require_once __DIR__ . '/8.1/json.php';
-}
-if (str_starts_with(PHP_VERSION, "8.4.")) {
-    require_once __DIR__ . '/8.1/json.php';
-}
-if (str_starts_with(PHP_VERSION, "8.5.")) {
-    require_once __DIR__ . '/8.1/json.php';
-}
-if (str_starts_with(PHP_VERSION, "8.6.")) {
-    require_once __DIR__ . '/8.1/json.php';
->>>>>>> Stashed changes
-}
-

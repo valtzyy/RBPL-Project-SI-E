@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\XmlException;
@@ -19,10 +18,6 @@ function xml_parser_free($parser): void
     if ($safeResult === false) {
         throw XmlException::createFromPhpError();
     }
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/xml.php';
->>>>>>> Stashed changes
 }
 
 
@@ -719,4 +714,3 @@ function xml_set_unparsed_entity_decl_handler($parser, callable $handler): void
         throw XmlException::createFromPhpError();
     }
 }
-

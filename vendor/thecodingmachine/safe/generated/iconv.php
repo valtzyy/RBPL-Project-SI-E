@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\IconvException;
@@ -32,10 +31,6 @@ function iconv_get_encoding(string $type = "all")
         throw IconvException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/iconv.php';
->>>>>>> Stashed changes
 }
 
 
@@ -98,4 +93,3 @@ function iconv(string $from_encoding, string $to_encoding, string $string): stri
     }
     return $safeResult;
 }
-

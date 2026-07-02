@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\HashException;
@@ -40,10 +39,6 @@ function hash_hkdf(string $algo, string $key, int $length = 0, string $info = ""
         throw HashException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/hash.php';
->>>>>>> Stashed changes
 }
 
 
@@ -68,4 +63,3 @@ function hash_update_file(\HashContext $context, string $filename, ?\HashContext
         throw HashException::createFromPhpError();
     }
 }
-

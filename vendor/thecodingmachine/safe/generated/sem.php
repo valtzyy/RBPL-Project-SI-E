@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\SemException;
@@ -30,10 +29,6 @@ function msg_get_queue(int $key, int $permissions = 0666)
         throw SemException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/sem.php';
->>>>>>> Stashed changes
 }
 
 
@@ -548,4 +543,3 @@ function shm_remove($shm): void
         throw SemException::createFromPhpError();
     }
 }
-

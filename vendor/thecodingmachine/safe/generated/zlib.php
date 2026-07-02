@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\ZlibException;
@@ -31,10 +30,6 @@ function deflate_add($context, string $data, int $flush_mode = ZLIB_SYNC_FLUSH):
         throw ZlibException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/zlib.php';
->>>>>>> Stashed changes
 }
 
 
@@ -724,4 +719,3 @@ function zlib_decode(string $data, int $max_length = 0): string
     }
     return $safeResult;
 }
-

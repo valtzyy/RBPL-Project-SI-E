@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\YazException;
@@ -55,10 +54,6 @@ function yaz_ccl_parse($id, string $query, ?array &$result): void
     if ($safeResult === false) {
         throw YazException::createFromPhpError();
     }
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/yaz.php';
->>>>>>> Stashed changes
 }
 
 
@@ -441,4 +436,3 @@ function yaz_wait(array &$options = null)
     }
     return $safeResult;
 }
-

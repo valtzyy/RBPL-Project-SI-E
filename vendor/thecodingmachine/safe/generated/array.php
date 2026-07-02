@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\ArrayException;
@@ -38,10 +37,6 @@ function array_walk_recursive(&$array, callable $callback, $arg = null): void
     if ($safeResult === false) {
         throw ArrayException::createFromPhpError();
     }
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/array.php';
->>>>>>> Stashed changes
 }
 
 
@@ -62,4 +57,3 @@ function shuffle(array &$array): void
         throw ArrayException::createFromPhpError();
     }
 }
-

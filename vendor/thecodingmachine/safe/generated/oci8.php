@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\Oci8Exception;
@@ -109,10 +108,6 @@ function oci_bind_array_by_name($statement, string $param, array &$var, int $max
     if ($safeResult === false) {
         throw Oci8Exception::createFromPhpError();
     }
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/oci8.php';
->>>>>>> Stashed changes
 }
 
 
@@ -1658,4 +1653,3 @@ function oci_unregister_taf_callback($connection): void
         throw Oci8Exception::createFromPhpError();
     }
 }
-

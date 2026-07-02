@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\XdiffException;
@@ -24,10 +23,6 @@ function xdiff_file_bdiff(string $old_file, string $new_file, string $dest): voi
     if ($safeResult === false) {
         throw XdiffException::createFromPhpError();
     }
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/xdiff.php';
->>>>>>> Stashed changes
 }
 
 
@@ -239,4 +234,3 @@ function xdiff_string_patch(string $str, string $patch, int $flags = null, ?stri
     }
     return $safeResult;
 }
-

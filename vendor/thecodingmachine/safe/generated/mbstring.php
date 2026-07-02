@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\MbstringException;
@@ -32,10 +31,6 @@ function mb_chr(int $codepoint, string $encoding = null): string
         throw MbstringException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/mbstring.php';
->>>>>>> Stashed changes
 }
 
 
@@ -607,4 +602,3 @@ function mb_split(string $pattern, string $string, int $limit = -1): array
     }
     return $safeResult;
 }
-

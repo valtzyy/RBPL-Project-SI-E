@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\StringsException;
@@ -21,10 +20,6 @@ function convert_uudecode(string $string): string
         throw StringsException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/strings.php';
->>>>>>> Stashed changes
 }
 
 
@@ -91,4 +86,3 @@ function sha1_file(string $filename, bool $binary = false): string
     }
     return $safeResult;
 }
-

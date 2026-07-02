@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\CurlException;
@@ -22,10 +21,6 @@ function curl_copy_handle(\CurlHandle $handle): \CurlHandle
         throw CurlException::createFromPhpError($handle);
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/curl.php';
->>>>>>> Stashed changes
 }
 
 
@@ -3316,4 +3311,3 @@ function curl_upkeep(\CurlHandle $handle): void
         throw CurlException::createFromPhpError($handle);
     }
 }
-

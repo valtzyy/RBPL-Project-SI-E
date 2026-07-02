@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\ComException;
@@ -23,10 +22,6 @@ function com_create_guid(): string
         throw ComException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/com.php';
->>>>>>> Stashed changes
 }
 
 
@@ -199,4 +194,3 @@ function variant_round($value, int $decimals)
     }
     return $safeResult;
 }
-

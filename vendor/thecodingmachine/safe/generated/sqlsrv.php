@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\SqlsrvException;
@@ -26,10 +25,6 @@ function sqlsrv_begin_transaction($conn): void
     if ($safeResult === false) {
         throw SqlsrvException::createFromPhpError();
     }
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/sqlsrv.php';
->>>>>>> Stashed changes
 }
 
 
@@ -432,4 +427,3 @@ function sqlsrv_rollback($conn): void
         throw SqlsrvException::createFromPhpError();
     }
 }
-

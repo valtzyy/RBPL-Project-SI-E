@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\NetworkException;
@@ -19,10 +18,6 @@ function closelog(): void
     if ($safeResult === false) {
         throw NetworkException::createFromPhpError();
     }
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/network.php';
->>>>>>> Stashed changes
 }
 
 
@@ -823,4 +818,3 @@ function syslog(int $priority, string $message): void
         throw NetworkException::createFromPhpError();
     }
 }
-

@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\SsdeepException;
@@ -25,10 +24,6 @@ function ssdeep_fuzzy_compare(string $signature1, string $signature2): int
         throw SsdeepException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/ssdeep.php';
->>>>>>> Stashed changes
 }
 
 
@@ -73,4 +68,3 @@ function ssdeep_fuzzy_hash(string $to_hash): string
     }
     return $safeResult;
 }
-

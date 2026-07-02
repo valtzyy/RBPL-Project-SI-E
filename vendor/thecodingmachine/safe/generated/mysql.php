@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\MysqlException;
@@ -34,10 +33,6 @@ function mysql_close($link_identifier = null): void
     if ($safeResult === false) {
         throw MysqlException::createFromPhpError();
     }
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/mysql.php';
->>>>>>> Stashed changes
 }
 
 
@@ -941,4 +936,3 @@ function mysql_unbuffered_query(string $query, $link_identifier = null)
     }
     return $safeResult;
 }
-

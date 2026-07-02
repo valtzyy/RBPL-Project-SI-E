@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< Updated upstream
 namespace Safe;
 
 use Safe\Exceptions\LibxmlException;
@@ -21,10 +20,6 @@ function libxml_get_last_error(): \LibXMLError
         throw LibxmlException::createFromPhpError();
     }
     return $safeResult;
-=======
-if (str_starts_with(PHP_VERSION, "8.1.") || str_starts_with(PHP_VERSION, "8.0.")) {
-    require_once __DIR__ . '/8.1/libxml.php';
->>>>>>> Stashed changes
 }
 
 
@@ -81,4 +76,3 @@ function libxml_set_external_entity_loader(callable $resolver_function): void
         throw LibxmlException::createFromPhpError();
     }
 }
-
