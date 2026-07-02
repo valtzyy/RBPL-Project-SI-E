@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_WARNING);
+ini_set('display_errors', 0);
 define('ROOT_PATH', __DIR__ . '/..');
 
 try {
