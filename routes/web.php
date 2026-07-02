@@ -231,3 +231,11 @@ $router->post('/webhook-approval', 'WebhookApprovalController@process');
 $router->get('/verifikasi-dp',     'VerifikasiDpController@showForm');
 $router->post('/verifikasi-dp',    'VerifikasiDpController@process');
 $router->get('/history',  'TransaksiController@history');
+
+$router->get('/delivery',                      'DeliveryScheduleController@index');
+$router->get('/delivery/create',               'DeliveryScheduleController@create');
+$router->get('/delivery/:id',                  'DeliveryScheduleController@show');
+$router->get('/delivery/:id/document',         'DeliveryScheduleController@document');
+$router->post('/delivery',                     'DeliveryScheduleController@store');
+$router->post('/delivery/:id/confirm',         'DeliveryScheduleController@confirm');
+$router->post('/delivery/:id/fail', 'DeliveryScheduleController@fail');
