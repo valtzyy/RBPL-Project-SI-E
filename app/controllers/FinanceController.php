@@ -68,7 +68,7 @@ class FinanceController extends Controller
         $transactionModel = new SalesTransaction();
         
         // Ambil user ID dari session (finance yang sedang login)
-        $userId = Auth::id() ?? ($_SESSION['user_id'] ?? 1);
+        $userId = Auth::id() ?? ($_SESSION['user_id'] ?? 3);
 
         try {
             // Update payment status to verified
