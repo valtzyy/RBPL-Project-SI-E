@@ -18,15 +18,24 @@ class Router
     {
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
-        $uri = $this->stripBasePath($uri);
 
-        if ($uri !== '/') {
-            $uri = rtrim($uri, '/');
+        // normalisasi path app jika dijalankan di subfolder atau dengan public/index.php
+        $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+        $basePath = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
+
+        if ($basePath !== '' && $basePath !== '/' && str_starts_with($uri, $basePath)) {
+            $uri = substr($uri, strlen($basePath));
+            if ($uri === '') {
+                $uri = '/';
+            }
         }
 
+        // normalize: buang trailing slash
+        $uri = rtrim($uri, '/');
         if ($uri === '') {
             $uri = '/';
         }
+
 
         foreach ($this->routes[$method] ?? [] as $path => $action) {
             $pattern = $this->routePattern($path);
@@ -42,24 +51,6 @@ class Router
 
         http_response_code(404);
         echo '<h1>404 - Halaman tidak ditemukan</h1>';
-    }
-
-    /**
-     * Membuang prefix folder (misal /RBPL_SI-E/RBPL-Project-SI-E/public)
-     * dari URI, supaya route tetap cocok meski project ditaruh di subfolder
-     * (umum terjadi pada setup XAMPP htdocs tanpa virtual host).
-     */
-    private function stripBasePath(string $uri): string
-    {
-        $scriptDir = isset($_SERVER['SCRIPT_NAME'])
-            ? str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']))
-            : '';
-
-        if ($scriptDir !== '' && $scriptDir !== '/' && str_starts_with($uri, $scriptDir)) {
-            $uri = substr($uri, strlen($scriptDir));
-        }
-
-        return $uri === '' ? '/' : $uri;
     }
 
     private function routePattern(string $path): string
