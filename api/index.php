@@ -2,6 +2,7 @@
 define('ROOT_PATH', __DIR__ . '/..');
 
 try {
+    require_once ROOT_PATH . '/vendor/autoload.php';
     require_once ROOT_PATH . '/config/env.php';
     require_once ROOT_PATH . '/config/database.php';
     $app = require ROOT_PATH . '/config/app.php';
