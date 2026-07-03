@@ -108,11 +108,12 @@ function rupiah(float $n): string
                                         <tr
                                             data-name="<?= htmlspecialchars(strtolower($t['customer_name'])) ?>"
                                             data-vehicle="<?= htmlspecialchars(strtolower($t['brand'] . ' ' . $t['vehicle_type'])) ?>"
+                                            data-plate="<?= htmlspecialchars(strtolower($t['plate_number'] ?? '')) ?>"
                                             data-status="<?= htmlspecialchars($t['wo_status']) ?>">
                                             <td><?= $i + 1 ?></td>
                                             <td>
                                                 <div class="td-name"><?= htmlspecialchars($t['customer_name']) ?></div>
-                                                <div class="td-sub"><?= htmlspecialchars($t['customer_phone'] ?? '-') ?></div>
+                                                <div class="td-sub"><?= htmlspecialchars($t['plate_number'] ?? '-') ?></div>
                                             </td>
                                             <td>
                                                 <div class="td-name"><?= htmlspecialchars($t['brand'] . ' ' . $t['vehicle_type']) ?></div>
@@ -197,21 +198,33 @@ function rupiah(float $n): string
          * Filter baris tabel berdasarkan input search dan dropdown status.
          */
         function filterTagihan() {
-            const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
-            const status = document.getElementById('statusFilter').value;
-            const rows = document.querySelectorAll('#tagihan-table tbody tr');
+    const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
+    const status = document.getElementById('statusFilter').value;
+    const rows = document.querySelectorAll('#tagihan-table tbody tr');
 
-            rows.forEach(function(row) {
-                const name = row.dataset.name || '';
-                const vehicle = row.dataset.vehicle || '';
-                const rowStat = row.dataset.status || '';
+    rows.forEach(function(row) {
+        // Mengubah data ke lowercase agar pencarian tidak sensitif huruf besar/kecil
+        const name = (row.dataset.name || '').toLowerCase();
+        const plate = (row.dataset.plate || '').toLowerCase();
+        const vehicle = (row.dataset.vehicle || '').toLowerCase();
+        const rowStat = row.dataset.status || '';
 
-                const cocokKata = keyword === '' || name.includes(keyword) || vehicle.includes(keyword);
-                const cocokStatus = status === '' || rowStat === status;
+        // Normalisasi spasi untuk plat nomor
+        const keywordFlat = keyword.replace(/\s+/g, '');
+        const plateFlat = plate.replace(/\s+/g, '');
 
-                row.style.display = (cocokKata && cocokStatus) ? '' : 'none';
-            });
-        }
+        // Logika baru: Menggunakan .startsWith() untuk mengutamakan huruf depan
+        const cocokKata = keyword === '' ||
+            name.startsWith(keyword) ||
+            vehicle.startsWith(keyword) ||
+            plate.startsWith(keyword) ||
+            (keywordFlat.length > 0 && plateFlat.startsWith(keywordFlat));
+            
+        const cocokStatus = status === '' || rowStat === status;
+
+        row.style.display = (cocokKata && cocokStatus) ? '' : 'none';
+    });
+}
 
         /**
          * Buka modal dan load data detail via fetch JSON.
