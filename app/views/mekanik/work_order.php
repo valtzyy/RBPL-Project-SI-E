@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/CSS/style.css">
+<link rel="stylesheet" href="public/CSS/style.css">
 <div class="form-container" style="max-width: 700px; margin: 0 auto; padding-top: 20px;">
     <div class="form-header">
         <h2>Pencarian Suku Cadang Mekanik</h2>
